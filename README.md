@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/HBRS-MAAS/ws18-project-right-brothers.svg?branch=master)](https://travis-ci.org/HBRS-MAAS/ws18-project-right-brothers)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/f65d632f35334321a8ee3a5feaf6a26c)](https://www.codacy.com/app/DRealArun/ws18-project-right-brothers?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=HBRS-MAAS/ws18-project-right-brothers&amp;utm_campaign=Badge_Grade)
 
 # MAAS Project - right-brothers
 
