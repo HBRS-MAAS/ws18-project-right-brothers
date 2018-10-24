@@ -1,4 +1,4 @@
-https://travis-ci.org/HBRS-MAAS/ws18-project-right-brothers.svg?branch=master
+[![Build Status](https://travis-ci.org/HBRS-MAAS/ws18-project-right-brothers.svg?branch=master)](https://travis-ci.org/HBRS-MAAS/ws18-project-right-brothers)
 
 # MAAS Project - right-brothers
 
@@ -6,7 +6,7 @@ Add a brief description of your project. Make sure to keep this README updated, 
 
 ## Team Members
 * Dharmin Bakaraniya - [@DharminB](https://github.com/DharminB)
-* Name2 LastName2 - [@githubusername](https://github.com/username)
+* Arun Rajendra Prabhu - [@DRealArun](https://github.com/DRealArun)
 
 ## Dependencies
 * JADE v.4.5.0
