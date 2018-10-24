@@ -7,6 +7,7 @@ Add a brief description of your project. Make sure to keep this README updated, 
 ## Team Members
 * Dharmin Bakaraniya - [@DharminB](https://github.com/DharminB)
 * Arun Rajendra Prabhu - [@DRealArun](https://github.com/DRealArun)
+* Md Zahiduzzaman - [@ZahidSE](https://github.com/ZahidSE)
 
 ## Dependencies
 * JADE v.4.5.0
