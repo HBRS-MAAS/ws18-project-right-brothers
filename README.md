@@ -1,9 +1,11 @@
-# MAAS Project - <Team Name>
+https://travis-ci.org/HBRS-MAAS/ws18-project-right-brothers.svg?branch=master
+
+# MAAS Project - right-brothers
 
 Add a brief description of your project. Make sure to keep this README updated, particularly on how to run your project from the **command line**.
 
 ## Team Members
-* Name1 LastName1 - [@githubusername](https://github.com/username)
+* Dharmin Bakaraniya - [@DharminB](https://github.com/DharminB)
 * Name2 LastName2 - [@githubusername](https://github.com/username)
 
 ## Dependencies
