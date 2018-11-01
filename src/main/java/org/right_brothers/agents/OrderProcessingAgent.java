@@ -9,7 +9,7 @@ import jade.domain.JADEAgentManagement.ShutdownPlatform;
 import jade.domain.FIPANames;
 
 import jade.core.Agent;
-import jade.core.AID;
+//import jade.core.AID;
 import jade.core.behaviours.*;
 import java.util.*;
 import jade.lang.acl.ACLMessage;
@@ -112,7 +112,7 @@ public class OrderProcessingAgent extends Agent {
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 // Message received. Process it
-                String title = msg.getContent();
+//                String title = msg.getContent();
                 ACLMessage reply = msg.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
                 reply.setContent("Got your order.");

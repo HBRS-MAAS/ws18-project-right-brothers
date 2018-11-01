@@ -95,9 +95,9 @@ public class BakeryCustomerAgent extends Agent {
         This is the behaviour used by Bread-buyer agents to request seller
         agents the target Bread.
         */
-		private AID bestSeller; // The agent who provides the best offer
-		private int bestPrice; // The best offered price
-		private int repliesCnt = 0; // The counter of replies from seller agents
+//		private AID bestSeller; // The agent who provides the best offer
+//		private int bestPrice; // The best offered price
+//		private int repliesCnt = 0; // The counter of replies from seller agents
 		private MessageTemplate mt; // The template to receive replies
 		private int step = 0;
         private String Bread_title;
@@ -141,6 +141,8 @@ public class BakeryCustomerAgent extends Agent {
 					block();
 				}
 				break;
+            default:
+                step = 0;
 			}
 		}
 		public boolean done() {
