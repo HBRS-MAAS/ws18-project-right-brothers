@@ -143,6 +143,7 @@ public class BakeryCustomerAgent extends Agent {
 				break;
             default:
                 step = 0;
+                break;
 			}
 		}
 		public boolean done() {
