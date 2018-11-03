@@ -116,6 +116,7 @@ public class OrderProcessingAgent extends Agent {
                 ACLMessage reply = msg.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
                 reply.setContent("Got your order.");
+                System.out.println(msg.getContent());
                 myAgent.send(reply);
             }
             else {
