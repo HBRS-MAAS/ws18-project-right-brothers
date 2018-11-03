@@ -1,0 +1,197 @@
+\documentclass[12pt]{article}
+\usepackage{natbib,amsmath,amsfonts,fullpage,hyphenat,booktabs,graphicx,setspace}
+\usepackage[colorlinks,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\setcitestyle{square,super,comma}
+\onehalfspacing{}
+
+\title{Architecture and agent definition\\Multiagent and Agent System}
+\author{Arun Prabhu\\Md Zahiduzzaman\\Dharmin Bakaraniya}
+\begin{document}
+\maketitle{}
+\pagebreak
+\section{Architecture}%
+\label{sec:architecture}
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=1.0\linewidth]{Bakery.png}
+    \caption{Architecture diagram explaining the interaction between customer and bakery agents}\label{fig:somename}
+\end{figure}
+
+\pagebreak
+
+\section{Agent descriptions}%
+\label{sec:agent_descriptions}
+
+\subsection{Customer}%
+\label{sub:customer_agent}
+\begin{itemize}
+    \item \textbf{Stage}: Order
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: PlaceOrder
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item Proposal (Sender: OrderProcessor)
+            \item RejectCFP (Sender: OrderProcessor)
+            \item RejectOrder (Sender: OrderProcessor)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item RequestProposal (Receiver: OrderProcessor)
+            \item OrderPlacement (Receiver: OrderProcessor)
+        \end{itemize}
+\end{itemize}
+
+\subsection{Order Processor}%
+\label{sub:order_processor}
+\begin{itemize}
+    \item \textbf{Stage}: Order
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: CFPServer, OrderServer
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item RequestProposal (Sender: Customer)
+            \item OrderPlacement (Sender: Customer)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item Proposal (Receiver: Customer)
+            \item RejectCFP (Receiver: Customer)
+            \item RejectOrder (Receiver: Customer)
+            \item OrderInfo (Receiver: PackagingManager)
+        \end{itemize}
+\end{itemize}
+
+\subsection{Oven Manager}%
+\label{sub:over_manager}
+\begin{itemize}
+    \item \textbf{Stage}: OrderProcessing
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: TBD
+\end{itemize}
+
+\subsection{Dough Kneading Manager}%
+\label{sub:knead_manager}
+\begin{itemize}
+    \item \textbf{Stage}: OrderProcessing
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: TBD
+\end{itemize}
+
+\subsection{Idle Time Manager}%
+\label{sub:idle_manager}
+\begin{itemize}
+    \item \textbf{Stage}: OrderProcessor
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: TBD
+\end{itemize}
+
+\subsection{Dough Preparation Manager}%
+\label{sub:prep_manager}
+\begin{itemize}
+    \item \textbf{Stage}: OrderProcessing
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: TBD
+\end{itemize}
+
+\subsection{Packaging Manager}%
+\label{sub:packaging_manager}
+\begin{itemize}
+    \item \textbf{Stage}: OrderProcessing
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: TBD
+\end{itemize}
+
+\subsection{Delivery Manager}%
+\label{sub:delivery_manager}
+\begin{itemize}
+    \item \textbf{Stage}: Delivery
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: TBD
+\end{itemize}
+
+\subsection{Time Keeper}%
+\label{sub:time_keeper}
+\begin{itemize}
+    \item \textbf{Stage}: Order, OrderProcessing, Delivery
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: TBD
+\end{itemize}
+
+\subsection{Order}%
+\label{sub:order}
+\begin{itemize}
+    \item \textbf{Stage}: Order
+    \item \textbf{Agent/Object}: Object
+    \item \textbf{Static/Dynamic}: Dynamic
+\end{itemize}
+
+\subsection{Truck}%
+\label{sub:truck}
+\begin{itemize}
+    \item \textbf{Stage}: Delivery
+    \item \textbf{Agent/Object}: Object
+    \item \textbf{Static/Dynamic}: Static
+\end{itemize}
+
+\subsection{Product}%
+\label{sub:product}
+\begin{itemize}
+    \item \textbf{Stage}: Order, OrderProcessing, Delivery
+    \item \textbf{Agent/Object}: 
+    \item \textbf{Static/Dynamic}: 
+\end{itemize}
+
+\subsection{Location}%
+\label{sub:location}
+\begin{itemize}
+    \item \textbf{Stage}: Delivery
+    \item \textbf{Agent/Object}: Object
+    \item \textbf{Static/Dynamic}: Dynamic
+\end{itemize}
+
+\subsection{StreetNetwork}%
+\label{sub:street_network}
+\begin{itemize}
+    \item \textbf{Stage}: Delivery
+    \item \textbf{Agent/Object}: Object
+    \item \textbf{Static/Dynamic}: Static
+\end{itemize}
+
+\end{document}
+
+%\subsection{}%
+%\label{sub:}
+%\begin{itemize}
+%    \item \textbf{Stage}: 
+%    \item \textbf{Agent/Object}: 
+%    \item \textbf{Static/Dynamic}: 
+%    \item \textbf{Behaviour}: 
+%    \item \textbf{Messages in}:
+%        \begin{itemize}
+%            \item msgName (Sender: sen)
+%        \end{itemize}
+%    \item \textbf{Messages out}:
+%        \begin{itemize}
+%            \item msgName (Receiver: rec)
+%        \end{itemize}
+%\end{itemize}
+%
+%
+%
+%\subsection{}%
+%\label{sub:}
+%\begin{itemize}
+%    \item \textbf{Stage}: 
+%    \item \textbf{Agent/Object}: 
+%    \item \textbf{Static/Dynamic}: 
+%\end{itemize}
