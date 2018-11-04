@@ -21,6 +21,20 @@ Just install gradle and run:
     gradle run
 
 It will automatically get the dependencies and start JADE with the configured agents.
+
+### Running from different machines
+
+#### Main Container
+```
+gradle run --args="server"
+
+```
+
+#### Peripheral Container
+```
+gradle run --args="-host <host ip address>"
+```
+
 In case you want to clean you workspace run
 
     gradle clean
