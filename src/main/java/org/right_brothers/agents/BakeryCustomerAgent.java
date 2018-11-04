@@ -3,6 +3,8 @@ package org.right_brothers.agents;
 import jade.core.Agent;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
@@ -37,13 +39,11 @@ public class BakeryCustomerAgent extends Agent {
         this.getOrderProcessorAID();
         Object[] args = getArguments();
         
-        
         if (args != null && args.length > 0) {
-        	StringBuilder builder = new StringBuilder();
-        	for(Object object : Arrays.asList(args)) {
-        	    builder.append(object.toString());
-        	}
-        	addBehaviour(new  RequestPerformer(builder.toString()));
+        	List<String> arguments = Arrays.asList(args).stream()
+        			.map(arg -> arg.toString()).collect(Collectors.toList());
+        	String order = String.join(",", arguments);
+        	addBehaviour(new  RequestPerformer(order));
         }
         else {
             System.out.println("\tNo Bread title specified");

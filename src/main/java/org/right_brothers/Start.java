@@ -1,28 +1,33 @@
 package org.right_brothers;
 
 import java.util.*;
-//import org.right_brothers.agents.DummyAgent;
-//import org.right_brothers.agents.BakeryCustomerAgent;
-//import org.right_brothers.agents.OrderProcessingAgent;
 
 public class Start {
     public static void main(String[] args) {
-        List<String> agents = new Vector<>();
-        agents.add("test:org.right_brothers.agents.DummyAgent");
-        agents.add("seller1:org.right_brothers.agents.OrderProcessingAgent");
-
-        for (int i = 1; i < 2 ; i++) {
-            agents.add(getBuyerAgentInitializationString(i));
-        }
-
-        List<String> cmd = new Vector<>();
-        cmd.add("-agents");
-        StringBuilder sb = new StringBuilder();
-        for (String a : agents) {
-            sb.append(a);
-            sb.append(";");
-        }
-        cmd.add(sb.toString());
+    	List<String> agents = new Vector<>();
+    	List<String> cmd = new Vector<>();
+    	
+    	List<String> arguments = Arrays.asList(args);
+    	
+    	if(arguments.size() > 0) {
+    		String customArgument = String.join(" ", arguments).trim();
+    		if(customArgument.toLowerCase().equals("server")) {
+    			cmd.add("-agents");
+    			agents.add("remote_seller_1:org.right_brothers.agents.OrderProcessingAgent");
+    		} else {
+    			cmd.addAll(Arrays.asList("-container",customArgument, "-agents"));
+    			agents.add(getBuyerAgentInitializationString(1));
+    		}
+    	} else {
+    		cmd.add("-agents");
+    		
+            agents.add("test:org.right_brothers.agents.DummyAgent");
+            agents.add("seller1:org.right_brothers.agents.OrderProcessingAgent");
+            
+            agents.add(getBuyerAgentInitializationString(1));
+    	}       
+        
+        cmd.add(String.join(";", agents));
         jade.Boot.main(cmd.toArray(new String[cmd.size()]));
     }
     private static String getBuyerAgentInitializationString(int buyerID){
