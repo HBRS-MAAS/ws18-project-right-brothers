@@ -15,7 +15,9 @@ public class Start {
     			cmd.add("-agents");
     			agents.add("remote_seller_1:org.right_brothers.agents.OrderProcessingAgent");
     		} else {
-    			cmd.addAll(Arrays.asList("-container",customArgument, "-agents"));
+				cmd.add("-container");
+				cmd.addAll(arguments);
+				cmd.add("-agents");
     			agents.add(getBuyerAgentInitializationString(1));
     		}
     	} else {
