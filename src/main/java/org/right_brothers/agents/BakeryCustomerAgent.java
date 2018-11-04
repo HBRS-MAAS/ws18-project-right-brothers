@@ -12,41 +12,32 @@ import jade.lang.acl.MessageTemplate;
 
 @SuppressWarnings("serial")
 public class BakeryCustomerAgent extends Agent {
-    // The list of known seller agents
     private AID[] sellerAgents;
 
     protected void setup() {
-		// Printout a welcome message
         System.out.println("\tCustomer-agent "+getAID().getLocalName()+" is born.");
 
         this.publishOrderProcessingAID();
-        // wait for order processing agents to be born
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // get the agent id of all the available order processing agents
-        this.getCustomerAID();
-        // Get the title of the Bread to buy as a start-up argument
+        this.getOrderProcessorAID();
         Object[] args = getArguments();
         if (args != null && args.length > 0) {
             for (int i = 0; i < args.length; i++) {
                 String Bread_title = (String) args[i];
-                // System.out.println("\tTrying to buy " + Bread_title);
                 addBehaviour(new  RequestPerformer(Bread_title));
             }
         }
         else {
-            // Make the agent terminate immediately
             System.out.println("\tNo Bread title specified");
             doDelete();
         }
-        // addBehaviour(new shutdown());
     }
 
     protected void takeDown() {
-        // Deregister from the yellow pages
         try {
             DFService.deregister(this);
         }
@@ -57,7 +48,6 @@ public class BakeryCustomerAgent extends Agent {
     }
 
     protected void publishOrderProcessingAID(){
-        // Register the Bakery-customer-agent service in the yellow pages
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
@@ -71,8 +61,7 @@ public class BakeryCustomerAgent extends Agent {
             fe.printStackTrace();
         }
     }
-    protected void getCustomerAID() {
-        // Update the list of customers agents
+    protected void getOrderProcessorAID() {
         DFAgentDescription template = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setType("Order-processing-agent");
@@ -89,29 +78,23 @@ public class BakeryCustomerAgent extends Agent {
         }
     }
 
+    /*
+     * Inner class RequestPerformer.
+     * This is the behavior used by Bread-buyer agents to request seller
+     * agents the target Bread.
+     * */
 	private class RequestPerformer extends Behaviour {
-        /*
-        Inner class RequestPerformer.
-        This is the behaviour used by Bread-buyer agents to request seller
-        agents the target Bread.
-        */
-//		private AID bestSeller; // The agent who provides the best offer
-//		private int bestPrice; // The best offered price
-//		private int repliesCnt = 0; // The counter of replies from seller agents
-		private MessageTemplate mt; // The template to receive replies
+		private MessageTemplate mt;
 		private int step = 0;
         private String Bread_title;
 
         RequestPerformer (String Bread_title) {
             this.Bread_title = Bread_title;
-            // System.out.println("inside constructor of RequestPerformer " + this.Bread_title);
         }
 
 		public void action() {
 			switch (step) {
 			case 0:
-				// Send the request to all sellers
-                // System.out.println("\t" + myAgent.getLocalName() + " inside step 0 " + this.Bread_title);
 				ACLMessage cfp = new ACLMessage(ACLMessage.REQUEST);
 				for (int i = 0; i < sellerAgents.length; ++i) {
 					cfp.addReceiver(sellerAgents[i]);
@@ -120,19 +103,14 @@ public class BakeryCustomerAgent extends Agent {
 				cfp.setConversationId("Bread-trade");
 				cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
 				myAgent.send(cfp);
-				// Prepare the template to get confirmation
 				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Bread-trade"),
 				MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 				step = 1;
 				break;
 			case 1:
-                // System.out.println("\t" + myAgent.getLocalName() + " inside step 1 " + this.Bread_title);
 				ACLMessage reply = myAgent.receive(mt);
 				if (reply != null) {
-					// Reply received
-                    // System.out.println(reply.getContent());
 					if (reply.getPerformative() == ACLMessage.CONFIRM) {
-						// received confirmation
                         System.out.println("\t" + myAgent.getLocalName() + " received confirmation from " + reply.getSender().getLocalName());
 						step = 2;
 					}
@@ -147,7 +125,6 @@ public class BakeryCustomerAgent extends Agent {
 			}
 		}
 		public boolean done() {
-            // if got confirmation, kill the agent
             if (step == 2) {
                 myAgent.doDelete();
                 return true;
