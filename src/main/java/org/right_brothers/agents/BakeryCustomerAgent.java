@@ -1,6 +1,9 @@
 package org.right_brothers.agents;
 
 import jade.core.Agent;
+
+import java.util.Arrays;
+
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.basic.Action;
@@ -33,11 +36,14 @@ public class BakeryCustomerAgent extends Agent {
         }
         this.getOrderProcessorAID();
         Object[] args = getArguments();
+        
+        
         if (args != null && args.length > 0) {
-            for (int i = 0; i < args.length; i++) {
-                String order = (String) args[i];
-                addBehaviour(new  RequestPerformer(order));
-            }
+        	StringBuilder builder = new StringBuilder();
+        	for(Object object : Arrays.asList(args)) {
+        	    builder.append(object.toString());
+        	}
+        	addBehaviour(new  RequestPerformer(builder.toString()));
         }
         else {
             System.out.println("\tNo Bread title specified");
