@@ -18,6 +18,9 @@ import jade.domain.FIPAAgentManagement.*;
 import jade.domain.FIPAException;
 import jade.domain.DFService;
 
+import org.right_brothers.objects.Order;
+import org.json.simple.JSONObject;
+
 public class OrderProcessingAgent extends Agent {
 
     protected void setup() {
@@ -108,11 +111,16 @@ public class OrderProcessingAgent extends Agent {
          * */
         public void action() {
             // System.out.println("\tinside OfferRequestsServer action");
-            MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 // Message received. Process it
-//                String title = msg.getContent();
+                try {
+                    Order order = (Order) msg.getContentObject();
+                    System.out.println(order.guid);
+                } catch(Exception e){
+//                    System.out.println("something");
+                }
                 ACLMessage reply = msg.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
                 reply.setContent("Got your order.");

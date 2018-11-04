@@ -9,11 +9,14 @@ import jade.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import org.right_brothers.objects.Order;
+import org.json.simple.JSONObject;
 
 @SuppressWarnings("serial")
 public class BakeryCustomerAgent extends Agent {
     // The list of known seller agents
     private AID[] sellerAgents;
+    private Order order;
 
     protected void setup() {
 		// Printout a welcome message
@@ -26,6 +29,8 @@ public class BakeryCustomerAgent extends Agent {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        this.order = new Order("order-001");
         // get the agent id of all the available order processing agents
         this.getCustomerAID();
         // Get the title of the Bread to buy as a start-up argument
@@ -34,7 +39,7 @@ public class BakeryCustomerAgent extends Agent {
             for (int i = 0; i < args.length; i++) {
                 String Bread_title = (String) args[i];
                 // System.out.println("\tTrying to buy " + Bread_title);
-                addBehaviour(new  RequestPerformer(Bread_title));
+                addBehaviour(new  RequestPerformer(this.order));
             }
         }
         else {
@@ -100,10 +105,10 @@ public class BakeryCustomerAgent extends Agent {
 //		private int repliesCnt = 0; // The counter of replies from seller agents
 		private MessageTemplate mt; // The template to receive replies
 		private int step = 0;
-        private String Bread_title;
+        private Order order;
 
-        RequestPerformer (String Bread_title) {
-            this.Bread_title = Bread_title;
+        RequestPerformer (Order order) {
+            this.order = order;
             // System.out.println("inside constructor of RequestPerformer " + this.Bread_title);
         }
 
@@ -112,11 +117,16 @@ public class BakeryCustomerAgent extends Agent {
 			case 0:
 				// Send the request to all sellers
                 // System.out.println("\t" + myAgent.getLocalName() + " inside step 0 " + this.Bread_title);
-				ACLMessage cfp = new ACLMessage(ACLMessage.REQUEST);
+				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 				for (int i = 0; i < sellerAgents.length; ++i) {
 					cfp.addReceiver(sellerAgents[i]);
 				}
-				cfp.setContent(this.Bread_title);
+                try {
+                    cfp.setContentObject(this.order);
+                    
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
 				cfp.setConversationId("Bread-trade");
 				cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
 				myAgent.send(cfp);
