@@ -1,12 +1,5 @@
 package org.right_brothers.agents;
 
-import jade.content.lang.Codec;
-import jade.content.lang.sl.SLCodec;
-import jade.content.onto.basic.Action;
-import jade.domain.JADEAgentManagement.JADEManagementOntology;
-import jade.domain.JADEAgentManagement.ShutdownPlatform;
-import jade.domain.FIPANames;
-
 import jade.core.Agent;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
@@ -23,7 +16,6 @@ public class OrderProcessingAgent extends Agent {
         this.publishSellerAID();
         
         addBehaviour(new OfferRequestsServer());
-        addBehaviour(new SellerTerminator());
     }
 
     protected void takeDown() {
@@ -50,55 +42,6 @@ public class OrderProcessingAgent extends Agent {
         }
     }
     
-    /*
-     * Inner class SellerTerminator
-     * This behaviour is used by Bread-seller agents to check if there are any 
-     * buyer agents alive. If there are none, then the seller agent will terminate
-     * itself. The checking is done in action method and the suicide is commited in
-     * done method.
-     * */
-    private class SellerTerminator extends Behaviour {
-        private int numberOfBuyersAlive;
-        public void action() {
-            DFAgentDescription template = new DFAgentDescription();
-            ServiceDescription sd = new ServiceDescription();
-            sd.setType("Bakery-customer-agent");
-            template.addServices(sd);
-            try {
-                DFAgentDescription[] result = DFService.search(myAgent, template);
-                this.numberOfBuyersAlive = (int) result.length;
-            }
-            catch (FIPAException fe) {
-                fe.printStackTrace();
-            }
-        }
-        public boolean done () {
-            if (this.numberOfBuyersAlive == 0) {
-                shutdown();
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        
-        public void shutdown() {
-            ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
-            Codec codec = new SLCodec();
-            myAgent.getContentManager().registerLanguage(codec);
-            myAgent.getContentManager().registerOntology(JADEManagementOntology.getInstance());
-            shutdownMessage.addReceiver(myAgent.getAMS());
-            shutdownMessage.setLanguage(FIPANames.ContentLanguage.FIPA_SL);
-            shutdownMessage.setOntology(JADEManagementOntology.getInstance().getName());
-            try {
-                myAgent.getContentManager().fillContent(shutdownMessage,new Action(myAgent.getAID(), new ShutdownPlatform()));
-                myAgent.send(shutdownMessage);
-            }
-            catch (Exception e) {
-            }
-        }
-    }
-
     /*
      * Inner class OfferRequestsServer.
      * This is the behaviour used by Bread-seller agents to serve incoming requests
