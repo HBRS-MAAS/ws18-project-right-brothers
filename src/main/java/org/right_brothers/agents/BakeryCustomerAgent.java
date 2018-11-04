@@ -129,9 +129,7 @@ public class BakeryCustomerAgent extends Agent {
                 myAgent.doDelete();
                 return true;
             }
-            else {
-                return false;
-            }
+            return false;
 		}
 	} // End of inner class RequestPerformer
 

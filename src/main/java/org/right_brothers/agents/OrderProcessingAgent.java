@@ -74,11 +74,27 @@ public class OrderProcessingAgent extends Agent {
         }
         public boolean done () {
             if (this.numberOfBuyersAlive == 0) {
-                myAgent.addBehaviour(new shutdown());
+                shutdown();
                 return true;
             }
             else {
                 return false;
+            }
+        }
+        
+        public void shutdown() {
+            ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
+            Codec codec = new SLCodec();
+            myAgent.getContentManager().registerLanguage(codec);
+            myAgent.getContentManager().registerOntology(JADEManagementOntology.getInstance());
+            shutdownMessage.addReceiver(myAgent.getAMS());
+            shutdownMessage.setLanguage(FIPANames.ContentLanguage.FIPA_SL);
+            shutdownMessage.setOntology(JADEManagementOntology.getInstance().getName());
+            try {
+                myAgent.getContentManager().fillContent(shutdownMessage,new Action(myAgent.getAID(), new ShutdownPlatform()));
+                myAgent.send(shutdownMessage);
+            }
+            catch (Exception e) {
             }
         }
     }
@@ -104,24 +120,6 @@ public class OrderProcessingAgent extends Agent {
             }
             else {
                 block();
-            }
-        }
-    }
-    
-    private class shutdown extends OneShotBehaviour{
-        public void action() {
-            ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
-            Codec codec = new SLCodec();
-            myAgent.getContentManager().registerLanguage(codec);
-            myAgent.getContentManager().registerOntology(JADEManagementOntology.getInstance());
-            shutdownMessage.addReceiver(myAgent.getAMS());
-            shutdownMessage.setLanguage(FIPANames.ContentLanguage.FIPA_SL);
-            shutdownMessage.setOntology(JADEManagementOntology.getInstance().getName());
-            try {
-                myAgent.getContentManager().fillContent(shutdownMessage,new Action(myAgent.getAID(), new ShutdownPlatform()));
-                myAgent.send(shutdownMessage);
-            }
-            catch (Exception e) {
             }
         }
     }
