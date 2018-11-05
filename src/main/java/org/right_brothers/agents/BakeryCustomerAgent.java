@@ -140,15 +140,24 @@ public class BakeryCustomerAgent extends Agent {
 		}
 		public boolean done() {
             if (step == 2) {
+                System.out.println(totalAgents);
             	if(totalAgents == 0) {
-            		shutdown();
+                    myAgent.addBehaviour(new shutdown());
             	}
+                else {
+                    myAgent.doDelete();
+                }
                 return true;
             }
             return false;
 		}
 		
-		public void shutdown() {
+	} // End of inner class RequestPerformer
+
+    // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
+    private class shutdown extends OneShotBehaviour{
+		public void action() {
+            System.out.println("inside shutdown behaviour");
             ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
             Codec codec = new SLCodec();
             myAgent.getContentManager().registerLanguage(codec);
@@ -162,7 +171,6 @@ public class BakeryCustomerAgent extends Agent {
             }
             catch (Exception e) {}
         }
-	} // End of inner class RequestPerformer
-
+    }
 
 }
