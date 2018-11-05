@@ -26,13 +26,13 @@ It will automatically get the dependencies and start JADE with the configured ag
 
 #### Main Container
 ```
-gradle run --args="server"
+	gradle run --args="server"
 
 ```
 
 #### Peripheral Container
 ```
-gradle run --args="-host <host ip address>"
+	gradle run --args="-host <host ip address>"
 ```
 
 In case you want to clean you workspace run

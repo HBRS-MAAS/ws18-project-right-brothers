@@ -11,7 +11,7 @@ public class Start {
     	
     	if(arguments.size() > 0) {
     		String customArgument = String.join(" ", arguments).trim();
-    		if(customArgument.toLowerCase().equals("server")) {
+    		if(customArgument.equalsIgnoreCase("server")) {
     			cmd.add("-agents");
     			agents.add("remote_seller_1:org.right_brothers.agents.OrderProcessingAgent");
     		} else {
