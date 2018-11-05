@@ -28,7 +28,6 @@ It will automatically get the dependencies and start JADE with the configured ag
 
     gradle run --args="server"
 
-
 #### Peripheral Container
 
     gradle run --args="-host <host ip address>"
