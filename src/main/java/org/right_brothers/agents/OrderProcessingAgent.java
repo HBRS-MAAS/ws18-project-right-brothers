@@ -19,7 +19,7 @@ import jade.domain.FIPAException;
 import jade.domain.DFService;
 
 import org.right_brothers.objects.Order;
-import org.json.simple.JSONObject;
+//import org.json.simple.JSONObject;
 
 public class OrderProcessingAgent extends Agent {
 

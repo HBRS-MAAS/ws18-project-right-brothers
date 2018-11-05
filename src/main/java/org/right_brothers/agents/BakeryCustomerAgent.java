@@ -10,13 +10,13 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import org.right_brothers.objects.Order;
-import org.json.simple.JSONObject;
+//import org.json.simple.JSONObject;
 
 @SuppressWarnings("serial")
 public class BakeryCustomerAgent extends Agent {
     // The list of known seller agents
     private AID[] sellerAgents;
-    private Order order;
+//    private Order order;
 
     protected void setup() {
 		// Printout a welcome message
@@ -30,7 +30,7 @@ public class BakeryCustomerAgent extends Agent {
             e.printStackTrace();
         }
 
-        this.order = new Order("order-001");
+        Order order = new Order("order-001");
         // get the agent id of all the available order processing agents
         this.getCustomerAID();
         // Get the title of the Bread to buy as a start-up argument
@@ -39,7 +39,7 @@ public class BakeryCustomerAgent extends Agent {
             for (int i = 0; i < args.length; i++) {
                 String Bread_title = (String) args[i];
                 // System.out.println("\tTrying to buy " + Bread_title);
-                addBehaviour(new  RequestPerformer(this.order));
+                addBehaviour(new  RequestPerformer(order));
             }
         }
         else {
