@@ -1,10 +1,21 @@
 package org.right_brothers.agents;
 
 import jade.core.Agent;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import jade.content.lang.Codec;
+import jade.content.lang.sl.SLCodec;
+import jade.content.onto.basic.Action;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.domain.FIPAAgentManagement.*;
+import jade.domain.JADEAgentManagement.JADEManagementOntology;
+import jade.domain.JADEAgentManagement.ShutdownPlatform;
 import jade.domain.FIPAException;
+import jade.domain.FIPANames;
 import jade.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -12,41 +23,35 @@ import jade.lang.acl.MessageTemplate;
 
 @SuppressWarnings("serial")
 public class BakeryCustomerAgent extends Agent {
-    // The list of known seller agents
     private AID[] sellerAgents;
+    private static int totalAgents;
 
     protected void setup() {
-		// Printout a welcome message
         System.out.println("\tCustomer-agent "+getAID().getLocalName()+" is born.");
-
-        this.publishOrderProcessingAID();
-        // wait for order processing agents to be born
+        totalAgents++;
+        
+        this.publishCustomerAID();
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // get the agent id of all the available order processing agents
-        this.getCustomerAID();
-        // Get the title of the Bread to buy as a start-up argument
+        this.getOrderProcessorAID();
         Object[] args = getArguments();
+        
         if (args != null && args.length > 0) {
-            for (int i = 0; i < args.length; i++) {
-                String Bread_title = (String) args[i];
-                // System.out.println("\tTrying to buy " + Bread_title);
-                addBehaviour(new  RequestPerformer(Bread_title));
-            }
+        	List<String> arguments = Arrays.asList(args).stream()
+        			.map(arg -> arg.toString()).collect(Collectors.toList());
+        	String order = String.join(",", arguments);
+        	addBehaviour(new  RequestPerformer(order));
         }
         else {
-            // Make the agent terminate immediately
             System.out.println("\tNo Bread title specified");
             doDelete();
         }
-        // addBehaviour(new shutdown());
     }
 
     protected void takeDown() {
-        // Deregister from the yellow pages
         try {
             DFService.deregister(this);
         }
@@ -56,8 +61,7 @@ public class BakeryCustomerAgent extends Agent {
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
 
-    protected void publishOrderProcessingAID(){
-        // Register the Bakery-customer-agent service in the yellow pages
+    protected void publishCustomerAID(){
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
         ServiceDescription sd = new ServiceDescription();
@@ -71,8 +75,7 @@ public class BakeryCustomerAgent extends Agent {
             fe.printStackTrace();
         }
     }
-    protected void getCustomerAID() {
-        // Update the list of customers agents
+    protected void getOrderProcessorAID() {
         DFAgentDescription template = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setType("Order-processing-agent");
@@ -89,51 +92,41 @@ public class BakeryCustomerAgent extends Agent {
         }
     }
 
+    /*
+     * Inner class RequestPerformer.
+     * This is the behavior used by Bread-buyer agents to request seller
+     * agents the target Bread.
+     * */
 	private class RequestPerformer extends Behaviour {
-        /*
-        Inner class RequestPerformer.
-        This is the behaviour used by Bread-buyer agents to request seller
-        agents the target Bread.
-        */
-//		private AID bestSeller; // The agent who provides the best offer
-//		private int bestPrice; // The best offered price
-//		private int repliesCnt = 0; // The counter of replies from seller agents
-		private MessageTemplate mt; // The template to receive replies
+		private MessageTemplate mt;
 		private int step = 0;
-        private String Bread_title;
+        private String order;
 
-        RequestPerformer (String Bread_title) {
-            this.Bread_title = Bread_title;
-            // System.out.println("inside constructor of RequestPerformer " + this.Bread_title);
+        RequestPerformer (String order) {
+            this.order = order;
         }
 
 		public void action() {
 			switch (step) {
 			case 0:
-				// Send the request to all sellers
-                // System.out.println("\t" + myAgent.getLocalName() + " inside step 0 " + this.Bread_title);
 				ACLMessage cfp = new ACLMessage(ACLMessage.REQUEST);
 				for (int i = 0; i < sellerAgents.length; ++i) {
 					cfp.addReceiver(sellerAgents[i]);
 				}
-				cfp.setContent(this.Bread_title);
+				cfp.setContent(this.order);
 				cfp.setConversationId("Bread-trade");
 				cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
 				myAgent.send(cfp);
-				// Prepare the template to get confirmation
 				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Bread-trade"),
 				MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
 				step = 1;
 				break;
 			case 1:
-                // System.out.println("\t" + myAgent.getLocalName() + " inside step 1 " + this.Bread_title);
 				ACLMessage reply = myAgent.receive(mt);
 				if (reply != null) {
-					// Reply received
-                    // System.out.println(reply.getContent());
 					if (reply.getPerformative() == ACLMessage.CONFIRM) {
-						// received confirmation
                         System.out.println("\t" + myAgent.getLocalName() + " received confirmation from " + reply.getSender().getLocalName());
+                        totalAgents--;
 						step = 2;
 					}
 				}
@@ -142,21 +135,42 @@ public class BakeryCustomerAgent extends Agent {
 				}
 				break;
             default:
-                step = 0;
                 break;
 			}
 		}
 		public boolean done() {
-            // if got confirmation, kill the agent
             if (step == 2) {
-                myAgent.doDelete();
+                System.out.println(totalAgents);
+            	if(totalAgents == 0) {
+                    myAgent.addBehaviour(new shutdown());
+            	}
+                else {
+                    myAgent.doDelete();
+                }
                 return true;
             }
-            else {
-                return false;
-            }
+            return false;
 		}
+		
 	} // End of inner class RequestPerformer
 
+    // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
+    private class shutdown extends OneShotBehaviour{
+		public void action() {
+            System.out.println("inside shutdown behaviour");
+            ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
+            Codec codec = new SLCodec();
+            myAgent.getContentManager().registerLanguage(codec);
+            myAgent.getContentManager().registerOntology(JADEManagementOntology.getInstance());
+            shutdownMessage.addReceiver(myAgent.getAMS());
+            shutdownMessage.setLanguage(FIPANames.ContentLanguage.FIPA_SL);
+            shutdownMessage.setOntology(JADEManagementOntology.getInstance().getName());
+            try {
+                myAgent.getContentManager().fillContent(shutdownMessage,new Action(myAgent.getAID(), new ShutdownPlatform()));
+                myAgent.send(shutdownMessage);
+            }
+            catch (Exception e) {}
+        }
+    }
 
 }
