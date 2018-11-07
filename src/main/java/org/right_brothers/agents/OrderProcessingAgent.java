@@ -8,6 +8,9 @@ import jade.domain.FIPAAgentManagement.*;
 import jade.domain.FIPAException;
 import jade.domain.DFService;
 
+import org.right_brothers.objects.Order;
+//import org.json.simple.JSONObject;
+
 public class OrderProcessingAgent extends Agent {
 
     protected void setup() {
@@ -52,13 +55,21 @@ public class OrderProcessingAgent extends Agent {
      * */
     private class OfferRequestsServer extends CyclicBehaviour {
         public void action() {
-            MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
+            MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
+                System.out.println("inside action of OfferRequestsServer " + msg.getReplyWith());
+                // Message received. Process it
+                try {
+                    Order order = (Order) msg.getContentObject();
+                    System.out.println(order.guid);
+                    System.out.println(order.customer_id);
+                } catch(Exception e){
+                    System.out.println("Could not read order");
+                }
                 ACLMessage reply = msg.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
                 reply.setContent("Got your order.");
-                System.out.println(msg.getContent());
                 myAgent.send(reply);
             }
             else {
