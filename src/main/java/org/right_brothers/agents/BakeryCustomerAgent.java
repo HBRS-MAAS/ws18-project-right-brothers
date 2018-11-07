@@ -36,6 +36,7 @@ public class BakeryCustomerAgent extends Agent {
         // Get the title of the Bread to buy as a start-up argument
         Object[] args = getArguments();
         if (args != null && args.length > 0) {
+            System.out.println("arguments " + args.length);
             for (int i = 0; i < args.length; i++) {
                 String Bread_title = (String) args[i];
                 // System.out.println("\tTrying to buy " + Bread_title);

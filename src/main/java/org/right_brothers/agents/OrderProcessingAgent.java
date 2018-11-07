@@ -114,17 +114,19 @@ public class OrderProcessingAgent extends Agent {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
+                System.out.println("inside action of OfferRequestsServer " + msg.getReplyWith());
                 // Message received. Process it
                 try {
                     Order order = (Order) msg.getContentObject();
                     System.out.println(order.guid);
+                    System.out.println(order.customer_id);
                 } catch(Exception e){
 //                    System.out.println("something");
                 }
                 ACLMessage reply = msg.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
                 reply.setContent("Got your order.");
-                System.out.println(msg.getContent());
+//                System.out.println(msg.getContent());
                 myAgent.send(reply);
             }
             else {
