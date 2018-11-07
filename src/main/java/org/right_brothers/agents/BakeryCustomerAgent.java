@@ -20,10 +20,13 @@ import jade.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import org.right_brothers.objects.Order;
+//import org.json.simple.JSONObject;
 
 @SuppressWarnings("serial")
 public class BakeryCustomerAgent extends Agent {
     private AID[] sellerAgents;
+
     private static int totalAgents;
 
     protected void setup() {
@@ -36,19 +39,13 @@ public class BakeryCustomerAgent extends Agent {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        Order order = new Order("order-001");
+        
         this.getOrderProcessorAID();
         Object[] args = getArguments();
         
-        if (args != null && args.length > 0) {
-        	List<String> arguments = Arrays.asList(args).stream()
-        			.map(arg -> arg.toString()).collect(Collectors.toList());
-        	String order = String.join(",", arguments);
-        	addBehaviour(new  RequestPerformer(order));
-        }
-        else {
-            System.out.println("\tNo Bread title specified");
-            doDelete();
-        }
+        addBehaviour(new  RequestPerformer(order));
     }
 
     protected void takeDown() {
@@ -100,20 +97,25 @@ public class BakeryCustomerAgent extends Agent {
 	private class RequestPerformer extends Behaviour {
 		private MessageTemplate mt;
 		private int step = 0;
-        private String order;
+    private Order order;
 
-        RequestPerformer (String order) {
-            this.order = order;
-        }
+    RequestPerformer (Order order) {
+        this.order = order;
+    }
 
 		public void action() {
 			switch (step) {
 			case 0:
-				ACLMessage cfp = new ACLMessage(ACLMessage.REQUEST);
+				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 				for (int i = 0; i < sellerAgents.length; ++i) {
 					cfp.addReceiver(sellerAgents[i]);
 				}
-				cfp.setContent(this.order);
+        try {
+            cfp.setContentObject(this.order);
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
 				cfp.setConversationId("Bread-trade");
 				cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
 				myAgent.send(cfp);
