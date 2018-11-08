@@ -1,4 +1,4 @@
-package org.right_brothers;
+package org.right_brothers.objects;
 
 import java.util.*;
 import org.json.simple.JSONObject;
@@ -24,6 +24,8 @@ public class ScenarioParser {
     private String network_file = "street-network.json";
     private String config_path = "/config/sample/";
     private ArrayList customer_list;
+    private ArrayList bakery_list;
+    private ArrayList delivery_list;
 
     /*
      * constructor: initialises few arraylist objects for further use
@@ -31,49 +33,28 @@ public class ScenarioParser {
     public ScenarioParser () {
         System.out.println("inside ScenarioParser constructor");
         this.customer_list = new ArrayList();
+        this.bakery_list = new ArrayList();
+        this.delivery_list = new ArrayList();
     }
 
     /*
      * returns the name of all the customers in a particular scenario
      */
     public ArrayList read_customer_file(){
-
         ArrayList customer_ids = new ArrayList();
         JSONParser parser = new JSONParser();
-        JSONObject jsonOrder = null;
         File file = new File(this.getClass().getResource(this.config_path + this.client_file).getPath());
         try {
             Object obj = parser.parse(new FileReader(file));
-
             JSONArray customers = (JSONArray) obj;
-            System.out.println(customers);
 
             Iterator<JSONObject> i = customers.iterator();
             while (i.hasNext()) {
                 JSONObject customer = (JSONObject) i.next();
                 this.customer_list.add(customer);
                 String guid = (String) customer.get("guid");
-                System.out.println(guid);
                 customer_ids.add(guid);
             }
-
-            System.out.println(this.customer_list.size());
-
-////            System.out.println(jsonOrder);
-//            JSONObject jsonDate = (JSONObject) jsonOrder.get("order_date");
-////            System.out.println(jsonDate);
-//            this.order_date = new Date((int)(long) jsonDate.get("day"), (int)(long) jsonDate.get("hour"));
-//
-//            jsonDate = (JSONObject) jsonOrder.get("delivery_date");
-////            System.out.println(jsonDate);
-//            this.delivery_date = new Date((int)(long) jsonDate.get("day"), (int)(long) jsonDate.get("hour"));
-//
-//            this.products = (String) jsonOrder.get("products").toString();
-////            System.out.println(this.products);
-//            this.customer_id = (String) jsonOrder.get("customer_id");
-//            this.guid = (String) jsonOrder.get("guid");
-////            System.out.println(this.customer_id + " " + this.guid);
-
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -84,6 +65,77 @@ public class ScenarioParser {
         return customer_ids;
     }
 
-    // TODO: make functions for reading other files
+    /*
+     * returns the name of all the bakeries in a particular scenario
+     */
+    public ArrayList read_bakery_file(){
+        ArrayList bakery_ids = new ArrayList();
+        JSONParser parser = new JSONParser();
+        File file = new File(this.getClass().getResource(this.config_path + this.bakery_file).getPath());
+        try {
+            Object obj = parser.parse(new FileReader(file));
+            JSONArray bakeries = (JSONArray) obj;
+
+            Iterator<JSONObject> i = bakeries.iterator();
+            while (i.hasNext()) {
+                JSONObject bakery = (JSONObject) i.next();
+                this.bakery_list.add(bakery);
+                String guid = (String) bakery.get("guid");
+                bakery_ids.add(guid);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return bakery_ids;
+    }
+
+    /*
+     * returns the name of all the delivery company in a particular scenario
+     */
+    public ArrayList read_delivery_file(){
+        ArrayList delivery_ids = new ArrayList();
+        JSONParser parser = new JSONParser();
+        File file = new File(this.getClass().getResource(this.config_path + this.delivery_file).getPath());
+        try {
+            Object obj = parser.parse(new FileReader(file));
+            JSONArray deliveries = (JSONArray) obj;
+
+            Iterator<JSONObject> i = deliveries.iterator();
+            while (i.hasNext()) {
+                JSONObject delivery = (JSONObject) i.next();
+                this.delivery_list.add(delivery);
+                String guid = (String) delivery.get("guid");
+                delivery_ids.add(guid);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return delivery_ids;
+    }
+
+    /*
+     * returns a JSONObject containing the information of a customer
+     * with given guid
+     */
+    public JSONObject get_customer_from_guid(String guid){
+        for (Object o : this.customer_list) {
+            JSONObject customer = (JSONObject) o;
+            if (guid.equals(customer.get("guid"))){
+                return customer;
+            }
+        }
+        return null;
+    }
+
+
+    // TODO: make function for reading network file
 }
 

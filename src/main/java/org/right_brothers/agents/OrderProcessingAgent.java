@@ -9,9 +9,12 @@ import jade.domain.FIPAException;
 import jade.domain.DFService;
 
 import org.right_brothers.objects.Order;
+import org.right_brothers.objects.ScenarioParser;
 //import org.json.simple.JSONObject;
 
 public class OrderProcessingAgent extends Agent {
+
+    private static ScenarioParser sp;
 
     protected void setup() {
         System.out.println("\tOrder-processing-agent "+getAID().getLocalName()+" is born.");
@@ -44,7 +47,9 @@ public class OrderProcessingAgent extends Agent {
             fe.printStackTrace();
         }
     }
-    
+    public static void setScenarioParser(ScenarioParser sp_object){
+        sp = sp_object;
+    }
     /*
      * Inner class OfferRequestsServer.
      * This is the behaviour used by Bread-seller agents to serve incoming requests
@@ -58,12 +63,11 @@ public class OrderProcessingAgent extends Agent {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
-//                System.out.println("inside action of OfferRequestsServer " + msg.getReplyWith());
                 // Message received. Process it
                 try {
                     Order order = (Order) msg.getContentObject();
-                    System.out.println("\tOrder guid " + order.guid);
-                    System.out.println("\tOrder customer id " + order.customer_id);
+                    System.out.println("\tOrder guid " + order.getOrderGuid());
+                    System.out.println("\tOrder customer id " + order.getCustomerId());
                 } catch(Exception e){
                     System.out.println("Could not read order");
                 }
