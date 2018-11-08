@@ -1,6 +1,7 @@
 package org.right_brothers;
 
 import java.util.*;
+import org.right_brothers.ScenarioParser;
 
 public class Start {
     public static void main(String[] args) {
@@ -9,6 +10,14 @@ public class Start {
     	
     	List<String> arguments = Arrays.asList(args);
     	
+        ScenarioParser sp = new ScenarioParser();
+        
+        ArrayList<String> customer_ids = sp.read_customer_file();
+        for (String cus_id : customer_ids) {
+            System.out.println(cus_id);
+        }
+        // TODO: create customers based on this information
+
     	if(arguments.size() > 0) {
     		String customArgument = String.join(" ", arguments).trim();
     		if(customArgument.equalsIgnoreCase("server")) {

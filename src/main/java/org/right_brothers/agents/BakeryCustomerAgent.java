@@ -159,7 +159,7 @@ public class BakeryCustomerAgent extends Agent {
     // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
     private class shutdown extends OneShotBehaviour{
 		public void action() {
-            System.out.println("inside shutdown behaviour");
+//            System.out.println("inside shutdown behaviour");
             ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
             Codec codec = new SLCodec();
             myAgent.getContentManager().registerLanguage(codec);

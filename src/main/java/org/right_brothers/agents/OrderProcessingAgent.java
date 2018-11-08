@@ -58,12 +58,12 @@ public class OrderProcessingAgent extends Agent {
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
-                System.out.println("inside action of OfferRequestsServer " + msg.getReplyWith());
+//                System.out.println("inside action of OfferRequestsServer " + msg.getReplyWith());
                 // Message received. Process it
                 try {
                     Order order = (Order) msg.getContentObject();
-                    System.out.println(order.guid);
-                    System.out.println(order.customer_id);
+                    System.out.println("\tOrder guid " + order.guid);
+                    System.out.println("\tOrder customer id " + order.customer_id);
                 } catch(Exception e){
                     System.out.println("Could not read order");
                 }
