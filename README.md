@@ -36,6 +36,10 @@ In case you want to clean you workspace run
 
     gradle clean
 
+## Unit test
+
+    gradle test
+
 ## Eclipse
 To use this project with eclipse run
 
