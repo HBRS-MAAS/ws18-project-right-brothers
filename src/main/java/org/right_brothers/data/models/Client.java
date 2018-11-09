@@ -7,7 +7,12 @@ public class Client {
 	private String guid;
 	private int type;
 	private String name;
-
+	private Location location;
+	
+	public Client() {
+		this.location = new Location();
+	}
+	
 	public String getGuid() {
 		return guid;
 	}
@@ -30,5 +35,13 @@ public class Client {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 }
