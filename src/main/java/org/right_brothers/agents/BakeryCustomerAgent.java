@@ -19,44 +19,34 @@ import jade.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-import org.right_brothers.objects.Order;
-import org.right_brothers.objects.Date;
-import org.right_brothers.objects.ScenarioParser;
-import org.right_brothers.objects.Location;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
+import org.right_brothers.data.models.Order;
+import org.right_brothers.data.models.Location;
+import org.right_brothers.data.models.Client;
 
 @SuppressWarnings("serial")
 public class BakeryCustomerAgent extends Agent {
     private AID[] sellerAgents;
 
     private static int totalAgents;
-    private static ScenarioParser sp;
+    private static List<Client> clients;
     private String name;
     private String guid;
     private int type;
     private Location location;
-    private ArrayList orders;
+    private List<Order> orders;
 
     protected void setup() {
         System.out.println("\tCustomer-agent "+getAID().getLocalName()+" is born.");
         totalAgents++;
 
         this.getCustomerInformation();
-        
-        this.publishCustomerAID();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        Order order = new Order("order-001");
-        
+        this.publishCustomerAID();
+
         this.getOrderProcessorAID();
         Object[] args = getArguments();
-        
-        addBehaviour(new  RequestPerformer(order));
+
+        addBehaviour(new  RequestPerformer(this.orders.get(0)));
     }
 
     protected void takeDown() {
@@ -99,37 +89,19 @@ public class BakeryCustomerAgent extends Agent {
             fe.printStackTrace();
         }
     }
-    public static void setScenarioParser(ScenarioParser sp_object){
-        sp = sp_object;
-    }
-    private void getCustomerInformation(){
-        JSONObject my_info = this.sp.get_customer_from_guid(getAID().getLocalName());
-        // System.out.println(my_info);
-        this.name = (String) my_info.get("name");
-        this.guid = (String) my_info.get("guid");
-        this.type = (int)(long) my_info.get("type");
-        JSONObject loc = (JSONObject) my_info.get("location");
-        this.location = new Location((float)(double) loc.get("x"), (float)(double) loc.get("y"));
-        JSONArray orders = (JSONArray) my_info.get("orders");
-        this.orders = new ArrayList();
-
-        Iterator<JSONObject> i = orders.iterator();
-        while (i.hasNext()) {
-            JSONObject jsonOrder = (JSONObject) i.next();
-            guid = (String) jsonOrder.get("guid");
-            Order order = new Order(guid);
-            JSONObject date = (JSONObject) jsonOrder.get("orderDate");
-            Date order_date = new Date((int)(long) date.get("day"), (int)(long) date.get("hour"));
-            order.setOrderDate(order_date);
-            date = (JSONObject) jsonOrder.get("deliveryDate");
-            Date delivery_date = new Date((int)(long) date.get("day"), (int)(long) date.get("hour"));
-            order.setOrderDate(delivery_date);
-            String products = (String) jsonOrder.get("products").toString();
-            order.setProducts(products);
-            String customer_id = (String) jsonOrder.get("customer_id");
-            order.setCustomerId(customer_id);
-            this.orders.add(order);
+    private void getCustomerInformation() {
+        for (Client c : this.clients) {
+            if (c.getGuid().equals(getAID().getLocalName())) {
+                this.guid = c.getGuid();
+                this.orders = c.getOrders();
+                this.location = c.getLocation();
+                this.name = c.getName();
+                this.type = c.getType();
+            }
         }
+    }
+    public static void setClients(List<Client> list_of_clients){
+        clients = list_of_clients;
     }
 
     /*
@@ -137,71 +109,71 @@ public class BakeryCustomerAgent extends Agent {
      * This is the behavior used by Bread-buyer agents to request seller
      * agents the target Bread.
      * */
-	private class RequestPerformer extends Behaviour {
-		private MessageTemplate mt;
-		private int step = 0;
-    private Order order;
+    private class RequestPerformer extends Behaviour {
+        private MessageTemplate mt;
+        private int step = 0;
+        private Order order;
 
-    RequestPerformer (Order order) {
-        this.order = order;
-    }
+        RequestPerformer (Order order) {
+            this.order = order;
+        }
 
-		public void action() {
-			switch (step) {
-			case 0:
-				ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
-				for (int i = 0; i < sellerAgents.length; ++i) {
-					cfp.addReceiver(sellerAgents[i]);
-				}
+        public void action() {
+            switch (step) {
+            case 0:
+                ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+                for (int i = 0; i < sellerAgents.length; ++i) {
+                    cfp.addReceiver(sellerAgents[i]);
+                }
         try {
             cfp.setContentObject(this.order);
 
         } catch(Exception e){
             e.printStackTrace();
         }
-				cfp.setConversationId("Bread-trade");
-				cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
-				myAgent.send(cfp);
-				mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Bread-trade"),
-				MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
-				step = 1;
-				break;
-			case 1:
-				ACLMessage reply = myAgent.receive(mt);
-				if (reply != null) {
-					if (reply.getPerformative() == ACLMessage.CONFIRM) {
+                cfp.setConversationId("Bread-trade");
+                cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
+                myAgent.send(cfp);
+                mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Bread-trade"),
+                MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
+                step = 1;
+                break;
+            case 1:
+                ACLMessage reply = myAgent.receive(mt);
+                if (reply != null) {
+                    if (reply.getPerformative() == ACLMessage.CONFIRM) {
                         System.out.println("\t" + myAgent.getLocalName() + " received confirmation from " + reply.getSender().getLocalName());
                         totalAgents--;
-						step = 2;
-					}
-				}
-				else {
-					block();
-				}
-				break;
+                        step = 2;
+                    }
+                }
+                else {
+                    block();
+                }
+                break;
             default:
                 break;
-			}
-		}
-		public boolean done() {
+            }
+        }
+        public boolean done() {
             if (step == 2) {
                 System.out.println(totalAgents);
-            	if(totalAgents == 0) {
+                if(totalAgents == 0) {
                     myAgent.addBehaviour(new shutdown());
-            	}
+                }
                 else {
                     myAgent.doDelete();
                 }
                 return true;
             }
             return false;
-		}
-		
-	} // End of inner class RequestPerformer
+        }
+
+    }
 
     // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
     private class shutdown extends OneShotBehaviour{
-		public void action() {
+        public void action() {
             ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
             Codec codec = new SLCodec();
             myAgent.getContentManager().registerLanguage(codec);
