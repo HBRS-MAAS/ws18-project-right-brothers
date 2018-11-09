@@ -2,8 +2,7 @@ package org.right_brothers.agents;
 
 import jade.core.Agent;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import jade.content.lang.Codec;
@@ -21,17 +20,29 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import org.right_brothers.objects.Order;
-//import org.json.simple.JSONObject;
+import org.right_brothers.objects.Date;
+import org.right_brothers.objects.ScenarioParser;
+import org.right_brothers.objects.Location;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 
 @SuppressWarnings("serial")
 public class BakeryCustomerAgent extends Agent {
     private AID[] sellerAgents;
 
     private static int totalAgents;
+    private static ScenarioParser sp;
+    private String name;
+    private String guid;
+    private int type;
+    private Location location;
+    private ArrayList orders;
 
     protected void setup() {
         System.out.println("\tCustomer-agent "+getAID().getLocalName()+" is born.");
         totalAgents++;
+
+        this.getCustomerInformation();
         
         this.publishCustomerAID();
         try {
@@ -86,6 +97,38 @@ public class BakeryCustomerAgent extends Agent {
         }
         catch (FIPAException fe) {
             fe.printStackTrace();
+        }
+    }
+    public static void setScenarioParser(ScenarioParser sp_object){
+        sp = sp_object;
+    }
+    private void getCustomerInformation(){
+        JSONObject my_info = this.sp.get_customer_from_guid(getAID().getLocalName());
+        // System.out.println(my_info);
+        this.name = (String) my_info.get("name");
+        this.guid = (String) my_info.get("guid");
+        this.type = (int)(long) my_info.get("type");
+        JSONObject loc = (JSONObject) my_info.get("location");
+        this.location = new Location((float)(double) loc.get("x"), (float)(double) loc.get("y"));
+        JSONArray orders = (JSONArray) my_info.get("orders");
+        this.orders = new ArrayList();
+
+        Iterator<JSONObject> i = orders.iterator();
+        while (i.hasNext()) {
+            JSONObject jsonOrder = (JSONObject) i.next();
+            guid = (String) jsonOrder.get("guid");
+            Order order = new Order(guid);
+            JSONObject date = (JSONObject) jsonOrder.get("orderDate");
+            Date order_date = new Date((int)(long) date.get("day"), (int)(long) date.get("hour"));
+            order.setOrderDate(order_date);
+            date = (JSONObject) jsonOrder.get("deliveryDate");
+            Date delivery_date = new Date((int)(long) date.get("day"), (int)(long) date.get("hour"));
+            order.setOrderDate(delivery_date);
+            String products = (String) jsonOrder.get("products").toString();
+            order.setProducts(products);
+            String customer_id = (String) jsonOrder.get("customer_id");
+            order.setCustomerId(customer_id);
+            this.orders.add(order);
         }
     }
 
@@ -159,7 +202,6 @@ public class BakeryCustomerAgent extends Agent {
     // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
     private class shutdown extends OneShotBehaviour{
 		public void action() {
-            System.out.println("inside shutdown behaviour");
             ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
             Codec codec = new SLCodec();
             myAgent.getContentManager().registerLanguage(codec);
