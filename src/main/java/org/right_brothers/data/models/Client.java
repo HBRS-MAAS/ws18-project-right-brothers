@@ -1,5 +1,8 @@
 package org.right_brothers.data.models;
 
+import java.util.List;
+import java.util.Vector;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -8,9 +11,11 @@ public class Client {
 	private int type;
 	private String name;
 	private Location location;
+	private List<Order> orders;
 	
 	public Client() {
 		this.location = new Location();
+		this.orders = new Vector<Order>();
 	}
 	
 	public String getGuid() {
@@ -43,5 +48,13 @@ public class Client {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public List<Order> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
 	}
 }
