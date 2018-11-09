@@ -47,3 +47,18 @@ To use this project with eclipse run
 
 This command will create the necessary eclipse files.
 Afterwards you can import the project folder.
+
+## Team convention
+
+### Code
+- No commented out code should be checked in as it makes the code less readable. This is often done for print statements used during debugging. If other members find a commented out code he/she will remove it without confirming and without complaining. However, if there is some reason to comment out code it should explain the reason at first line.
+
+    //TODO - I found this nice code from stackoverflow but not sure how to use it
+    /**
+     *
+     */
+    
+- Line comments should be avoided as much as possible and code should be self explanatory. Doc comment is encouraged but not mandatory.
+
+### Git
+- Multiple members working on same feature should use same branch. Having multiple branches makes merging more difficult.
