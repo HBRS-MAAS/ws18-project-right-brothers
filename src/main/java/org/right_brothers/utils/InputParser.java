@@ -1,4 +1,4 @@
-package org.right_brothers.agents.utils;
+package org.right_brothers.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
