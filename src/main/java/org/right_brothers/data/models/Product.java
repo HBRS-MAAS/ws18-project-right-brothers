@@ -1,8 +1,5 @@
 package org.right_brothers.data.models;
 
-import java.util.List;
-import java.util.Vector;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
