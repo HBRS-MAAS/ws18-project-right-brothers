@@ -19,7 +19,6 @@ import org.right_brothers.data.models.Product;
 public class OrderProcessingAgent extends Agent {
 
     private static List<Bakery> bakeries;
-    // TODO: uncomment below lines when using these private variables (commented because of codacy)
     private String guid;
     private String name;
     private Location location;
@@ -71,11 +70,11 @@ public class OrderProcessingAgent extends Agent {
                 this.products = b.getProducts();
             }
         }
-        // TODO: comment code when actually using above private variables (added below 4 lines for codacy error)
-        String temp = this.guid + this.name;
-        Product p = this.products.get(0);
-        Equipment e = this.equipment;
-        Location l = this.location;
+        // TODO: comment code when actually using private variables (added because of codacy error)
+        System.out.println(this.guid + this.name);
+        System.out.println(this.products.get(0));
+        System.out.println(this.equipment);
+        System.out.println(this.location);
     }
 
     /*
