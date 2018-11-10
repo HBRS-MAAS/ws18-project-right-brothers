@@ -42,7 +42,7 @@
     * **Approach 4:**
         * Similar to Approach 2. The difference lies in the fact that we represent messages as smaller rectanges.
         * The message rectangles move from sender agent to receiver agent.
-    * **Approach 4:**
+    * **Approach 5:**
         * Each stage is represented by columns. Similar to github project boards, the orders can be moved from one column to another. 
         * The agents cannot be visualised here, neither can the messages be tracked. But it gives a overall progress of how much a particular orders has been processed. More useful for customers.
 
