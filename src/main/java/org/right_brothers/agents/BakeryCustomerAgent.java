@@ -29,11 +29,12 @@ public class BakeryCustomerAgent extends Agent {
 
     private static int totalAgents;
     private static List<Client> clients;
-    private String name;
-    private String guid;
-    private int type;
-    private Location location;
-    private List<Order> orders;
+    // TODO: uncomment below lines when using these private variable (commentd because of codacy)
+//     private String name;
+//     private String guid;
+//     private int type;
+//     private Location location;
+//     private List<Order> orders;
 
     protected void setup() {
         System.out.println("\tCustomer-agent "+getAID().getLocalName()+" is born.");
@@ -92,11 +93,12 @@ public class BakeryCustomerAgent extends Agent {
     private void getCustomerInformation() {
         for (Client c : this.clients) {
             if (c.getGuid().equals(getAID().getLocalName())) {
-                this.guid = c.getGuid();
-                this.orders = c.getOrders();
-                this.location = c.getLocation();
-                this.name = c.getName();
-                this.type = c.getType();
+                // TODO: uncomment below lines when using these private variables (commented bacause of codacy)
+//                 this.guid = c.getGuid();
+//                 this.orders = c.getOrders();
+//                 this.location = c.getLocation();
+//                 this.name = c.getName();
+//                 this.type = c.getType();
             }
         }
     }
