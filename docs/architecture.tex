@@ -29,17 +29,19 @@
     \item \textbf{Stage}: Order
     \item \textbf{Agent/Object}: Agent
     \item \textbf{Static/Dynamic}: Static
-    \item \textbf{Behaviour}: PlaceOrder
+    \item \textbf{Behaviour}: PlaceOrder (Generic)
     \item \textbf{Messages in}:
         \begin{itemize}
-            \item AskForPriceProposalResponse (Sender: OrderProcessor)
-            \item AskForPriceRefuseResponse (Sender: OrderProcessor)
-            \item RefuseOrderResponse (Sender: OrderProcessor)
+            \item AskForPriceProposal (Sender: OrderProcessor)
+            \item AskForPriceRefuse (Sender: OrderProcessor)
+            \item RefuseOrder (Sender: OrderProcessor)
+            \item TimeStep (Sender: Time Keeper)
         \end{itemize}
     \item \textbf{Messages out}:
         \begin{itemize}
             \item AskForPrice (Receiver: OrderProcessor)
-            \item AcceptProposal (Receiver: OrderProcessor)
+            \item PlaceOrder (Receiver: OrderProcessor)
+            \item Finished (Receiver: Time Keeper)
         \end{itemize}
 \end{itemize}
 
@@ -49,18 +51,22 @@
     \item \textbf{Stage}: Order
     \item \textbf{Agent/Object}: Agent
     \item \textbf{Static/Dynamic}: Static
-    \item \textbf{Behaviour}: CFPServer, OrderServer
+    \item \textbf{Behaviour}: CFPServer (Cyclic), OrderServer (Cyclic)
     \item \textbf{Messages in}:
         \begin{itemize}
             \item AskForPrice (Sender: Customer)
-            \item AcceptProposal (Sender: Customer)
+            \item PlaceOrder (Sender: Customer)
+            \item ResourceAvailabilityResponce (Sender: Oven Manager, Dough Kneading Manager, Dough Preparation Manager, Delivery Manager)
+            \item TimeStep (Sender: Time Keeper)
         \end{itemize}
     \item \textbf{Messages out}:
         \begin{itemize}
-            \item AskForPriceProposalResponse (Receiver: Customer)
-            \item AskForPriceRefuseResponse (Receiver: Customer)
-            \item RefuseOrderResponse (Receiver: Customer)
+            \item AskForPriceProposal (Receiver: Customer)
+            \item AskForPriceRefuse (Receiver: Customer)
+            \item ResourceAvailability (Receiver: Oven Manager, Dough Kneading Manager, Dough Preparation Manager, Delivery Manager)
+            \item BookTimeSlot (Receiver: Oven Manager, Dough Kneading Manager, Dough Preparation Manager, Delivery Manager)
             \item OrderDetails (Receiver: PackagingManager)
+            \item Finished (Receiver: Time Keeper)
         \end{itemize}
 \end{itemize}
 
@@ -70,7 +76,20 @@
     \item \textbf{Stage}: OrderProcessing
     \item \textbf{Agent/Object}: Agent
     \item \textbf{Static/Dynamic}: Static
-    \item \textbf{Behaviour}: TBD
+    \item \textbf{Behaviour}: ResourceAvailabilityServer (Cyclic), BookingServer (Cyclic), Bake (Generic)
+    \item \textbf{Message in}:
+        \begin{itemize}
+            \item ResourceAvailability (Sender: Order Processor)
+            \item BookTimeSlot (Sender: Order Processor)
+            \item UnbakedProducts (Sender: Idle Time Manager)
+            \item TimeStep (Sender: Time Keeper)
+        \end{itemize}
+    \item \textbf{Message out}:
+        \begin{itemize}
+            \item ResourceAvailabilityResponce (Receiver: OrderProcessor)
+            \item BakedProducts (Receiver: Idle Time Manager)
+            \item Finished (Receiver: Time Keeper)
+        \end{itemize}
 \end{itemize}
 
 \subsection{Dough Kneading Manager}%
@@ -79,7 +98,41 @@
     \item \textbf{Stage}: OrderProcessing
     \item \textbf{Agent/Object}: Agent
     \item \textbf{Static/Dynamic}: Static
-    \item \textbf{Behaviour}: TBD
+    \item \textbf{Behaviour}: ResourceAvailabilityServer (Cyclic), BookingServer (Cyclic), Knead (Generic)
+    \item \textbf{Message in}:
+        \begin{itemize}
+            \item ResourceAvailability (Sender: Order Processor)
+            \item BookTimeSlot (Sender: Order Processor)
+            \item TimeStep (Sender: Time Keeper)
+        \end{itemize}
+    \item \textbf{Message out}:
+        \begin{itemize}
+            \item ResourceAvailabilityResponce (Receiver: OrderProcessor)
+            \item Dough (Receiver: Idle Time Manager)
+            \item Finished (Receiver: Time Keeper)
+        \end{itemize}
+\end{itemize}
+
+\subsection{Prep Table Manager}%
+\label{sub:prep_manager}
+\begin{itemize}
+    \item \textbf{Stage}: OrderProcessing
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: ResourceAvailabilityServer (Cyclic), BookingServer (Cyclic), Prepare (Generic)
+    \item \textbf{Message in}:
+        \begin{itemize}
+            \item ResourceAvailability (Sender: Order Processor)
+            \item BookTimeSlot (Sender: Order Processor)
+            \item Dough (Sender: Idle Time Manager)
+            \item TimeStep (Sender: Time Keeper)
+        \end{itemize}
+    \item \textbf{Message out}:
+        \begin{itemize}
+            \item ResourceAvailabilityResponce (Receiver: OrderProcessor)
+            \item UnbakedProducts (Receiver: Idle Time Manager)
+            \item Finished (Receiver: Time Keeper)
+        \end{itemize}
 \end{itemize}
 
 \subsection{Idle Time Manager}%
@@ -88,16 +141,21 @@
     \item \textbf{Stage}: OrderProcessor
     \item \textbf{Agent/Object}: Agent
     \item \textbf{Static/Dynamic}: Static
-    \item \textbf{Behaviour}: TBD
-\end{itemize}
-
-\subsection{Dough Preparation Manager}%
-\label{sub:prep_manager}
-\begin{itemize}
-    \item \textbf{Stage}: OrderProcessing
-    \item \textbf{Agent/Object}: Agent
-    \item \textbf{Static/Dynamic}: Static
-    \item \textbf{Behaviour}: TBD
+    \item \textbf{Behaviour}: SetDough (Cyclic), GetDough (Cyclic), SetUnbakedProducts (Cyclic), GetUnbakedProducts (Cyclic), SetBakedProducts (Cyclic), GetBakedProducts (Cyclic)
+    \item \textbf{Message in}:
+        \begin{itemize}
+            \item UnbakedProducts (Sender: Prep Table Manager)
+            \item BakedProducts (Sender: Oven Manager)
+            \item Dough (Sender: Kneading Manager)
+            \item TimeStep (Sender: Time Keeper)
+        \end{itemize}
+    \item \textbf{Message out}:
+        \begin{itemize}
+            \item UnbakedProducts (Receiver: Oven Manager)
+            \item BakedProducts   (Receiver: Packaging Manager)
+            \item Dough           (Receiver: Prep Table Manager)
+            \item Finished (Receiver: Time Keeper)
+        \end{itemize}
 \end{itemize}
 
 \subsection{Packaging Manager}%
@@ -106,7 +164,18 @@
     \item \textbf{Stage}: OrderProcessing
     \item \textbf{Agent/Object}: Agent
     \item \textbf{Static/Dynamic}: Static
-    \item \textbf{Behaviour}: TBD
+    \item \textbf{Behaviour}: OrderDetailsServer (Cyclic), Pack (Cyclic)
+    \item \textbf{Message in}:
+        \begin{itemize}
+            \item OrderDetails (Sender: Order Processor)
+            \item BakedProducts (Sender: Idle Time Manager)
+            \item TimeStep (Sender: Time Keeper)
+        \end{itemize}
+    \item \textbf{Message out}:
+        \begin{itemize}
+            \item Boxes (Receiver: Delivery Manager)
+            \item Finished (Receiver: Time Keeper)
+        \end{itemize}
 \end{itemize}
 
 \subsection{Delivery Manager}%
@@ -115,7 +184,20 @@
     \item \textbf{Stage}: Delivery
     \item \textbf{Agent/Object}: Agent
     \item \textbf{Static/Dynamic}: Static
-    \item \textbf{Behaviour}: TBD
+    \item \textbf{Behaviour}: ResourceAvailabilityServer (Cyclic), BookingServer (Cyclic), Deliver (Generic)
+    \item \textbf{Message in}:
+        \begin{itemize}
+            \item ResourceAvailability (Sender: Order Processor)
+            \item BookTimeSlot (Sender: Order Processor)
+            \item Boxes (Sender: Packaging Manager)
+            \item TimeStep (Sender: Time Keeper)
+        \end{itemize}
+    \item \textbf{Message out}:
+        \begin{itemize}
+            \item ResourceAvailabilityResponce (Receiver: OrderProcessor)
+            \item InformDelivery (Receiver: Customer)
+            \item Finished (Receiver: Time Keeper)
+        \end{itemize}
 \end{itemize}
 
 \subsection{Time Keeper}%
@@ -124,7 +206,15 @@
     \item \textbf{Stage}: Order, OrderProcessing, Delivery
     \item \textbf{Agent/Object}: Agent
     \item \textbf{Static/Dynamic}: Static
-    \item \textbf{Behaviour}: TBD
+    \item \textbf{Behaviour}: Clock (Generic), Shutdown (One shot)
+    \item \textbf{Message in}:
+        \begin{itemize}
+            \item Finished (Sender: All Agents)
+        \end{itemize}
+    \item \textbf{Message out}:
+        \begin{itemize}
+            \item TimeStep (Receiver: All Agents)
+        \end{itemize}
 \end{itemize}
 
 \subsection{Order}%
