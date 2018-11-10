@@ -12,7 +12,7 @@
         * When ever an Agent is spawned, a new Rectangle is added to the canvas/window/console.
         * The color of the rectangle represents the state the agent is in.
         * Consider the following scenarion as an example. The Agent can be in either of the following 4 states,
-            * ** Operating :** The color of the agent is yellow in this state.
+            * **Operating :** The color of the agent is yellow in this state.
                 * When Agent is initiated, it is in this state.
             * **Processing New Message :** The color of the agent is blue in this state.
                 * When Agent is processing a newly received message, it is in this state.
@@ -34,6 +34,7 @@
 
         ![picture alt](Approach2.png "Approach 2")
 
+    
     * **Approach 3:**
         * Similar to Approach 1. The difference lies in the fact that we represent messages as smaller rectanges.
         * The message rectangles move from sender agent to receiver agent.
@@ -41,6 +42,9 @@
     * **Approach 4:**
         * Similar to Approach 2. The difference lies in the fact that we represent messages as smaller rectanges.
         * The message rectangles move from sender agent to receiver agent.
+    * **Approach 4:**
+        * Each stage is represented by columns. Similar to github project boards, the orders can be moved from one column to another. 
+        * The agents cannot be visualised here, neither can the messages be tracked. But it gives a overall progress of how much a particular orders has been processed. More useful for customers.
 
 * Approach-1 would suffice our requirement quite well.
 
@@ -61,7 +65,7 @@
 
     * There are frameworks for converting images to ascii art to be displayed on the console but that is not what we need.
 
-    * There are frameworks/codebases for ascii 2d console games. However tweaking them for our use case is a huge project in itself. (http://roguebasin.roguelikedevelopment.org/index.php?title=Main_Page#Java_Roguelike_Development_Guide)
+    * There are frameworks/codebases for ascii 2d console games. However tweaking them for our use case is a huge project in itself. ([roguebasin](http://roguebasin.roguelikedevelopment.org/index.php?title=Main_Page#Java_Roguelike_Development_Guide))
 
     * One approach might be to implement a simple stdout print based approach for displaying the predefined shapes on the console.
 
