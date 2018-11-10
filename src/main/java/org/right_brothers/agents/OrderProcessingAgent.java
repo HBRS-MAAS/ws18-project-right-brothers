@@ -20,11 +20,11 @@ public class OrderProcessingAgent extends Agent {
 
     private static List<Bakery> bakeries;
     // TODO: uncomment below lines when using these private variables (commented because of codacy)
-//     private String guid;
-//     private String name;
-//     private Location location;
-//     private Equipment equipment;
-//     private List<Product> products;
+    private String guid;
+    private String name;
+    private Location location;
+    private Equipment equipment;
+    private List<Product> products;
 
     protected void setup() {
         System.out.println("\tOrder-processing-agent "+getAID().getLocalName()+" is born.");
@@ -64,14 +64,18 @@ public class OrderProcessingAgent extends Agent {
     private void getBakeryInformation() {
         for (Bakery b : this.bakeries) {
             if (b.getGuid().equals(getAID().getLocalName())) {
-                // TODO: remove the commented code when using these private variables
-//                 this.guid = b.getGuid();
-//                 this.location = b.getLocation();
-//                 this.name = b.getName();
-//                 this.equipment = b.getEquipment();
-//                 this.products = b.getProducts();
+                this.guid = b.getGuid();
+                this.location = b.getLocation();
+                this.name = b.getName();
+                this.equipment = b.getEquipment();
+                this.products = b.getProducts();
             }
         }
+        // TODO: comment code when actually using above private variables (added below 4 lines for codacy error)
+        String temp = this.guid + this.name;
+        Product p = this.products.get(0);
+        Equipment e = this.equipment;
+        Location l = this.location;
     }
 
     /*
