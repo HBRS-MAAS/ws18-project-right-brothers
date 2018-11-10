@@ -20,7 +20,7 @@
 
 \pagebreak
 
-\section{Agent descriptions}%
+\section{Class descriptions}%
 \label{sec:agent_descriptions}
 
 \subsection{Customer}%
@@ -45,6 +45,7 @@
         \end{itemize}
 \end{itemize}
 
+\newpage{}
 \subsection{Order Processor}%
 \label{sub:order_processor}
 \begin{itemize}
@@ -56,20 +57,21 @@
         \begin{itemize}
             \item AskForPrice (Sender: Customer)
             \item PlaceOrder (Sender: Customer)
-            \item ResourceAvailabilityResponce (Sender: Oven Manager, Dough Kneading Manager, Dough Preparation Manager, Delivery Manager)
+            \item ResourceAvailabilityResponce (Sender: Oven Manager, Dough Kneading Manager, Prep Table Manager, Delivery Manager)
             \item TimeStep (Sender: Time Keeper)
         \end{itemize}
     \item \textbf{Messages out}:
         \begin{itemize}
             \item AskForPriceProposal (Receiver: Customer)
             \item AskForPriceRefuse (Receiver: Customer)
-            \item ResourceAvailability (Receiver: Oven Manager, Dough Kneading Manager, Dough Preparation Manager, Delivery Manager)
-            \item BookTimeSlot (Receiver: Oven Manager, Dough Kneading Manager, Dough Preparation Manager, Delivery Manager)
-            \item OrderDetails (Receiver: PackagingManager)
+            \item ResourceAvailability (Receiver: Oven Manager, Dough Kneading Manager, Prep Table Manager, Delivery Manager)
+            \item BookTimeSlot (Receiver: Oven Manager, Dough Kneading Manager, Prep Table Manager, Delivery Manager)
+            \item OrderDetails (Receiver: Packaging Manager)
             \item Finished (Receiver: Time Keeper)
         \end{itemize}
 \end{itemize}
 
+\newpage{}
 \subsection{Oven Manager}%
 \label{sub:over_manager}
 \begin{itemize}
@@ -81,17 +83,19 @@
         \begin{itemize}
             \item ResourceAvailability (Sender: Order Processor)
             \item BookTimeSlot (Sender: Order Processor)
-            \item UnbakedProducts (Sender: Idle Time Manager)
+            \item UnbakedProducts (Sender: Coordinator)
             \item TimeStep (Sender: Time Keeper)
         \end{itemize}
     \item \textbf{Message out}:
         \begin{itemize}
             \item ResourceAvailabilityResponce (Receiver: OrderProcessor)
-            \item BakedProducts (Receiver: Idle Time Manager)
+            \item RequestUnbackedProducts (Receiver: Coordinator)
+            \item BakedProducts (Receiver: Coordinator)
             \item Finished (Receiver: Time Keeper)
         \end{itemize}
 \end{itemize}
 
+\newpage{}
 \subsection{Dough Kneading Manager}%
 \label{sub:knead_manager}
 \begin{itemize}
@@ -108,11 +112,12 @@
     \item \textbf{Message out}:
         \begin{itemize}
             \item ResourceAvailabilityResponce (Receiver: OrderProcessor)
-            \item Dough (Receiver: Idle Time Manager)
+            \item Dough (Receiver: Coordinator)
             \item Finished (Receiver: Time Keeper)
         \end{itemize}
 \end{itemize}
 
+\newpage{}
 \subsection{Prep Table Manager}%
 \label{sub:prep_manager}
 \begin{itemize}
@@ -124,18 +129,20 @@
         \begin{itemize}
             \item ResourceAvailability (Sender: Order Processor)
             \item BookTimeSlot (Sender: Order Processor)
-            \item Dough (Sender: Idle Time Manager)
+            \item Dough (Sender: Coordinator)
             \item TimeStep (Sender: Time Keeper)
         \end{itemize}
     \item \textbf{Message out}:
         \begin{itemize}
             \item ResourceAvailabilityResponce (Receiver: OrderProcessor)
-            \item UnbakedProducts (Receiver: Idle Time Manager)
+            \item RequestDough (Receiver: Coordinator)
+            \item UnbakedProducts (Receiver: Coordinator)
             \item Finished (Receiver: Time Keeper)
         \end{itemize}
 \end{itemize}
 
-\subsection{Idle Time Manager}%
+\newpage{}
+\subsection{Coordinator}%
 \label{sub:idle_manager}
 \begin{itemize}
     \item \textbf{Stage}: OrderProcessor
@@ -144,8 +151,11 @@
     \item \textbf{Behaviour}: SetDough (Cyclic), GetDough (Cyclic), SetUnbakedProducts (Cyclic), GetUnbakedProducts (Cyclic), SetBakedProducts (Cyclic), GetBakedProducts (Cyclic)
     \item \textbf{Message in}:
         \begin{itemize}
+            \item RequestUnbackedProducts (Sender: Oven Manager)
             \item UnbakedProducts (Sender: Prep Table Manager)
+            \item RequestBakedProducts (Sender: Packaging Manager)
             \item BakedProducts (Sender: Oven Manager)
+            \item RequestDough (Sender: Prep Table Manager)
             \item Dough (Sender: Kneading Manager)
             \item TimeStep (Sender: Time Keeper)
         \end{itemize}
@@ -158,6 +168,7 @@
         \end{itemize}
 \end{itemize}
 
+\newpage{}
 \subsection{Packaging Manager}%
 \label{sub:packaging_manager}
 \begin{itemize}
@@ -168,16 +179,18 @@
     \item \textbf{Message in}:
         \begin{itemize}
             \item OrderDetails (Sender: Order Processor)
-            \item BakedProducts (Sender: Idle Time Manager)
+            \item BakedProducts (Sender: Coordinator)
             \item TimeStep (Sender: Time Keeper)
         \end{itemize}
     \item \textbf{Message out}:
         \begin{itemize}
+            \item RequestBakedProducts (Receiver: Coordinator)
             \item Boxes (Receiver: Delivery Manager)
             \item Finished (Receiver: Time Keeper)
         \end{itemize}
 \end{itemize}
 
+\newpage{}
 \subsection{Delivery Manager}%
 \label{sub:delivery_manager}
 \begin{itemize}
@@ -200,6 +213,7 @@
         \end{itemize}
 \end{itemize}
 
+\newpage{}
 \subsection{Time Keeper}%
 \label{sub:time_keeper}
 \begin{itemize}
@@ -215,14 +229,23 @@
         \begin{itemize}
             \item TimeStep (Receiver: All Agents)
         \end{itemize}
+    \item \textbf{Explantion about its working}:
+        \begin{itemize}
+            \item The \textbf{Clock} behaviour has two steps. Based on current status, one of the step will be executed.
+            \item The first step is to send messages (\texttt{TimeStep}) to each and every alive agent. This will be INFORM type. This tells all the agent to perform the task they are supposed to do in that particular time step.
+            \item Once they are done with any actions that they are supposed to perform in a particular time step, they will respond (\texttt{Finished}) with an INFORM message. Then they will wait for another \texttt{TimeStep} message before performing any actions.
+            \item The second step is to wait for responce from all alive agents. Once it gets all the responce messages, it increaments the \texttt{currentTime} (which signifies the simulation time). 
+            \item The \texttt{done} method checks if the \texttt{currentTime} is more than \texttt{endTime} (read from \texttt{meta.json}). If it is then it will call \texttt{Shutdown} behaviour otherwise it will execute first step.
+        \end{itemize}
 \end{itemize}
 
+\newpage{}
 \subsection{Order}%
 \label{sub:order}
 \begin{itemize}
     \item \textbf{Stage}: Order
     \item \textbf{Agent/Object}: Object
-    \item \textbf{Static/Dynamic}: Dynamic
+    \item \textbf{Static/Dynamic}: Static
 \end{itemize}
 
 \subsection{Truck}%
@@ -237,8 +260,8 @@
 \label{sub:product}
 \begin{itemize}
     \item \textbf{Stage}: Order, OrderProcessing, Delivery
-    \item \textbf{Agent/Object}: 
-    \item \textbf{Static/Dynamic}: 
+    \item \textbf{Agent/Object}: Object
+    \item \textbf{Static/Dynamic}: Dynamic
 \end{itemize}
 
 \subsection{Location}%
@@ -280,29 +303,3 @@
 
 \end{document}
 
-%\subsection{}%
-%\label{sub:}
-%\begin{itemize}
-%    \item \textbf{Stage}: 
-%    \item \textbf{Agent/Object}: 
-%    \item \textbf{Static/Dynamic}: 
-%    \item \textbf{Behaviour}: 
-%    \item \textbf{Messages in}:
-%        \begin{itemize}
-%            \item msgName (Sender: sen)
-%        \end{itemize}
-%    \item \textbf{Messages out}:
-%        \begin{itemize}
-%            \item msgName (Receiver: rec)
-%        \end{itemize}
-%\end{itemize}
-%
-%
-%
-%\subsection{}%
-%\label{sub:}
-%\begin{itemize}
-%    \item \textbf{Stage}: 
-%    \item \textbf{Agent/Object}: 
-%    \item \textbf{Static/Dynamic}: 
-%\end{itemize}
