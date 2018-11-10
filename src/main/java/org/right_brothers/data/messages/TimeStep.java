@@ -1,6 +1,8 @@
 package org.right_brothers.data.messages;
 
-public class TimeStep {
+import jade.util.leap.Serializable;
+
+public class TimeStep implements Serializable {
 	private int day;
 	private int hour;
 	
