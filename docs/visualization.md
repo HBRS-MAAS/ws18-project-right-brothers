@@ -8,6 +8,10 @@
 ### Approaches :
 * Following are the proposals for the visualization agent for the Bakery eco-system.
     * **Approach 1:** 
+        * Sniffer is a tool provide by tilab for tracking messages being communicated between different agents in a Jade Environment. 
+        * For more details refer the following link ([tilab](http://jade.tilab.com/documentation/tutorials-guides/sniffer/introduction/))
+
+    * **Approach 2:** 
         * All Agents are represented using Rectangles.
         * When ever an Agent is spawned, a new Rectangle is added to the canvas/window/console.
         * The color of the rectangle represents the state the agent is in.
@@ -24,7 +28,7 @@
 
         ![picture alt](Approach1.png "Approach 1")
 
-    * **Approach 2:**
+    * **Approach 3:**
         * All Agents are represented using Circles.
         * When ever an Agent is spawned, a new circle is added to the canvas/window/console.
         * The color of the Circle represents the stage to which it belongs.
@@ -35,18 +39,18 @@
         ![picture alt](Approach2.png "Approach 2")
 
     
-    * **Approach 3:**
+    * **Approach 4:**
         * Similar to Approach 1. The difference lies in the fact that we represent messages as smaller rectanges.
         * The message rectangles move from sender agent to receiver agent.
 
-    * **Approach 4:**
+    * **Approach 5:**
         * Similar to Approach 2. The difference lies in the fact that we represent messages as smaller rectanges.
         * The message rectangles move from sender agent to receiver agent.
-    * **Approach 5:**
+    * **Approach 6:**
         * Each stage is represented by columns. Similar to github project boards, the orders can be moved from one column to another. 
         * The agents cannot be visualised here, neither can the messages be tracked. But it gives a overall progress of how much a particular orders has been processed. More useful for customers.
 
-* Approach-1 would suffice our requirement quite well.
+* Approach-1 would suffice our requirement quite well and is readily available.
 
 
 ### Visualization Frameworks :
@@ -58,6 +62,8 @@
     * If the machine on which testing is being done supports X Windows, we can use available Java frameworks for rendering the agents and the interactions taking place between them.
 
     * Some widely used X Windows based frameworks like Swing together with Abstract Window Toolkit (AWT) can be used to generate simple animations on the X Windows.
+
+    * Sniffer tool from tilab ([tilab](http://jade.tilab.com/documentation/tutorials-guides/sniffer/introduction/))
 
 * ** Visualization options using console : **
 

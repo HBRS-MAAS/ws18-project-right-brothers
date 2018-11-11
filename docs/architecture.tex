@@ -20,6 +20,32 @@
 
 \pagebreak
 
+\section{Architectural Description}%
+\label{sec:description}
+We implement a quasi-distributed approach to develop this architecture instead of going completely distributed. This enables easier planning. It also enables us to loosely follow the Single Responsibility principle. Ex : Anything related to Ovens is taken care by OvenManager and so on.
+\begin{itemize}
+    \item \textbf{Customer}: It is quite obvious that each customer needs to be assigned an Agent. This Agent is spawned whenever a new a customer wants to initiate an order. The Agent is terminated after the order has been successfully delivered. It interacts with OrderProcessor in two ways.,
+    \begin{enumerate}
+    	\item To ask for product proposals.
+    	\item To place order. 
+    \end{enumerate}
+    For the prior the OrderProcessor responds with a proposal and for the later it responds with a refuse order if it cannot be taken up by the bakery.
+    \item \textbf{OrderProcessor}: OrderProcessor can be considered as the first Agent for every bakery. The responsibility of this Agent is to interact with the customer Agent. It also interacts with the other Agents in the bakery (OvenManager, DoughKneadingManager, PreparationTableManager, DeliveryManager) to check for the available resources before it can confirm the order with the customer. It also interacts with the PackingManager to provide it with the order details for packing.
+    \item \textbf{TimeKeeper}: This is the first Agent which is spawned. It is responsible for the movement of time in the entire bakery eco-system. This is responsible for providing all the other agents with a common time reference so that everyone are in sync. This also gets feedback from all the agents about the status of their tasks. If all the agents are done with whatever task they were supposed to finish in the time step, the TimeKeeper increments the time step.
+    \item \textbf{OvenManager}: We assign a single Agent to manage all the ovens in the bakery. This manager acts like a point of contact for all queries related to ovens and baking. The status about the availability of free trays, cooling times and heating times of different products are entirely kept track by this agent. It interacts with the OrderProcessor during order taking, to provide the status of the availability of the free trays in the ovens. If a new order is confirmed, a request to book the timeslot is also recieved from the OrderProcessor. It also interacts with the Coordinator Agent (Interface between Baking and Packing stages) and provides it with the baked products after they have been cooled.
+    \item \textbf{DoughKneadingManager}: We assign a single Agent to manage the entire dough kneading process. This manager acts like a point of contact for all queries related to kneading machine and raw dough. It interacts with the OrderProcessor during order taking, to provide the status of the availability of the kneading machine. If a new order is confirmed, a request to book the timeslot is also recieved from the Order Processor. It also interacts with the Coordinator Agent(Interface between Dough preparation and Product preparation stages) and provides it with the kneaded dough after the resting time is over.
+    \item \textbf{PreparationTableManager}: We assign a single Agent to manage the product preparation process. This manager acts like a point of contact for all queries related to product preparation. It interacts with the OrderProcessor during order taking, to provide the status of the availability of the Preparation Tables. If a new order is confirmed, a request to book the timeslot is also recieved from the Order Processor. It also interacts with the Coordinator Agent(Interface between Product preparation and Baking stages) and provides it with the unbaked products after they have been prepared.
+    \item \textbf{PackingManager}: We assign a single Agent to manage the packing process. This manager interacts with the OrderProcessor to get the order details. It interacts with the Coordinator Agent (Interface between Baking and Packing stages) which provides it with the baked and cooled products for packing. It also interacts with the Delivery Manager by providing it with Packed boxes for delivery.
+    \item \textbf{DeliveryManager}: We assign a single Agent to manage the logistic process. This manager interacts with the OrderProcessor during order taking, to provide the status of the availability of the trucks for delivery. If a new order is confirmed, a request to book the timeslot is also recieved from the Order Processor. It receives the packed products to deliver, from the PackingManager. The delivery manager also informs the customer that the delivery of the products has been initiated.
+    \item \textbf{Coordinator}: This is a general type of Agent with acts as an iterface between various stages in the bakery. We spawn three agents of this type to serve the following roles,
+    \begin{enumerate}
+    \item Interface between Baking and Packing stages.
+    \item Interface between Product preparation and Baking.
+    \item Interface between Dough preparation and Product preparation.
+    \end{enumerate}
+\end{itemize}
+
+
 \section{Class descriptions}%
 \label{sec:agent_descriptions}
 
