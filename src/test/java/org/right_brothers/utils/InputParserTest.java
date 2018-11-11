@@ -7,6 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import org.right_brothers.data.models.Client;
 import org.right_brothers.data.models.Meta;
+import org.right_brothers.data.models.Bakery;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -32,5 +33,17 @@ public class InputParserTest {
 		
 		assertEquals(meta.getBakeries(), 2);
 		assertEquals(meta.getCustomers().size(), 3);
+	}
+
+	@Test
+	public void testBakeriesParse() throws Throwable {
+		InputParser<Vector<Bakery>> parser = new InputParser<>
+			("/config/sample/bakeries.json", new TypeReference<Vector<Bakery>>(){});
+		
+		List<Bakery> bakeries = parser.parse();
+		
+		assertEquals(bakeries.size(), 1);
+		assertEquals(bakeries.get(0).getGuid(), "bakery-001");
+		assertEquals(bakeries.get(0).getName(), "Sunspear Bakery");
 	}
 }
