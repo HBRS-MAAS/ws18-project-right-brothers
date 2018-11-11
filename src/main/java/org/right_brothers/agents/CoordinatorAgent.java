@@ -40,7 +40,8 @@ public class CoordinatorAgent extends Agent {
      * Serves the request from various types of agent. Receives a REQUEST from an agent and reply 
      * with whatever was asked by the agent
      */
-    private class RequestsServer extends CyclicBehaviour {
+    @SuppressWarnings("serial")
+	private class RequestsServer extends CyclicBehaviour {
         public void action() {
             MessageTemplate requestTemplate = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 
@@ -76,7 +77,8 @@ public class CoordinatorAgent extends Agent {
      * Serves the inform messages from various types of agent. Receives a INFORM from an agent 
      * and adds the content object to a queue reply with CONFIRM 
      */
-    private class InformServer extends CyclicBehaviour {
+    @SuppressWarnings("serial")
+	private class InformServer extends CyclicBehaviour {
         public void action() {
             MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 
@@ -103,12 +105,3 @@ public class CoordinatorAgent extends Agent {
         }
     }
 }
-//                 try {
-//                  TimeStep step = (TimeStep)informMessage.getContentObject();
-//                  currentTime = step;
-//
-//                  System.out.println(String.format("Updated time step day: %d, hour: %d", step.getDay(), step.getHour()));
-//              } catch (UnreadableException e) {
-//                  e.printStackTrace();
-//              }
-//             }

@@ -2,6 +2,7 @@ package org.right_brothers.data.messages;
 
 import jade.util.leap.Serializable;
 
+@SuppressWarnings("serial")
 public class CoordinatorMessage implements Serializable{
     private String id;
 

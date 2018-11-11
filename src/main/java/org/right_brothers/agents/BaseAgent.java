@@ -8,7 +8,7 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
-public class BaseAgent extends Agent {
+public abstract class BaseAgent extends Agent {
 	protected TimeStep currentTime;
 	
     protected void register(String type, String name){
