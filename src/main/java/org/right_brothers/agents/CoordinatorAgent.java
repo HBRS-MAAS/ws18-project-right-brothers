@@ -103,8 +103,6 @@ public class CoordinatorAgent extends Agent {
         }
     }
 }
-
-//             if (informMessage != null) {
 //                 try {
 //                  TimeStep step = (TimeStep)informMessage.getContentObject();
 //                  currentTime = step;
