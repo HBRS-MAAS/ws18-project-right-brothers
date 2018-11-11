@@ -9,75 +9,93 @@ import org.right_brothers.data.messages.CoordinatorMessage;
 import org.right_brothers.data.messages.TimeStep;
 
 import jade.core.behaviours.*;
+import jade.core.Agent;
+import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
-public class CoordinatorAgent extends BaseAgent {
-	private List<CoordinatorMessage> messages;
-	
+public class CoordinatorAgent extends Agent {
+    private AID dummy = new AID("dummy", AID.ISLOCALNAME);
+    private List<CoordinatorMessage> messages;
+
     protected void setup() {
-        this.register("order-processing", "coordinator");
+        // this.register("order-processing", "coordinator");
+        System.out.println("\tCoordinator-agent "+getAID().getLocalName()+" is born.");
         messages = new Vector<CoordinatorMessage>();
-        
+        CoordinatorMessage msg = new CoordinatorMessage();
+        msg.setId("Hey there");
+        messages.add(msg);
+
         addBehaviour(new RequestsServer());
+        addBehaviour(new InformServer());
     }
 
     protected void takeDown() {
-        deRegister();
+        System.out.println("\t"+getAID().getLocalName()+" terminating.");
+        // deRegister();
     }
 
+    /*
+     * Serves the request from various types of agent. Receives a REQUEST from an agent and reply 
+     * with whatever was asked by the agent
+     */
     private class RequestsServer extends CyclicBehaviour {
         public void action() {
             MessageTemplate requestTemplate = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
-            MessageTemplate responseTemplate = MessageTemplate.MatchPerformative(ACLMessage.REQUEST_WHEN);
-            MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
-            
+
             ACLMessage requestMessage = myAgent.receive(requestTemplate);
-            ACLMessage responseMessage = myAgent.receive(responseTemplate);
-            ACLMessage informMessage = myAgent.receive(informTemplate);
             if (requestMessage != null) {
-                try {
-                	CoordinatorMessage data = (CoordinatorMessage)requestMessage.getContentObject();
-                	messages.add(data);
-                	
-					System.out.println(String.format("Received message of type: %s", data.getClass()));
-				} catch (UnreadableException e) {
-					e.printStackTrace();
-				}
-            }
-            else if(responseMessage != null) {
-                String id = responseMessage.getContent();
+                String id = requestMessage.getContent();
                 System.out.println(String.format("Received query for: %s", id));
-                
-                ACLMessage reply = responseMessage.createReply();
+
+                ACLMessage reply = requestMessage.createReply();
                 Optional<CoordinatorMessage> result = messages.stream()
-	                .filter(m -> id.equals(m.getId()))
-	                .findFirst();
-                
+                 .filter(m -> id.equals(m.getId()))
+                 .findFirst();
                 try {
-                	if(result.isPresent()) {
-                    	reply.setPerformative(ACLMessage.CONFIRM);
-						reply.setContentObject(result.get());
+                    if(result.isPresent()) {
+                        reply.setPerformative(ACLMessage.CONFIRM);
+                        reply.setContentObject(result.get());
                     }else {
-                    	reply.setPerformative(ACLMessage.REFUSE);
-						reply.setContentObject(null);
+                        reply.setPerformative(ACLMessage.REFUSE);
+                        reply.setContentObject(null);
                     }
                 }catch(IOException e) {
-                	e.printStackTrace();
+                    e.printStackTrace();
                 }
-                
                 myAgent.send(reply);
             }
+            else {
+                block();
+            }
+        }
+    }
+
+    /*
+     * Serves the inform messages from various types of agent. Receives a INFORM from an agent 
+     * and adds the content object to a queue reply with CONFIRM 
+     */
+    private class InformServer extends CyclicBehaviour {
+        public void action() {
+            MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+
+            ACLMessage informMessage = myAgent.receive(informTemplate);
             if (informMessage != null) {
                 try {
-                	TimeStep step = (TimeStep)informMessage.getContentObject();
-                	currentTime = step;
-                	
-					System.out.println(String.format("Updated time step day: %d, hour: %d", step.getDay(), step.getHour()));
-				} catch (UnreadableException e) {
-					e.printStackTrace();
-				}
+                    CoordinatorMessage data = (CoordinatorMessage)informMessage.getContentObject();
+                    messages.add(data);
+
+                    System.out.println(String.format("Received inform message of type: %s", data.getClass()));
+                    System.out.println("\tMessage: " + data.getId());
+                    System.out.println("\tCurrent messages list size: " + messages.size());
+                } catch (UnreadableException e) {
+                    e.printStackTrace();
+                }
+                ACLMessage reply = informMessage.createReply();
+                reply.setPerformative(ACLMessage.CONFIRM);
+                reply.setContent("Got your Object.");
+                myAgent.send(reply);
             }
             else {
                 block();
@@ -85,3 +103,14 @@ public class CoordinatorAgent extends BaseAgent {
         }
     }
 }
+
+//             if (informMessage != null) {
+//                 try {
+//                  TimeStep step = (TimeStep)informMessage.getContentObject();
+//                  currentTime = step;
+//
+//                  System.out.println(String.format("Updated time step day: %d, hour: %d", step.getDay(), step.getHour()));
+//              } catch (UnreadableException e) {
+//                  e.printStackTrace();
+//              }
+//             }

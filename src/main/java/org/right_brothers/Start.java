@@ -30,12 +30,17 @@ public class Start {
 
         if(arguments.size() > 0) {
             String customArgument = String.join(" ", arguments).trim();
+            if(customArgument.equalsIgnoreCase("coordinatorTest")){
+                cmd.add("-agents");
+                agents.add("dummy:org.right_brothers.agents.DummyAgent");
+                agents.add("coordinator:org.right_brothers.agents.CoordinatorAgent");
+            }
             if(customArgument.equalsIgnoreCase("server")) {
                 cmd.add("-agents");
                 for (Bakery b : bakeries) {
                     agents.add(b.getGuid() + ":org.right_brothers.agents.OrderProcessingAgent");
                 }
-            } else {
+            } else if(arguments.get(0).equalsIgnoreCase("-host")) {
                 cmd.add("-container");
                 cmd.addAll(arguments);
                 cmd.add("-agents");
