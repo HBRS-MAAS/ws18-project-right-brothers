@@ -1,20 +1,22 @@
 package org.right_brothers.agents;
 
-import jade.core.Agent;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+// for shutdown behaviour
 import jade.content.lang.Codec;
 import jade.content.lang.sl.SLCodec;
 import jade.content.onto.basic.Action;
+import jade.domain.JADEAgentManagement.JADEManagementOntology;
+import jade.domain.JADEAgentManagement.ShutdownPlatform;
+import jade.domain.FIPANames;
+
+import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.domain.FIPAAgentManagement.*;
-import jade.domain.JADEAgentManagement.JADEManagementOntology;
-import jade.domain.JADEAgentManagement.ShutdownPlatform;
 import jade.domain.FIPAException;
-import jade.domain.FIPANames;
 import jade.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -128,12 +130,12 @@ public class BakeryCustomerAgent extends Agent {
                 for (int i = 0; i < sellerAgents.length; ++i) {
                     cfp.addReceiver(sellerAgents[i]);
                 }
-        try {
-            cfp.setContentObject(this.order);
+                try {
+                    cfp.setContentObject(this.order);
 
-        } catch(Exception e){
-            e.printStackTrace();
-        }
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
                 cfp.setConversationId("Bread-trade");
                 cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
                 myAgent.send(cfp);
