@@ -6,26 +6,20 @@ import java.util.Optional;
 import java.util.Vector;
 
 import org.right_brothers.data.messages.CoordinatorMessage;
-import org.right_brothers.data.messages.TimeStep;
 
 import jade.core.behaviours.*;
 import jade.core.Agent;
-import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
+@SuppressWarnings("serial")
 public class CoordinatorAgent extends Agent {
-    private AID dummy = new AID("dummy", AID.ISLOCALNAME);
     private List<CoordinatorMessage> messages;
 
     protected void setup() {
-        // this.register("order-processing", "coordinator");
         System.out.println("\tCoordinator-agent "+getAID().getLocalName()+" is born.");
         messages = new Vector<CoordinatorMessage>();
-        CoordinatorMessage msg = new CoordinatorMessage();
-        msg.setId("Hey there");
-        messages.add(msg);
 
         addBehaviour(new RequestsServer());
         addBehaviour(new InformServer());
@@ -33,15 +27,13 @@ public class CoordinatorAgent extends Agent {
 
     protected void takeDown() {
         System.out.println("\t"+getAID().getLocalName()+" terminating.");
-        // deRegister();
     }
 
     /*
      * Serves the request from various types of agent. Receives a REQUEST from an agent and reply 
      * with whatever was asked by the agent
      */
-    @SuppressWarnings("serial")
-	private class RequestsServer extends CyclicBehaviour {
+    private class RequestsServer extends CyclicBehaviour {
         public void action() {
             MessageTemplate requestTemplate = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 
@@ -77,8 +69,7 @@ public class CoordinatorAgent extends Agent {
      * Serves the inform messages from various types of agent. Receives a INFORM from an agent 
      * and adds the content object to a queue reply with CONFIRM 
      */
-    @SuppressWarnings("serial")
-	private class InformServer extends CyclicBehaviour {
+    private class InformServer extends CyclicBehaviour {
         public void action() {
             MessageTemplate informTemplate = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 

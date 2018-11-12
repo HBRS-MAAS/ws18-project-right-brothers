@@ -18,7 +18,13 @@ import jade.domain.FIPAException;
 import jade.domain.DFService;
 import jade.lang.acl.UnreadableException;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.right_brothers.data.messages.BakedProduct;
 import org.right_brothers.data.messages.CoordinatorMessage;
+import org.right_brothers.data.messages.Dough;
+import org.right_brothers.data.messages.UnbakedProduct;
 
 
 @SuppressWarnings("serial")
@@ -34,8 +40,16 @@ public class DummyAgent extends Agent {
         // This dummy agent acts like test agent
         this.addBehaviour(new RequestPerformer());
         this.counter++;
-        this.addBehaviour(new InformPerformer());
-        this.counter++;
+        
+        List<CoordinatorMessage> messages = Arrays.asList(
+        		new Dough("dough-1"),
+        		new BakedProduct("baked-1"),
+        		new UnbakedProduct("unbaked-1")
+    		);
+        for(CoordinatorMessage msg: messages) {
+        	this.addBehaviour(new InformPerformer(msg));
+        	this.counter++;
+        }
 
 	}
 	protected void takeDown() {
@@ -101,21 +115,25 @@ public class DummyAgent extends Agent {
     private class InformPerformer extends Behaviour {
         private MessageTemplate mt;
         private int step = 0;
+        private CoordinatorMessage message;
+        
+        public InformPerformer(CoordinatorMessage message) {
+        	this.message = message;
+        }
 
         public void action() {
             switch (step) {
             case 0:
                 ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
                 inform.addReceiver(coordinator);
-                CoordinatorMessage msg = new CoordinatorMessage();
-                msg.setId("Hello there");
+
                 try {
-                    inform.setContentObject(msg);
+                    inform.setContentObject(message);
                 } catch(Exception e){
                     e.printStackTrace();
                 }
                 inform.setConversationId("testing");
-                inform.setReplyWith("request"+System.currentTimeMillis()); // Unique value
+                inform.setReplyWith("request"+ message.getId() +System.currentTimeMillis()); // Unique value
                 myAgent.send(inform);
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("testing"),
                 MessageTemplate.MatchInReplyTo(inform.getReplyWith()));
