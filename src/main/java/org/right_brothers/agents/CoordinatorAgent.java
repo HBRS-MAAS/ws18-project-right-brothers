@@ -40,7 +40,7 @@ public class CoordinatorAgent extends Agent {
             ACLMessage requestMessage = myAgent.receive(requestTemplate);
             if (requestMessage != null) {
                 String id = requestMessage.getContent();
-                System.out.println(String.format("Received query for: %s", id));
+                System.out.println(String.format("\tReceived REQUEST: %s", id));
 
                 ACLMessage reply = requestMessage.createReply();
                 Optional<CoordinatorMessage> result = messages.stream()
@@ -79,7 +79,7 @@ public class CoordinatorAgent extends Agent {
                     CoordinatorMessage data = (CoordinatorMessage)informMessage.getContentObject();
                     messages.add(data);
 
-                    System.out.println(String.format("Received inform message of type: %s", data.getClass()));
+                    System.out.println(String.format("\tReceived INFORM: %s", data.getClass()));
                     System.out.println("\tMessage: " + data.getId());
                     System.out.println("\tCurrent messages list size: " + messages.size());
                 } catch (UnreadableException e) {

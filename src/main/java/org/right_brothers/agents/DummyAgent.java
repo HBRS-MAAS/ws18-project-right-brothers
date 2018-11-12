@@ -38,19 +38,18 @@ public class DummyAgent extends Agent {
 
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
-        this.addBehaviour(new RequestPerformer());
-        this.counter++;
-        
-        List<CoordinatorMessage> messages = Arrays.asList(
+        List<CoordinatorMessage> informMessages = Arrays.asList(
         		new Dough("dough-1"),
         		new BakedProduct("baked-1"),
         		new UnbakedProduct("unbaked-1")
     		);
-        for(CoordinatorMessage msg: messages) {
+        for(CoordinatorMessage msg: informMessages) {
         	this.addBehaviour(new InformPerformer(msg));
         	this.counter++;
         }
-
+        
+        this.addBehaviour(new RequestPerformer("dough-unavailable"));
+    	this.counter++;
 	}
 	protected void takeDown() {
 		System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
@@ -59,13 +58,18 @@ public class DummyAgent extends Agent {
     private class RequestPerformer extends Behaviour {
         private MessageTemplate mt;
         private int step = 0;
+        private String itemId;
+        
+        public RequestPerformer(String itemId) {
+        	this.itemId = itemId;
+        }
 
         public void action() {
             switch (step) {
             case 0:
                 ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
                 request.addReceiver(coordinator);
-                request.setContent("Hey there");
+                request.setContent(itemId);
                 request.setConversationId("testing");
                 request.setReplyWith("request"+System.currentTimeMillis()); // Unique value
                 myAgent.send(request);
@@ -80,7 +84,7 @@ public class DummyAgent extends Agent {
                         System.out.println("\t" + myAgent.getLocalName() + " received confirmation from " + reply.getSender().getLocalName());
                         try {
                             CoordinatorMessage data = (CoordinatorMessage)reply.getContentObject();
-                            System.out.println(String.format("Received reply message of type: %s", data.getClass()));
+                            System.out.println(String.format("\tReceived CONFIRM: %s", data.getClass()));
                             System.out.println("\tReply Message: " + data.getId());
                         } catch (UnreadableException e) {
                             e.printStackTrace();
@@ -88,7 +92,7 @@ public class DummyAgent extends Agent {
                         step = 2;
                     }
                     if (reply.getPerformative() == ACLMessage.REFUSE) {
-                        System.out.println("\t" + myAgent.getLocalName() + " received refusal from " + reply.getSender().getLocalName());
+                        System.out.println("\t" + myAgent.getLocalName() + " received REFUSE from " + reply.getSender().getLocalName() + " for " + itemId);
                         step = 2;
                     }
                 }
@@ -162,10 +166,7 @@ public class DummyAgent extends Agent {
         }
         public boolean done() {
             if (step == 2) {
-                counter --;
-                if(counter == 0) {
-                    myAgent.addBehaviour(new shutdown());
-                }
+            	myAgent.addBehaviour(new RequestPerformer(this.message.getId()));
                 return true;
             }
             return false;
