@@ -22,6 +22,11 @@ Just install gradle and run:
 
 It will automatically get the dependencies and start JADE with the configured agents.
 
+In case you want to clean you workspace run
+
+    gradle clean
+
+
 ### Running from different machines
 
 #### Main Container
@@ -32,9 +37,13 @@ It will automatically get the dependencies and start JADE with the configured ag
 
     gradle run --args="-host <host ip address>"
 
-In case you want to clean you workspace run
+#### Coordinator Test
+    
+    gradle run --args="coordinatorTest"
 
-    gradle clean
+## Unit test
+
+    gradle test
 
 ## Eclipse
 To use this project with eclipse run
@@ -43,3 +52,18 @@ To use this project with eclipse run
 
 This command will create the necessary eclipse files.
 Afterwards you can import the project folder.
+
+## Team convention
+
+### Code
+*   No commented out code should be checked in as it makes the code less readable. This is often done for print statements used during debugging. If other members find a commented out code he/she will remove it without confirming and without complaining. However, if there is some reason to comment out code it should explain the reason at first line.
+
+    //TODO - I found this nice code from stackoverflow but not sure how to use it
+    /**
+     *
+     */
+
+*   Line comments should be avoided as much as possible and code should be self explanatory. Doc comment is encouraged but not mandatory.
+
+### Git
+*   Multiple members working on same feature should use same branch. Having multiple branches makes merging more difficult.
