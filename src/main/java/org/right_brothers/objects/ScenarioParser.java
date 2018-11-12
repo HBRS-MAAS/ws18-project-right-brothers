@@ -18,10 +18,10 @@ import java.io.File;
 public class ScenarioParser {
 
     private String client_file = "clients.json";
-    private String meta_file = "meta.json";
+//     private String meta_file = "meta.json";
     private String bakery_file = "bakeries.json";
     private String delivery_file = "delivery.json";
-    private String network_file = "street-network.json";
+//     private String network_file = "street-network.json";
     private String config_path = "/config/sample/";
     private ArrayList customer_list;
     private ArrayList bakery_list;
@@ -40,7 +40,7 @@ public class ScenarioParser {
     /*
      * returns the name of all the customers in a particular scenario
      */
-    public ArrayList read_customer_file(){
+    public ArrayList readCustomerFile(){
         ArrayList customer_ids = new ArrayList();
         JSONParser parser = new JSONParser();
         File file = new File(this.getClass().getResource(this.config_path + this.client_file).getPath());
@@ -68,7 +68,7 @@ public class ScenarioParser {
     /*
      * returns the name of all the bakeries in a particular scenario
      */
-    public ArrayList read_bakery_file(){
+    public ArrayList readBakeryFile(){
         ArrayList bakery_ids = new ArrayList();
         JSONParser parser = new JSONParser();
         File file = new File(this.getClass().getResource(this.config_path + this.bakery_file).getPath());
@@ -96,7 +96,7 @@ public class ScenarioParser {
     /*
      * returns the name of all the delivery company in a particular scenario
      */
-    public ArrayList read_delivery_file(){
+    public ArrayList readDeliveryFile(){
         ArrayList delivery_ids = new ArrayList();
         JSONParser parser = new JSONParser();
         File file = new File(this.getClass().getResource(this.config_path + this.delivery_file).getPath());
@@ -125,7 +125,7 @@ public class ScenarioParser {
      * returns a JSONObject containing the information of a customer
      * with given guid
      */
-    public JSONObject get_customer_from_guid(String guid){
+    public JSONObject getCustomerFromGuid(String guid){
         for (Object o : this.customer_list) {
             JSONObject customer = (JSONObject) o;
             if (guid.equals(customer.get("guid"))){
