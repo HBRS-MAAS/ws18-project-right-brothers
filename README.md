@@ -62,7 +62,7 @@ Afterwards you can import the project folder.
     /**
      *
      */
-    
+
 *   Line comments should be avoided as much as possible and code should be self explanatory. Doc comment is encouraged but not mandatory.
 
 ### Git
