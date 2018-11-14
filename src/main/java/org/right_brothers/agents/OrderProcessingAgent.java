@@ -10,13 +10,14 @@ import jade.domain.FIPAAgentManagement.*;
 import jade.domain.FIPAException;
 import jade.domain.DFService;
 
+import org.right_brothers.agents.BaseAgent;
 import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Location;
 import org.right_brothers.data.models.Equipment;
 import org.right_brothers.data.models.Product;
 
-public class OrderProcessingAgent extends Agent {
+public class OrderProcessingAgent extends BaseAgent {
 
     private static List<Bakery> bakeries;
     private String guid;
@@ -26,36 +27,18 @@ public class OrderProcessingAgent extends Agent {
     private List<Product> products;
 
     protected void setup() {
+        super.setup();
         System.out.println("\tOrder-processing-agent "+getAID().getLocalName()+" is born.");
 
-        this.publishSellerAID();
+        this.register("Order-processing-agent", "JADE-bakery");
         this.getBakeryInformation();
         
         addBehaviour(new OfferRequestsServer());
     }
 
     protected void takeDown() {
-        try {
-            DFService.deregister(this);
-        }
-        catch (FIPAException fe) {
-            fe.printStackTrace();
-        }
+        this.deRegister();
         System.out.println("\t"+getAID().getLocalName()+" terminating.");
-    }
-    protected void publishSellerAID(){
-        DFAgentDescription dfd = new DFAgentDescription();
-        dfd.setName(getAID());
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType("Order-processing-agent");
-        sd.setName("JADE-bakery");
-        dfd.addServices(sd);
-        try {
-            DFService.register(this, dfd);
-        }
-        catch (FIPAException fe) {
-            fe.printStackTrace();
-        }
     }
     public static void setBakeries(List<Bakery> list_of_bakeries){
         bakeries = list_of_bakeries;
@@ -85,6 +68,7 @@ public class OrderProcessingAgent extends Agent {
      * */
     private class OfferRequestsServer extends CyclicBehaviour {
         public void action() {
+            baseAgent.finished();
             MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.CFP);
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
