@@ -89,11 +89,11 @@ public class BaseAgent extends Agent {
      * */
     protected void sendMessage(ACLMessage msg) {
         this.send(msg);
-        this.visualiseHistoricalView(msg);
-        this.visualiseIndividualOrderStatus(msg);
-        this.visualiseMessageQueuesByAgent(msg);
-        this.visualiseOrderBoard(msg);
-        this.visualiseStreetNetwork(msg);
+//         this.visualiseHistoricalView(msg);
+//         this.visualiseIndividualOrderStatus(msg);
+//         this.visualiseMessageQueuesByAgent(msg);
+//         this.visualiseOrderBoard(msg);
+//         this.visualiseStreetNetwork(msg);
     }
 
     /* implementation skeleton code for different visualisation methods
