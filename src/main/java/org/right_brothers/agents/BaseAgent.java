@@ -15,11 +15,12 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
+@SuppressWarnings("serial")
 public abstract class BaseAgent extends Agent {
 
-	protected int currentDay;
-    protected int currentHour;
-    protected boolean allowAction = false;
+	private int currentDay;
+    private int currentHour;
+    private boolean allowAction = false;
     protected AID clockAgent = new AID("TimeKeeper", AID.ISLOCALNAME);
     protected BaseAgent baseAgent = this;
 	
@@ -72,14 +73,14 @@ public abstract class BaseAgent extends Agent {
         this.send(finish);
     }
 
-    public void setAllowAction(boolean allowAction) {
-        this.allowAction = allowAction;
+    protected boolean getAllowAction() {
+        return allowAction;
     }
-    public void setCurrentDay(int currentDay) {
-        this.currentDay = currentDay;
+    protected int getCurrentDay() {
+        return currentDay;
     }
-    public void setCurrentHour(int currentHour) {
-        this.currentHour = currentHour;
+    protected int getCurrentHour() {
+        return currentHour;
     }
 
     /* This function is used as a middle man which uses the message
@@ -113,7 +114,7 @@ public abstract class BaseAgent extends Agent {
     /* Behaviour to receive message from clockAgent to proceed further with
      * tasks of next time step
      */
-    public class PermitAction extends CyclicBehaviour {
+    private class PermitAction extends CyclicBehaviour {
         private MessageTemplate mt;
 
         public void action(){
@@ -125,9 +126,9 @@ public abstract class BaseAgent extends Agent {
                 int counter = Integer.parseInt(messageContent);
                 int day = counter / 24;
                 int hour = counter % 24;
-                baseAgent.setCurrentDay(day);
-                baseAgent.setCurrentHour(hour);
-                baseAgent.setAllowAction(true);
+                currentDay = day;
+                currentHour = hour;
+                allowAction = true;
             }
             else {
                 block();

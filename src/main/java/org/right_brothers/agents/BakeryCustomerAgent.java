@@ -107,7 +107,7 @@ public class BakeryCustomerAgent extends BaseAgent {
         }
 
         public void action() {
-            if (!baseAgent.allowAction) {
+            if (!baseAgent.getAllowAction()) {
                 return;
             }
             switch (step) {
