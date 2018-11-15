@@ -98,16 +98,16 @@ public class BaseAgent extends Agent {
 
     /* implementation skeleton code for different visualisation methods
      */
-    protected void visualiseHistoricalView(ACLMessage msg) {
-    }
-    protected void visualiseIndividualOrderStatus(ACLMessage msg) {
-    }
-    protected void visualiseMessageQueuesByAgent(ACLMessage msg) {
-    }
-    protected void visualiseOrderBoard(ACLMessage msg) {
-    }
-    protected void visualiseStreetNetwork(ACLMessage msg) {
-    }
+//     protected void visualiseHistoricalView(ACLMessage msg) {
+//     }
+//     protected void visualiseIndividualOrderStatus(ACLMessage msg) {
+//     }
+//     protected void visualiseMessageQueuesByAgent(ACLMessage msg) {
+//     }
+//     protected void visualiseOrderBoard(ACLMessage msg) {
+//     }
+//     protected void visualiseStreetNetwork(ACLMessage msg) {
+//     }
 
 
     /* Behaviour to receive message from clockAgent to proceed further with
@@ -115,7 +115,6 @@ public class BaseAgent extends Agent {
      */
     public class PermitAction extends CyclicBehaviour {
         private MessageTemplate mt;
-        private BaseAgent ba;
 
         public void action(){
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
