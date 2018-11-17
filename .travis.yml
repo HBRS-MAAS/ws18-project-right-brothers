@@ -4,4 +4,6 @@ jdk:
 group: stable
 dist: trusty
 os: linux
-script: ./run.sh
+script: 
+    - ./gradlew run
+    - ./gradlew run --args="coordinatorTest"
