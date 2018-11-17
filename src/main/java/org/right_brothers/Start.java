@@ -54,6 +54,7 @@ public class Start {
             }
         } else {
             cmd.add("-agents");
+            agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
             for (Bakery b : bakeries) {
                 agents.add(b.getGuid() + ":org.right_brothers.agents.OrderProcessingAgent");
             }

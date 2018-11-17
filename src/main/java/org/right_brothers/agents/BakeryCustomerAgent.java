@@ -21,12 +21,13 @@ import jade.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import org.right_brothers.agents.BaseAgent;
 import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Location;
 import org.right_brothers.data.models.Client;
 
 @SuppressWarnings("serial")
-public class BakeryCustomerAgent extends Agent {
+public class BakeryCustomerAgent extends BaseAgent {
     private AID[] sellerAgents;
 
     private static int totalAgents;
@@ -38,12 +39,13 @@ public class BakeryCustomerAgent extends Agent {
     private List<Order> orders;
 
     protected void setup() {
+        super.setup();
         System.out.println("\tCustomer-agent "+getAID().getLocalName()+" is born.");
         totalAgents++;
 
         this.getCustomerInformation();
 
-        this.publishCustomerAID();
+        this.register("Bakery-customer-agent", "JADE-bakery");
 
         this.getOrderProcessorAID();
         Object[] args = getArguments();
@@ -52,29 +54,10 @@ public class BakeryCustomerAgent extends Agent {
     }
 
     protected void takeDown() {
-        try {
-            DFService.deregister(this);
-        }
-        catch (FIPAException fe) {
-            fe.printStackTrace();
-        }
+        this.deRegister();
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
 
-    protected void publishCustomerAID(){
-        DFAgentDescription dfd = new DFAgentDescription();
-        dfd.setName(getAID());
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType("Bakery-customer-agent");
-        sd.setName("JADE-bakery");
-        dfd.addServices(sd);
-        try {
-            DFService.register(this, dfd);
-        }
-        catch (FIPAException fe) {
-            fe.printStackTrace();
-        }
-    }
     protected void getOrderProcessorAID() {
         DFAgentDescription template = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
@@ -124,6 +107,9 @@ public class BakeryCustomerAgent extends Agent {
         }
 
         public void action() {
+            if (!baseAgent.getAllowAction()) {
+                return;
+            }
             switch (step) {
             case 0:
                 ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
@@ -138,7 +124,8 @@ public class BakeryCustomerAgent extends Agent {
                 }
                 cfp.setConversationId("Bread-trade");
                 cfp.setReplyWith("cfp"+System.currentTimeMillis()); // Unique value
-                myAgent.send(cfp);
+                baseAgent.sendMessage(cfp);
+                System.out.println("\t" + myAgent.getLocalName() + " sent cfp to order processor");
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("Bread-trade"),
                 MessageTemplate.MatchInReplyTo(cfp.getReplyWith()));
                 step = 1;
@@ -162,6 +149,7 @@ public class BakeryCustomerAgent extends Agent {
         }
         public boolean done() {
             if (step == 2) {
+                baseAgent.finished();
                 System.out.println(totalAgents);
                 if(totalAgents == 0) {
                     myAgent.addBehaviour(new shutdown());
