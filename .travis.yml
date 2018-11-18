@@ -1,8 +1,6 @@
 language: java
 jdk:
     - openjdk8
-before_install:
- - gradle wrapper --gradle-version 4.9
 group: stable
 dist: trusty
 os: linux
