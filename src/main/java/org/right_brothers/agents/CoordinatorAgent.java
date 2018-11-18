@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Vector;
 
 import org.right_brothers.data.messages.CoordinatorMessage;
+import org.right_brothers.agents.BaseAgent;
 
 import jade.core.behaviours.*;
 import jade.core.Agent;
@@ -14,18 +15,20 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 @SuppressWarnings("serial")
-public class CoordinatorAgent extends Agent {
-    private List<CoordinatorMessage> messages;
+public class CoordinatorAgent extends BaseAgent {
+    private List<String> messages;
 
     protected void setup() {
         System.out.println("\tCoordinator-agent "+getAID().getLocalName()+" is born.");
-        messages = new Vector<CoordinatorMessage>();
+        this.register("Coordinator-Agent", "JADE-Bakery-Testing");
+        messages = new Vector<String>();
 
         addBehaviour(new RequestsServer());
         addBehaviour(new InformServer());
     }
 
     protected void takeDown() {
+        this.deRegister();
         System.out.println("\t"+getAID().getLocalName()+" terminating.");
     }
 
@@ -43,21 +46,17 @@ public class CoordinatorAgent extends Agent {
                 System.out.println(String.format("\tReceived REQUEST: %s", id));
 
                 ACLMessage reply = requestMessage.createReply();
-                Optional<CoordinatorMessage> result = messages.stream()
-                 .filter(m -> id.equals(m.getId()))
+                Optional<String> result = messages.stream()
+                 .filter(m -> id.equals(m))
                  .findFirst();
-                try {
-                    if(result.isPresent()) {
-                        reply.setPerformative(ACLMessage.CONFIRM);
-                        reply.setContentObject(result.get());
-                    }else {
-                        reply.setPerformative(ACLMessage.REFUSE);
-                        reply.setContentObject(null);
-                    }
-                }catch(IOException e) {
-                    e.printStackTrace();
+                if(result.isPresent()) {
+                    reply.setPerformative(ACLMessage.CONFIRM);
+                    reply.setContent(result.get());
+                }else {
+                    reply.setPerformative(ACLMessage.REFUSE);
+                    reply.setContent("");
                 }
-                myAgent.send(reply);
+                baseAgent.sendMessage(reply);
             }
             else {
                 block();
@@ -75,20 +74,15 @@ public class CoordinatorAgent extends Agent {
 
             ACLMessage informMessage = myAgent.receive(informTemplate);
             if (informMessage != null) {
-                try {
-                    CoordinatorMessage data = (CoordinatorMessage)informMessage.getContentObject();
-                    messages.add(data);
+                String data = informMessage.getContent();
+                messages.add(data);
 
-                    System.out.println(String.format("\tReceived INFORM: %s", data.getClass()));
-                    System.out.println("\tMessage: " + data.getId());
-                    System.out.println("\tCurrent messages list size: " + messages.size());
-                } catch (UnreadableException e) {
-                    e.printStackTrace();
-                }
+                System.out.println(String.format("\tReceived INFORM: %s", data));
+                System.out.println("\tCurrent messages list size: " + messages.size());
                 ACLMessage reply = informMessage.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
                 reply.setContent("Got your Object.");
-                myAgent.send(reply);
+                baseAgent.sendMessage(reply);
             }
             else {
                 block();

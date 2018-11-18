@@ -22,10 +22,11 @@ import org.right_brothers.data.messages.BakedProduct;
 import org.right_brothers.data.messages.CoordinatorMessage;
 import org.right_brothers.data.messages.Dough;
 import org.right_brothers.data.messages.UnbakedProduct;
+import org.right_brothers.agents.BaseAgent;
 
 
 @SuppressWarnings("serial")
-public class DummyAgent extends Agent {
+public class DummyAgent extends BaseAgent {
 
     private AID coordinator = new AID("coordinator", AID.ISLOCALNAME);
     private int counter = 0;
@@ -33,6 +34,7 @@ public class DummyAgent extends Agent {
 	protected void setup() {
 		System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
 
+        this.register("Dummy-testing-Agent", "JADE-Bakery-Testing");
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
         List<CoordinatorMessage> informMessages = Arrays.asList(
@@ -49,6 +51,7 @@ public class DummyAgent extends Agent {
     	this.counter++;
 	}
 	protected void takeDown() {
+        this.deRegister();
 		System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
 	}
 
@@ -69,7 +72,7 @@ public class DummyAgent extends Agent {
                 request.setContent(itemId);
                 request.setConversationId("testing");
                 request.setReplyWith("request"+System.currentTimeMillis()); // Unique value
-                myAgent.send(request);
+                baseAgent.sendMessage(request);
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("testing"),
                 MessageTemplate.MatchInReplyTo(request.getReplyWith()));
                 step = 1;
@@ -79,13 +82,8 @@ public class DummyAgent extends Agent {
                 if (reply != null) {
                     if (reply.getPerformative() == ACLMessage.CONFIRM) {
                         System.out.println("\t" + myAgent.getLocalName() + " received confirmation from " + reply.getSender().getLocalName());
-                        try {
-                            CoordinatorMessage data = (CoordinatorMessage)reply.getContentObject();
-                            System.out.println(String.format("\tReceived CONFIRM: %s", data.getClass()));
-                            System.out.println("\tReply Message: " + data.getId());
-                        } catch (UnreadableException e) {
-                            e.printStackTrace();
-                        }
+                        String data = reply.getContent();
+                        System.out.println(String.format("\tReceived CONFIRM: %s", data));
                         step = 2;
                     }
                     if (reply.getPerformative() == ACLMessage.REFUSE) {
@@ -105,8 +103,7 @@ public class DummyAgent extends Agent {
             if (step == 2) {
                 counter --;
                 if (counter == 0){
-                    // myAgent.addBehaviour(new shutdown());
-                    System.out.println("done");
+                    myAgent.addBehaviour(new shutdown());
                 }
                 return true;
             }
@@ -128,15 +125,10 @@ public class DummyAgent extends Agent {
             case 0:
                 ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
                 inform.addReceiver(coordinator);
-
-                try {
-                    inform.setContentObject(message);
-                } catch(Exception e){
-                    e.printStackTrace();
-                }
+                inform.setContent(this.message.getId());
                 inform.setConversationId("testing");
                 inform.setReplyWith("request"+ message.getId() +System.currentTimeMillis()); // Unique value
-                myAgent.send(inform);
+                baseAgent.sendMessage(inform);
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("testing"),
                 MessageTemplate.MatchInReplyTo(inform.getReplyWith()));
                 step = 1;
@@ -164,7 +156,10 @@ public class DummyAgent extends Agent {
         }
         public boolean done() {
             if (step == 2) {
-            	myAgent.addBehaviour(new RequestPerformer(this.message.getId()));
+                counter --;
+                if (counter == 0){
+                    myAgent.addBehaviour(new shutdown());
+                }
                 return true;
             }
             return false;

@@ -21,7 +21,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class animation extends Application {
+public class Animation extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		Rectangle r = new Rectangle();
