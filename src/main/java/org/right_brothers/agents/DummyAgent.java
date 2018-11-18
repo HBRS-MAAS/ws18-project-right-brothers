@@ -105,7 +105,8 @@ public class DummyAgent extends Agent {
             if (step == 2) {
                 counter --;
                 if (counter == 0){
-                    myAgent.addBehaviour(new shutdown());
+                    // myAgent.addBehaviour(new shutdown());
+                    System.out.println("done");
                 }
                 return true;
             }
