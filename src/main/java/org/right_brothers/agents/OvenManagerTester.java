@@ -41,11 +41,34 @@ public class OvenManagerTester extends Agent {
         this.counter++;
         this.addBehaviour(new StringInformSender(orderGuid, ovenManager, "order_guid"));
         this.counter++;
+        this.addBehaviour(new BakedProductServer(ovenManager));
     }
     protected void takeDown() {
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
 
+
+    private class BakedProductServer extends CyclicBehaviour {
+        private MessageTemplate mt;
+        private AID sender;
+
+        public BakedProductServer (AID orderProcessor){
+            this.sender = orderProcessor;
+        }
+        public void action() {
+            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+                    MessageTemplate.MatchSender(sender));
+            ACLMessage msg = myAgent.receive(mt);
+            if (msg != null) {
+                String bakedProduct = msg.getContent();
+                System.out.println("\tReceived products : " + bakedProduct);
+                myAgent.addBehaviour(new shutdown());
+            }
+            else {
+                block();
+            }
+        }
+    }
 
     private class StringInformSender extends Behaviour {
         private MessageTemplate mt;
@@ -69,7 +92,7 @@ public class OvenManagerTester extends Agent {
         public boolean done(){
             counter --;
             if (counter == 0){
-                myAgent.addBehaviour(new shutdown());
+//                 myAgent.addBehaviour(new shutdown());
             }
             return true;
         }

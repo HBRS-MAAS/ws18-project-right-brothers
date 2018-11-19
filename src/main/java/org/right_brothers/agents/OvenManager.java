@@ -21,6 +21,9 @@ import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Product;
 import org.right_brothers.data.models.Oven;
 import org.right_brothers.data.models.Bakery;
+import org.right_brothers.data.models.Step;
+import org.right_brothers.data.messages.ProductMessage;
+import org.right_brothers.utils.JsonConverter;
 
 @SuppressWarnings("serial")
 public class OvenManager extends BaseAgent {
@@ -28,9 +31,10 @@ public class OvenManager extends BaseAgent {
     private AID proofer = new AID("dummy", AID.ISLOCALNAME);
     private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
     private List<Product> available_products;
+    private List<String> available_product_names;
     private String bakery_guid = "bakery-001";
     private List<Oven> ovens;
-    private Hashtable<String, Integer> unbakedProduct;
+    private List<ProductMessage> unbakedProduct;
 
     private List<Order> orders;
 
@@ -41,15 +45,18 @@ public class OvenManager extends BaseAgent {
         this.register("Oven-manager-agent", "JADE-bakery");
 
         this.orders = new ArrayList();
-        this.unbakedProduct = new Hashtable<String, Integer> ();
+        this.unbakedProduct = new ArrayList<ProductMessage> ();
+        this.available_products = new ArrayList<Product> ();
+        this.available_product_names = new ArrayList<String> ();
 
         // TODO: get bakery guid as argument
-//         Object[] args = getArguments();
+        //         Object[] args = getArguments();
 
         this.getAllInformation();
 
         this.addBehaviour(new OrderServer(orderProcessor));
         this.addBehaviour(new UnbakedProductsServer(proofer));
+        this.addBehaviour(new BakeProducts());
     }
 
     protected void takeDown() {
@@ -66,12 +73,41 @@ public class OvenManager extends BaseAgent {
                 this.ovens = b.getEquipment().getOvens();
             }
         }
-        System.out.println(this.available_products);
+//         System.out.println(this.available_products);
         System.out.println(this.ovens);
         for (Product p : this.available_products) {
-            this.unbakedProduct.put(p.getGuid(), 0);
+            this.available_product_names.add(p.getGuid());
         }
-        System.out.println(this.unbakedProduct);
+//         System.out.println(this.available_product_names);
+    }
+
+    private class BakeProducts extends CyclicBehaviour{
+        public void action(){
+            ArrayList<ProductMessage> temp = new ArrayList<ProductMessage> ();
+            for (ProductMessage pm : unbakedProduct) {
+                if (pm.getIsBaking())
+                    continue;
+                //TODO: check if the ovens are free or not
+                //TODO: check of the ovens are at correct temp or not
+                //TODO: start baking
+                    //pm.setIsBaking(true);
+                    //pm.setProcessStartTime(this.getCurrentHour());
+                //TODO: check if baking is done
+                //if (this.getCurrentHour() == pm.getProcessStartTime() + pm.getBakingDuration()){
+                String messageContent = JsonConverter.getJsonString(pm);
+                System.out.println("\tBaked " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
+//                 System.out.println(messageContent);
+                ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
+                inform.addReceiver(cooling_racks_agent);
+                inform.setContent(messageContent);
+                inform.setConversationId("Baked-products-001");
+                myAgent.send(inform);
+                temp.add(pm);
+                //}
+            }
+            for (ProductMessage pm : temp)
+                unbakedProduct.remove(pm);
+        }
     }
 
     /*
@@ -94,7 +130,6 @@ public class OvenManager extends BaseAgent {
                 System.out.println("\tUnbaked Order guid: " + order_guid);
                 for (Order o : orders) {
                     if (o.getGuid().equalsIgnoreCase(order_guid)){
-                        System.out.println("found it");
                         this.addUnbakedProducts(o.getProducts());
                     }
                 }
@@ -107,12 +142,42 @@ public class OvenManager extends BaseAgent {
             Enumeration e = products.keys();
             while (e.hasMoreElements()){
                 String productName = (String) e.nextElement();
-                if (unbakedProduct.containsKey(productName)){
-                    unbakedProduct.put(productName, unbakedProduct.get(productName) + products.get(productName));
+                boolean alreadyAdded = false;
+                if (available_product_names.contains(productName)){
+                    for (ProductMessage p : unbakedProduct) {
+                        if (p.getGuid().equals(productName) && !p.getIsBaking()){
+                            p.setQuantity(p.getQuantity() + products.get(productName));
+                            alreadyAdded = true;
+                            break;
+                        }
+                    }
+                    if (!alreadyAdded) {
+                        for (Product p : available_products) {
+                            if (p.getGuid().equals(productName)){
+                                ProductMessage pm = this.getProductMessageFromProduct(p);
+                                pm.setQuantity(products.get(productName));
+                                unbakedProduct.add(pm);
+                                break;
+                            }
+                        }
+                    }
                 } else {
                     throw new Error("Product with name " + productName + " is not offered by " + bakery_guid);
                 }
             }
+        }
+        private ProductMessage getProductMessageFromProduct(Product p) {
+            ProductMessage pm = new ProductMessage(p.getGuid());
+            pm.setCoolingRate(p.getRecipe().getCoolingRate());
+            pm.setBakingTemp(p.getRecipe().getBakingTemp());
+            pm.setBreadsPerOven(p.getBatch().getBreadsPerOven());
+            for (Step s : p.getRecipe().getSteps()) {
+                if (s.getAction().equals("cooling"))
+                    pm.setCoolingDuration(s.getDuration());
+                if (s.getAction().equals("baking"))
+                    pm.setBakingDuration(s.getDuration());
+            }
+            return pm;
         }
     }
     /*
