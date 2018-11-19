@@ -21,22 +21,32 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class Animation extends Application implements Runnable {
+import java.util.concurrent.CountDownLatch;
+
+public class Animation extends Application {
 
     public Text txt;
     public Thread myThread;
+    public static final CountDownLatch latch = new CountDownLatch(1);
+    public static Animation myself = null;
 
-    Animation(){
-        this.myThread = new Thread(this, "some dumb thread name");
-        System.out.println("my thread created" + myThread);
-        myThread.start();
+    // https://stackoverflow.com/questions/25873769/launch-javafx-application-from-another-class
+    public static Animation waitForStartUpTest() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return myself;
     }
 
-    public void run (){
-        System.out.println("before launch");
-//         this.launch(Animation.class);
-        this.start(new Stage());
-        System.out.println("after launch");
+    public static void setStartUpTest(Animation animationObject) {
+        myself = animationObject;
+        latch.countDown();
+    }
+
+    public Animation() {
+        setStartUpTest(this);
     }
 
     @Override
@@ -68,8 +78,8 @@ public class Animation extends Application implements Runnable {
 
     public void something(int counter){
         System.out.println("hello from something " + counter);
-        System.out.println(this.txt);
-        System.out.println(this);
+        System.out.println(this.txt.getText());
+        this.txt.setText(Integer.toString(counter));
     }
 }
 //      Rectangle r = new Rectangle();

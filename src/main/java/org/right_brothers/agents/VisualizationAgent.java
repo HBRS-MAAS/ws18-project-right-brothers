@@ -49,9 +49,17 @@ public class VisualizationAgent extends Agent {
 
         this.counter = 0;
         // launch the gui window in another thread
-        guiWindow = new Animation();
+//         guiWindow = new Animation();
 // 		Thread t = new Thread(guiWindow);
 //         t.start();
+        new Thread() {
+            @Override
+            public void run() {
+                Application.launch(Animation.class);
+            }
+        }.start();
+        guiWindow = Animation.waitForStartUpTest();
+//         System.out.println("a = " + a);
 		addBehaviour(new MessageServer());
 	}
 	protected void takeDown() {

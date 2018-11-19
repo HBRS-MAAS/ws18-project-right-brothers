@@ -111,6 +111,11 @@ public abstract class BaseAgent extends Agent {
         msg.clearAllReceiver();
         msg.addReceiver(orderBoardAgent);
         this.send(msg);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 //     protected void visualiseStreetNetwork(ACLMessage msg) {
 //     }
