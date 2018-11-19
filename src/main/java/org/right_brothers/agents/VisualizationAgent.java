@@ -73,8 +73,7 @@ public class VisualizationAgent extends Agent {
                 String msgString =  msg.getContent();
                 System.out.println("\tMessage inside VisualizationAgent " + msgString);
                 counter ++;
-                System.out.println(counter);
-                guiWindow.something(counter);
+                guiWindow.editTextObject(counter);
             }
             else {
                 block();

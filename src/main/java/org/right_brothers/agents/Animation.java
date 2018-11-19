@@ -22,13 +22,17 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.ArrayList;
 
 public class Animation extends Application {
 
-    public Text txt;
-    public Thread myThread;
+    private ArrayList<Text> orders;
     public static final CountDownLatch latch = new CountDownLatch(1);
     public static Animation myself = null;
+
+    private int[] xPositions = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private int winWidth = 800;
+    private int winHeight = 1000;
 
     // https://stackoverflow.com/questions/25873769/launch-javafx-application-from-another-class
     public static Animation waitForStartUpTest() {
@@ -47,39 +51,50 @@ public class Animation extends Application {
 
     public Animation() {
         setStartUpTest(this);
+        this.orders = new ArrayList<Text> ();
     }
 
     @Override
     public void start(Stage primaryStage) {
         System.out.println(this);
-        this.txt = new Text();
-        this.txt.setText("Coordinator");
-        this.txt.setFill(Color.RED);
-        this.txt.setFont(Font.font("null", FontWeight.BOLD, 20));
-        this.txt.setX(50);
-        this.txt.setY(180);
-        System.out.println(this.txt);
+        Text txt = new Text();
+        txt.setText("Order 007");
+        txt.setFill(Color.RED);
+        txt.setFont(Font.font("null", FontWeight.BOLD, 20));
+        txt.setX(this.getXPosition(0));
+        txt.setY(180);
+        this.orders.add(txt);
+        System.out.println(txt);
 
         Pane root = new Pane();
-        root.getChildren().add(this.txt);
+        root.getChildren().add(txt);
 //      root.getChildren().add(txt1);
 //      root.getChildren().add(r);
 //      root.getChildren().add(r2);
 //      root.getChildren().add(r3);
 //      root.getChildren().add(line);
 //      root.getChildren().add(line2);
-        Scene scene = new Scene(root, 1366, 768);
+        Scene scene = new Scene(root, this.winWidth, this.winHeight);
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Animation");
         primaryStage.setScene(scene);
         primaryStage.show();
-        System.out.println("after show");           
     }
 
-    public void something(int counter){
-        System.out.println("hello from something " + counter);
-        System.out.println(this.txt.getText());
-        this.txt.setText(Integer.toString(counter));
+    private int getXPosition (int index){
+        return (this.winWidth/this.xPositions.length)*this.xPositions[index];
+    }
+    private int getIndexFromXPosition (int xPosition) {
+        return xPosition/(this.winWidth/this.xPositions.length);
+    }
+    public void editTextObject(int counter){
+//         System.out.println("hello from something " + counter);
+//         System.out.println(this.txt.getText());
+        for (Text t : orders) {
+            int index = this.getIndexFromXPosition((int)t.getX());
+            t.setX(this.getXPosition(index+1));
+        }
+//         this.txt.setText(Integer.toString(counter));
     }
 }
 //      Rectangle r = new Rectangle();
