@@ -1,17 +1,17 @@
 package org.right_brothers.agents;
 
 import java.util.*;
-import java.util.stream.Collectors;
+// import java.util.stream.Collectors;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import jade.core.Agent;
+// import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.domain.FIPAAgentManagement.*;
-import jade.domain.FIPAException;
-import jade.domain.DFService;
+// import jade.domain.FIPAException;
+// import jade.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -162,7 +162,8 @@ public class OvenManager extends BaseAgent {
                         }
                     }
                 } else {
-                    throw new Error("Product with name " + productName + " is not offered by " + bakery_guid);
+                    System.out.println("Product with name " + productName + " is not offered by " + bakery_guid);
+//                     throw new Error("Product with name " + productName + " is not offered by " + bakery_guid);
                 }
             }
         }

@@ -13,15 +13,10 @@ import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
+// import jade.lang.acl.UnreadableException;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.right_brothers.data.messages.BakedProduct;
-import org.right_brothers.data.messages.CoordinatorMessage;
-import org.right_brothers.data.messages.Dough;
-import org.right_brothers.data.messages.UnbakedProduct;
+// import java.util.Arrays;
+// import java.util.List;
 
 
 @SuppressWarnings("serial")
@@ -92,6 +87,7 @@ public class OvenManagerTester extends Agent {
         public boolean done(){
             counter --;
             if (counter == 0){
+                System.out.println("No more inform messages left");
 //                 myAgent.addBehaviour(new shutdown());
             }
             return true;
