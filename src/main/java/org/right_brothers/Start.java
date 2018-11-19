@@ -27,15 +27,26 @@ public class Start {
 
         BakeryCustomerAgent.setClients(clients);
         OrderProcessingAgent.setBakeries(bakeries);
+        System.out.println(clients.size());
 
         if(arguments.size() > 0) {
             String customArgument = String.join(" ", arguments).trim();
-            if(customArgument.equalsIgnoreCase("coordinatorTest")){
+            if(arguments.get(0).equalsIgnoreCase("OvenManagerTest")){
+                cmd.add("-agents");
+                agents.add("dummy:org.right_brothers.agents.OvenManagerTester");
+                agents.add("ovenManager:org.right_brothers.agents.OvenManager");
+                agents.add("cooling-rack:org.right_brothers.agents.CoolingRackAgent");
+                agents.add("dummy-loading-bay:org.right_brothers.agents.DummyLoadingBayAgent");
+            }
+            if(arguments.get(0).equalsIgnoreCase("coordinatorTest")){
                 cmd.add("-agents");
                 agents.add("dummy:org.right_brothers.agents.DummyAgent");
                 agents.add("coordinator:org.right_brothers.agents.CoordinatorAgent");
             }
-            if(customArgument.equalsIgnoreCase("server")) {
+            if(arguments.get(0).equalsIgnoreCase("server")) {
+                for (int i = 1; i < arguments.size(); i++) {
+                   cmd.add(arguments.get(i)); 
+                }
                 cmd.add("-agents");
                 for (Bakery b : bakeries) {
                     agents.add(b.getGuid() + ":org.right_brothers.agents.OrderProcessingAgent");
@@ -50,7 +61,7 @@ public class Start {
             }
         } else {
             cmd.add("-agents");
-            agents.add("test:org.right_brothers.agents.DummyAgent");
+            agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
             for (Bakery b : bakeries) {
                 agents.add(b.getGuid() + ":org.right_brothers.agents.OrderProcessingAgent");
             }
