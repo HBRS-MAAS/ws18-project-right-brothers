@@ -40,13 +40,19 @@ import org.right_brothers.agents.Animation;
 @SuppressWarnings("serial")
 public class VisualizationAgent extends Agent {
 
+    private Animation guiWindow;
+    public int counter;
+
 	protected void setup() {
 	// Printout a welcome message
 		System.out.println("Hello! Visualization-agent "+getAID().getName()+" is ready.");
-// 		Application.launch(Animation.class); // Currently the platform shutdown is called when the application is closed.
-// 		addBehaviour(new shutdown());
-		addBehaviour(new MessageServer());
 
+        this.counter = 0;
+        // launch the gui window in another thread
+        guiWindow = new Animation();
+// 		Thread t = new Thread(guiWindow);
+//         t.start();
+		addBehaviour(new MessageServer());
 	}
 	protected void takeDown() {
 		System.out.println(getAID().getLocalName() + ": Terminating.");
@@ -58,6 +64,9 @@ public class VisualizationAgent extends Agent {
             if (msg != null) {
                 String msgString =  msg.getContent();
                 System.out.println("\tMessage inside VisualizationAgent " + msgString);
+                counter ++;
+                System.out.println(counter);
+                guiWindow.something(counter);
             }
             else {
                 block();

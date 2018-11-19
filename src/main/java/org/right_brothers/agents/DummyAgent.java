@@ -34,6 +34,11 @@ public class DummyAgent extends BaseAgent {
 	protected void setup() {
 		System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
 
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         this.register("Dummy-testing-Agent", "JADE-Bakery-Testing");
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
@@ -169,6 +174,7 @@ public class DummyAgent extends BaseAgent {
     // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
     private class shutdown extends OneShotBehaviour{
         public void action() {
+            System.out.println(">>>>>>Inside shutdown");
             ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
             Codec codec = new SLCodec();
             myAgent.getContentManager().registerLanguage(codec);
