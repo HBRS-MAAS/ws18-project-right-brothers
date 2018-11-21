@@ -1,25 +1,25 @@
 package org.right_brothers.agents;
 
 
-import javafx.animation.TranslateTransition;
-import javafx.animation.SequentialTransition;
-import javafx.animation.FadeTransition;
+// import javafx.animation.TranslateTransition;
+// import javafx.animation.SequentialTransition;
+// import javafx.animation.FadeTransition;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+// import javafx.event.ActionEvent;
+// import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Line;
+// import javafx.scene.control.Button;
+// import javafx.scene.shape.Rectangle;
+// import javafx.scene.shape.Line;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+// import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.util.Duration;
+// import javafx.util.Duration;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.ArrayList;

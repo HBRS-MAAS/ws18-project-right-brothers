@@ -1,38 +1,15 @@
 package org.right_brothers.agents;
 
-import jade.content.lang.Codec;
-import jade.content.lang.sl.SLCodec;
-import jade.content.onto.basic.Action;
-import jade.core.Agent;
-import jade.core.behaviours.*;
-import jade.domain.FIPANames;
-import jade.domain.JADEAgentManagement.JADEManagementOntology;
-import jade.domain.JADEAgentManagement.ShutdownPlatform;
-import jade.lang.acl.ACLMessage;
-
 import javafx.application.Application;
 
-import jade.content.lang.Codec;
-import jade.content.lang.sl.SLCodec;
-import jade.content.onto.basic.Action;
-import jade.domain.JADEAgentManagement.JADEManagementOntology;
-import jade.domain.JADEAgentManagement.ShutdownPlatform;
-import jade.domain.FIPANames;
-
 import jade.core.Agent;
-import jade.core.AID;
+// import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
+// import jade.lang.acl.MessageTemplate;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.right_brothers.data.messages.BakedProduct;
-import org.right_brothers.data.messages.CoordinatorMessage;
-import org.right_brothers.data.messages.Dough;
-import org.right_brothers.data.messages.UnbakedProduct;
+// import java.util.Arrays;
+// import java.util.List;
 
 import org.right_brothers.agents.Animation;
 
