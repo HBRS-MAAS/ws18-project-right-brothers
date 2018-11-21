@@ -28,7 +28,7 @@ public class BakingStageTester extends Agent {
 
     protected void setup() {
         System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
-        String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7} }"; 
+        String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }"; 
         String orderGuid = "order-331";
  
         // TODO: always add counter after adding behaviour

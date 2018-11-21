@@ -60,6 +60,60 @@
         },
         "salesPrice": 2.9,
         "productionCost": 0.3
+      },
+      {
+        "guid": "Donut",
+        "batch": {
+          "breadsPerOven": 17
+        },
+        "recipe": {
+          "coolingRate": 7,
+          "bakingTemp": 145,
+          "steps": [
+            {
+              "action": "kneading",
+              "duration": 7
+            },
+            {
+              "action": "resting",
+              "duration": 1
+            },
+            {
+              "action": "item preparation",
+              "duration": 1
+            },
+            {
+              "action": "cooling",
+              "duration": 2
+            },
+            {
+              "action": "proofing",
+              "duration": 1
+            },
+            {
+              "action": "filling",
+              "duration": 1
+            },
+            {
+              "action": "baking",
+              "duration": 2
+            },
+            {
+              "action": "decorating",
+              "duration": 1
+            },
+            {
+              "action": "sprinkling",
+              "duration": 1
+            }
+          ]
+        },
+        "packaging": {
+          "boxingTemp": 50,
+          "breadsPerBox": 11
+        },
+        "salesPrice": 4.9,
+        "productionCost": 2.0
       }
     ],
     "equipment": {

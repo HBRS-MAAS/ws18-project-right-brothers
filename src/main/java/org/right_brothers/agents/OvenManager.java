@@ -22,7 +22,8 @@ import org.right_brothers.data.models.Product;
 import org.right_brothers.data.models.Oven;
 import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Step;
-import org.right_brothers.data.messages.ProductMessage;
+import org.right_brothers.data.messages.BakedProductMessage;
+import org.right_brothers.data.messages.UnbakedProductMessage;
 import org.right_brothers.utils.JsonConverter;
 
 @SuppressWarnings("serial")
@@ -30,11 +31,11 @@ public class OvenManager extends BaseAgent {
     private AID coolingRacksAgent = new AID("cooling-rack", AID.ISLOCALNAME);
     private AID proofer = new AID("dummy", AID.ISLOCALNAME);
     private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
-    private List<Product> available_products;
-    private List<String> available_product_names;
-    private String bakery_guid = "bakery-001";
+    private List<Product> availableProducts;
+    private List<String> availableProductNames;
+    private String bakeryGuid = "bakery-001";
     private List<Oven> ovens;
-    private List<ProductMessage> unbakedProduct;
+    private List<UnbakedProductMessage> unbakedProduct;
 
     private List<Order> orders;
 
@@ -45,9 +46,9 @@ public class OvenManager extends BaseAgent {
         this.register("Oven-manager-agent", "JADE-bakery");
 
         this.orders = new ArrayList();
-        this.unbakedProduct = new ArrayList<ProductMessage> ();
-        this.available_products = new ArrayList<Product> ();
-        this.available_product_names = new ArrayList<String> ();
+        this.unbakedProduct = new ArrayList<UnbakedProductMessage> ();
+        this.availableProducts = new ArrayList<Product> ();
+        this.availableProductNames = new ArrayList<String> ();
 
         // TODO: get bakery guid as argument
         //         Object[] args = getArguments();
@@ -68,23 +69,22 @@ public class OvenManager extends BaseAgent {
 			("/config/sample/bakeries.json", new TypeReference<Vector<Bakery>>(){});
 		List<Bakery> bakeries = parser2.parse();
         for (Bakery b : bakeries) {
-            if (b.getGuid().equalsIgnoreCase(this.bakery_guid)){
-                this.available_products = b.getProducts();
+            if (b.getGuid().equalsIgnoreCase(this.bakeryGuid)){
+                this.availableProducts = b.getProducts();
                 this.ovens = b.getEquipment().getOvens();
             }
         }
-//         System.out.println(this.available_products);
         System.out.println(this.ovens);
-        for (Product p : this.available_products) {
-            this.available_product_names.add(p.getGuid());
+        for (Product p : this.availableProducts) {
+            this.availableProductNames.add(p.getGuid());
         }
-//         System.out.println(this.available_product_names);
     }
 
     private class BakeProducts extends CyclicBehaviour{
         public void action(){
-            ArrayList<ProductMessage> temp = new ArrayList<ProductMessage> ();
-            for (ProductMessage pm : unbakedProduct) {
+            ArrayList<BakedProductMessage> message = new ArrayList<BakedProductMessage> ();
+            ArrayList<UnbakedProductMessage> temp = new ArrayList<UnbakedProductMessage> ();
+            for (UnbakedProductMessage pm : unbakedProduct) {
                 if (pm.getIsBaking())
                     continue;
                 //TODO: check if the ovens are free or not
@@ -94,18 +94,26 @@ public class OvenManager extends BaseAgent {
                     //pm.setProcessStartTime(this.getCurrentHour());
                 //TODO: check if baking is done
                 //if (this.getCurrentHour() == pm.getProcessStartTime() + pm.getBakingDuration()){
-                String messageContent = JsonConverter.getJsonString(pm);
                 System.out.println("\tBaked " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
-//                 System.out.println(messageContent);
+//                 block();
+                BakedProductMessage bpm = new BakedProductMessage();
+                bpm.setGuid(pm.getGuid());
+                bpm.setQuantity(pm.getQuantity());
+                bpm.setCoolingRate(pm.getCoolingRate());
+                bpm.setCoolingDuration(pm.getCoolingDuration());
+                message.add(bpm);
+                temp.add(pm);
+                //}
+            }
+            if (message.size() > 0) {
+                String messageContent = JsonConverter.getJsonString(message);
                 ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
                 inform.addReceiver(coolingRacksAgent);
                 inform.setContent(messageContent);
                 inform.setConversationId("Baked-products-001");
                 myAgent.send(inform);
-                temp.add(pm);
-                //}
             }
-            for (ProductMessage pm : temp)
+            for (UnbakedProductMessage pm : temp)
                 unbakedProduct.remove(pm);
         }
     }
@@ -143,8 +151,8 @@ public class OvenManager extends BaseAgent {
             while (e.hasMoreElements()){
                 String productName = (String) e.nextElement();
                 boolean alreadyAdded = false;
-                if (available_product_names.contains(productName)){
-                    for (ProductMessage p : unbakedProduct) {
+                if (availableProductNames.contains(productName)){
+                    for (UnbakedProductMessage p : unbakedProduct) {
                         if (p.getGuid().equals(productName) && !p.getIsBaking()){
                             p.setQuantity(p.getQuantity() + products.get(productName));
                             alreadyAdded = true;
@@ -152,9 +160,9 @@ public class OvenManager extends BaseAgent {
                         }
                     }
                     if (!alreadyAdded) {
-                        for (Product p : available_products) {
+                        for (Product p : availableProducts) {
                             if (p.getGuid().equals(productName)){
-                                ProductMessage pm = this.getProductMessageFromProduct(p);
+                                UnbakedProductMessage pm = this.getUnbakedProductMessageFromProduct(p);
                                 pm.setQuantity(products.get(productName));
                                 unbakedProduct.add(pm);
                                 break;
@@ -162,14 +170,15 @@ public class OvenManager extends BaseAgent {
                         }
                     }
                 } else {
-                    System.out.println("Product with name " + productName + " is not offered by " + bakery_guid);
+                    System.out.println("Product with name " + productName + " is not offered by " + bakeryGuid);
                     // TODO: make codacy approved Error
-                    // throw new Error("Product with name " + productName + " is not offered by " + bakery_guid);
+                    // throw new Error("Product with name " + productName + " is not offered by " + bakeryGuid);
                 }
             }
         }
-        private ProductMessage getProductMessageFromProduct(Product p) {
-            ProductMessage pm = new ProductMessage(p.getGuid());
+        private UnbakedProductMessage getUnbakedProductMessageFromProduct(Product p) {
+            UnbakedProductMessage pm = new UnbakedProductMessage();
+            pm.setGuid(p.getGuid());
             pm.setCoolingRate(p.getRecipe().getCoolingRate());
             pm.setBakingTemp(p.getRecipe().getBakingTemp());
             pm.setBreadsPerOven(p.getBatch().getBreadsPerOven());
