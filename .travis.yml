@@ -7,4 +7,5 @@ os: linux
 script: 
     - ./gradlew run
     - ./gradlew run --args="coordinatorTest"
+    - ./gradlew run --args="ovenManagerTest"
     - ./gradlew run --args="coordinatorTestVisualization"
