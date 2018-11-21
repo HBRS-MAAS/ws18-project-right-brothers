@@ -150,7 +150,6 @@ public class BakeryCustomerAgent extends BaseAgent {
         public boolean done() {
             if (step == 2) {
                 baseAgent.finished();
-                System.out.println(totalAgents);
                 if(totalAgents == 0) {
                     myAgent.addBehaviour(new shutdown());
                 }
