@@ -1,14 +1,11 @@
 package org.right_brothers.agents;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Vector;
 import jade.core.behaviours.*;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 
 @SuppressWarnings("serial")
 public class CoordinatorAgent extends Agent {

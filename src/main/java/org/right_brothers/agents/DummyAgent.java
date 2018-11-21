@@ -13,7 +13,6 @@ import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,11 +29,7 @@ public class DummyAgent extends Agent {
 
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
-        List<String> informMessages = Arrays.asList(
-        		new String("dough-1"),
-        		new String("baked-1"),
-        		new String("unbaked-1")
-    		);
+        List<String> informMessages = Arrays.asList("dough-1", "baked-1", "unbaked-1");
         for(String msg: informMessages) {
         	this.addBehaviour(new InformPerformer(msg));
         	this.counter++;
