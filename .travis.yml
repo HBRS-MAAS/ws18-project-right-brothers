@@ -5,4 +5,6 @@ group: stable
 dist: trusty
 os: linux
 script: 
-    - gradle run
+    - ./gradlew run
+    - ./gradlew run --args="coordinatorTest"
+    - ./gradlew run --args="coordinatorTestVisualization"
