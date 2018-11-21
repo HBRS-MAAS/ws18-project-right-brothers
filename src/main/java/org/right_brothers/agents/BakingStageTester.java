@@ -20,9 +20,10 @@ import jade.lang.acl.MessageTemplate;
 
 
 @SuppressWarnings("serial")
-public class OvenManagerTester extends Agent {
+public class BakingStageTester extends Agent {
 
     private AID ovenManager = new AID("ovenManager", AID.ISLOCALNAME);
+    private AID coolingRackAgent = new AID("cooling-rack", AID.ISLOCALNAME);
     private int counter = 0;
 
     protected void setup() {
@@ -36,18 +37,19 @@ public class OvenManagerTester extends Agent {
         this.counter++;
         this.addBehaviour(new StringInformSender(orderGuid, ovenManager, "order_guid"));
         this.counter++;
-        this.addBehaviour(new BakedProductServer(ovenManager));
+        this.addBehaviour(new InformServer(ovenManager));
+        this.addBehaviour(new InformServer(coolingRackAgent));
     }
     protected void takeDown() {
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
 
 
-    private class BakedProductServer extends CyclicBehaviour {
+    private class InformServer extends CyclicBehaviour {
         private MessageTemplate mt;
         private AID sender;
 
-        public BakedProductServer (AID orderProcessor){
+        public InformServer (AID orderProcessor){
             this.sender = orderProcessor;
         }
         public void action() {
@@ -55,9 +57,10 @@ public class OvenManagerTester extends Agent {
                     MessageTemplate.MatchSender(sender));
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
-                String bakedProduct = msg.getContent();
-                System.out.println("\tReceived products : " + bakedProduct);
-                myAgent.addBehaviour(new shutdown());
+                String messageContent = msg.getContent();
+                System.out.println("\tReceived msg : " + messageContent);
+                if (this.sender == coolingRackAgent)
+                    myAgent.addBehaviour(new shutdown());
             }
             else {
                 block();
@@ -88,7 +91,6 @@ public class OvenManagerTester extends Agent {
             counter --;
             if (counter == 0){
                 System.out.println("No more inform messages left");
-//                 myAgent.addBehaviour(new shutdown());
             }
             return true;
         }

@@ -27,7 +27,7 @@ import org.right_brothers.utils.JsonConverter;
 
 @SuppressWarnings("serial")
 public class OvenManager extends BaseAgent {
-    private AID cooling_racks_agent = new AID("dummy", AID.ISLOCALNAME);
+    private AID coolingRacksAgent = new AID("cooling-rack", AID.ISLOCALNAME);
     private AID proofer = new AID("dummy", AID.ISLOCALNAME);
     private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
     private List<Product> available_products;
@@ -98,7 +98,7 @@ public class OvenManager extends BaseAgent {
                 System.out.println("\tBaked " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
 //                 System.out.println(messageContent);
                 ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
-                inform.addReceiver(cooling_racks_agent);
+                inform.addReceiver(coolingRacksAgent);
                 inform.setContent(messageContent);
                 inform.setConversationId("Baked-products-001");
                 myAgent.send(inform);
@@ -163,7 +163,8 @@ public class OvenManager extends BaseAgent {
                     }
                 } else {
                     System.out.println("Product with name " + productName + " is not offered by " + bakery_guid);
-//                     throw new Error("Product with name " + productName + " is not offered by " + bakery_guid);
+                    // TODO: make codacy approved Error
+                    // throw new Error("Product with name " + productName + " is not offered by " + bakery_guid);
                 }
             }
         }

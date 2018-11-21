@@ -7,15 +7,20 @@ import jade.lang.acl.MessageTemplate;
 
 @SuppressWarnings("serial")
 public class CoolingRackAgent extends BaseAgent{
-	private AID LOADING_BAY_AGENT = new AID("dummy-loading-bay", AID.ISLOCALNAME);
+	private AID LOADING_BAY_AGENT = new AID("dummy", AID.ISLOCALNAME);
 	
 	protected void setup() {
-		System.out.println("Hello! cooling-rack "+getAID().getLocalName()+" is ready.");
+		System.out.println("\tHello! cooling-rack "+getAID().getLocalName()+" is ready.");
 		
-		addBehaviour(new OvenManagerInformBehaviour());
+        this.register("cooling-rack-agent", "JADE-bakery");
+		addBehaviour(new BakedProdutsServer());
 	}
+    protected void takeDown() {
+        this.deRegister();
+        System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
+    }
 	
-	private class OvenManagerInformBehaviour extends CyclicBehaviour {
+	private class BakedProdutsServer extends CyclicBehaviour {
 		public void action() {
 			MessageTemplate mt = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
 			ACLMessage msg = myAgent.receive(mt);
@@ -31,7 +36,7 @@ public class CoolingRackAgent extends BaseAgent{
 	            loadingBayMessage.setConversationId("baked-products-152");
 	            loadingBayMessage.setContent(msg.getContent());
 	            try {
-	                baseAgent.send(loadingBayMessage);
+	                baseAgent.sendMessage(loadingBayMessage);
 	            }
 	            catch (Exception e) {}
 			}

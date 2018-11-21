@@ -33,10 +33,10 @@ public class Start {
             String customArgument = String.join(" ", arguments).trim();
             if(arguments.get(0).equalsIgnoreCase("OvenManagerTest")){
                 cmd.add("-agents");
-                agents.add("dummy:org.right_brothers.agents.OvenManagerTester");
+                agents.add("dummy:org.right_brothers.agents.BakingStageTester");
                 agents.add("ovenManager:org.right_brothers.agents.OvenManager");
                 agents.add("cooling-rack:org.right_brothers.agents.CoolingRackAgent");
-                agents.add("dummy-loading-bay:org.right_brothers.agents.DummyLoadingBayAgent");
+//                 agents.add("dummy-loading-bay:org.right_brothers.agents.DummyLoadingBayAgent");
             }
             if(arguments.get(0).equalsIgnoreCase("coordinatorTest")){
                 cmd.add("-agents");
