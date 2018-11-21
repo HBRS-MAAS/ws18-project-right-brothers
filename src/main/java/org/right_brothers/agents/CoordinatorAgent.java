@@ -1,25 +1,19 @@
 package org.right_brothers.agents;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Vector;
-
-import org.right_brothers.data.messages.CoordinatorMessage;
-
 import jade.core.behaviours.*;
 import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 
 @SuppressWarnings("serial")
 public class CoordinatorAgent extends Agent {
-    private List<CoordinatorMessage> messages;
+    private List<String> messages;
 
     protected void setup() {
         System.out.println("\tCoordinator-agent "+getAID().getLocalName()+" is born.");
-        messages = new Vector<CoordinatorMessage>();
+        messages = new Vector<String>();
 
         addBehaviour(new RequestsServer());
         addBehaviour(new InformServer());
@@ -40,28 +34,37 @@ public class CoordinatorAgent extends Agent {
             ACLMessage requestMessage = myAgent.receive(requestTemplate);
             if (requestMessage != null) {
                 String id = requestMessage.getContent();
-                System.out.println(String.format("\tReceived REQUEST: %s", id));
+                System.out.println(String.format("\t" + myAgent.getLocalName() + " received REQUEST: %s", id));
 
                 ACLMessage reply = requestMessage.createReply();
-                Optional<CoordinatorMessage> result = messages.stream()
-                 .filter(m -> id.equals(m.getId()))
-                 .findFirst();
-                try {
-                    if(result.isPresent()) {
-                        reply.setPerformative(ACLMessage.CONFIRM);
-                        reply.setContentObject(result.get());
-                    }else {
-                        reply.setPerformative(ACLMessage.REFUSE);
-                        reply.setContentObject(null);
-                    }
-                }catch(IOException e) {
-                    e.printStackTrace();
+                reply.setPerformative(ACLMessage.REFUSE);
+                reply.setContent(null);
+                String mess = this.isMessageConfirmable(id, messages); // Please add your logic here to decide when message can be termed as confirmed.
+                if (mess != null) {
+                    reply.setPerformative(ACLMessage.CONFIRM);
+                    reply.setContent(mess);
                 }
                 myAgent.send(reply);
             }
             else {
                 block();
             }
+        }
+
+        public String isMessageConfirmable(String id, List<String> msg) {
+            for (String m : msg) {
+                try {
+                    if (m.contains(id)) {
+                        return m;
+                    }
+                }
+                catch(NullPointerException e)
+                {
+                    System.out.println("m string in Null");
+                    return null;
+                }
+            }
+            return null;
         }
     }
 
@@ -75,16 +78,10 @@ public class CoordinatorAgent extends Agent {
 
             ACLMessage informMessage = myAgent.receive(informTemplate);
             if (informMessage != null) {
-                try {
-                    CoordinatorMessage data = (CoordinatorMessage)informMessage.getContentObject();
-                    messages.add(data);
-
-                    System.out.println(String.format("\tReceived INFORM: %s", data.getClass()));
-                    System.out.println("\tMessage: " + data.getId());
-                    System.out.println("\tCurrent messages list size: " + messages.size());
-                } catch (UnreadableException e) {
-                    e.printStackTrace();
-                }
+                String data = informMessage.getContent();
+                messages.add(data);
+                System.out.println("\t" + myAgent.getLocalName() + " received INFORM:" + data);
+                System.out.println("\t" + myAgent.getLocalName() + " current messages list size: " + messages.size());
                 ACLMessage reply = informMessage.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
                 reply.setContent("Got your Object.");

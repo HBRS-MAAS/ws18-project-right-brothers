@@ -13,15 +13,9 @@ import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 
 import java.util.Arrays;
 import java.util.List;
-
-import org.right_brothers.data.messages.BakedProduct;
-import org.right_brothers.data.messages.CoordinatorMessage;
-import org.right_brothers.data.messages.Dough;
-import org.right_brothers.data.messages.UnbakedProduct;
 
 
 @SuppressWarnings("serial")
@@ -35,12 +29,8 @@ public class DummyAgent extends Agent {
 
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
-        List<CoordinatorMessage> informMessages = Arrays.asList(
-        		new Dough("dough-1"),
-        		new BakedProduct("baked-1"),
-        		new UnbakedProduct("unbaked-1")
-    		);
-        for(CoordinatorMessage msg: informMessages) {
+        List<String> informMessages = Arrays.asList("dough-1", "baked-1", "unbaked-1");
+        for(String msg: informMessages) {
         	this.addBehaviour(new InformPerformer(msg));
         	this.counter++;
         }
@@ -78,14 +68,9 @@ public class DummyAgent extends Agent {
                 ACLMessage reply = myAgent.receive(mt);
                 if (reply != null) {
                     if (reply.getPerformative() == ACLMessage.CONFIRM) {
-                        System.out.println("\t" + myAgent.getLocalName() + " received confirmation from " + reply.getSender().getLocalName());
-                        try {
-                            CoordinatorMessage data = (CoordinatorMessage)reply.getContentObject();
-                            System.out.println(String.format("\tReceived CONFIRM: %s", data.getClass()));
-                            System.out.println("\tReply Message: " + data.getId());
-                        } catch (UnreadableException e) {
-                            e.printStackTrace();
-                        }
+                        System.out.println("\t" + myAgent.getLocalName() + " received CONFIRM from " + reply.getSender().getLocalName());
+                        String data = (String)reply.getContent();
+                        System.out.println("\t" + myAgent.getLocalName() + " Reply Message: " + data);
                         step = 2;
                     }
                     if (reply.getPerformative() == ACLMessage.REFUSE) {
@@ -116,9 +101,9 @@ public class DummyAgent extends Agent {
     private class InformPerformer extends Behaviour {
         private MessageTemplate mt;
         private int step = 0;
-        private CoordinatorMessage message;
+        private String message;
         
-        public InformPerformer(CoordinatorMessage message) {
+        public InformPerformer(String message) {
         	this.message = message;
         }
 
@@ -127,14 +112,9 @@ public class DummyAgent extends Agent {
             case 0:
                 ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
                 inform.addReceiver(coordinator);
-
-                try {
-                    inform.setContentObject(message);
-                } catch(Exception e){
-                    e.printStackTrace();
-                }
+                inform.setContent(message);
                 inform.setConversationId("testing");
-                inform.setReplyWith("request"+ message.getId() +System.currentTimeMillis()); // Unique value
+                inform.setReplyWith("request"+ message +System.currentTimeMillis()); // Unique value
                 myAgent.send(inform);
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("testing"),
                 MessageTemplate.MatchInReplyTo(inform.getReplyWith()));
@@ -145,7 +125,7 @@ public class DummyAgent extends Agent {
                 if (reply != null) {
                     if (reply.getPerformative() == ACLMessage.CONFIRM) {
                         System.out.println("\t" + myAgent.getLocalName() + " received confirmation from " + reply.getSender().getLocalName());
-                        System.out.println("\tReply Message: " + reply.getContent());
+                        System.out.println("\t" + myAgent.getLocalName() + " Reply Message: " + reply.getContent());
                         step = 2;
                     }
                     if (reply.getPerformative() == ACLMessage.REFUSE) {
@@ -163,7 +143,10 @@ public class DummyAgent extends Agent {
         }
         public boolean done() {
             if (step == 2) {
-            	myAgent.addBehaviour(new RequestPerformer(this.message.getId()));
+                counter --;
+                if (counter == 0){
+                    myAgent.addBehaviour(new shutdown());
+                }
                 return true;
             }
             return false;
