@@ -66,7 +66,7 @@ public class DummyAgent extends BaseAgent {
                 request.setContent(itemId);
                 request.setConversationId("testing");
                 request.setReplyWith("request"+System.currentTimeMillis()); // Unique value
-                myAgent.send(request);
+                baseAgent.sendMessage(request);
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("testing"),
                 MessageTemplate.MatchInReplyTo(request.getReplyWith()));
                 step = 1;
@@ -126,7 +126,7 @@ public class DummyAgent extends BaseAgent {
                 inform.setContent(message);
                 inform.setConversationId("testing");
                 inform.setReplyWith("request"+ message +System.currentTimeMillis()); // Unique value
-                myAgent.send(inform);
+                baseAgent.sendMessage(inform);
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("testing"),
                 MessageTemplate.MatchInReplyTo(inform.getReplyWith()));
                 step = 1;
@@ -168,6 +168,7 @@ public class DummyAgent extends BaseAgent {
     // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
     private class shutdown extends OneShotBehaviour{
         public void action() {
+            System.out.println(">>>>>>Inside shutdown");
             ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
             Codec codec = new SLCodec();
             myAgent.getContentManager().registerLanguage(codec);

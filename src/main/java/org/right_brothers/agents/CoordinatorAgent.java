@@ -16,6 +16,7 @@ public class CoordinatorAgent extends BaseAgent {
     protected void setup() {
         super.setup();
         System.out.println("\tCoordinator-agent "+getAID().getLocalName()+" is born.");
+
         messages = new Vector<String>();
 
         this.register("Coordinator-agent", "JADE-bakery");
@@ -51,7 +52,7 @@ public class CoordinatorAgent extends BaseAgent {
                     reply.setPerformative(ACLMessage.CONFIRM);
                     reply.setContent(mess);
                 }
-                myAgent.send(reply);
+                baseAgent.sendMessage(reply);
             }
             else {
                 block();
@@ -92,7 +93,7 @@ public class CoordinatorAgent extends BaseAgent {
                 ACLMessage reply = informMessage.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
                 reply.setContent("Got your Message.");
-                myAgent.send(reply);
+                baseAgent.sendMessage(reply);
             }
             else {
                 block();
