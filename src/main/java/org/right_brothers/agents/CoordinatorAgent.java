@@ -1,27 +1,25 @@
 package org.right_brothers.agents;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Vector;
-
-import org.right_brothers.data.messages.CoordinatorMessage;
-import org.right_brothers.agents.BaseAgent;
-
 import jade.core.behaviours.*;
-import jade.core.Agent;
+// import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
+
+import org.right_brothers.agents.BaseAgent;
 
 @SuppressWarnings("serial")
 public class CoordinatorAgent extends BaseAgent {
     private List<String> messages;
 
     protected void setup() {
+        super.setup();
         System.out.println("\tCoordinator-agent "+getAID().getLocalName()+" is born.");
-        this.register("Coordinator-Agent", "JADE-Bakery-Testing");
+
         messages = new Vector<String>();
+
+        this.register("Coordinator-agent", "JADE-bakery");
 
         addBehaviour(new RequestsServer());
         addBehaviour(new InformServer());
@@ -38,29 +36,43 @@ public class CoordinatorAgent extends BaseAgent {
      */
     private class RequestsServer extends CyclicBehaviour {
         public void action() {
+            baseAgent.finished();
             MessageTemplate requestTemplate = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 
             ACLMessage requestMessage = myAgent.receive(requestTemplate);
             if (requestMessage != null) {
                 String id = requestMessage.getContent();
-                System.out.println(String.format("\tReceived REQUEST: %s", id));
+                System.out.println(String.format("\t" + myAgent.getLocalName() + " received REQUEST: %s", id));
 
                 ACLMessage reply = requestMessage.createReply();
-                Optional<String> result = messages.stream()
-                 .filter(m -> id.equals(m))
-                 .findFirst();
-                if(result.isPresent()) {
+                reply.setPerformative(ACLMessage.REFUSE);
+                reply.setContent(null);
+                String mess = this.isMessageConfirmable(id, messages); // Please add your logic here to decide when message can be termed as confirmed.
+                if (mess != null) {
                     reply.setPerformative(ACLMessage.CONFIRM);
-                    reply.setContent(result.get());
-                }else {
-                    reply.setPerformative(ACLMessage.REFUSE);
-                    reply.setContent("");
+                    reply.setContent(mess);
                 }
                 baseAgent.sendMessage(reply);
             }
             else {
                 block();
             }
+        }
+
+        public String isMessageConfirmable(String id, List<String> msg) {
+            for (String m : msg) {
+                try {
+                    if (m.contains(id)) {
+                        return m;
+                    }
+                }
+                catch(NullPointerException e)
+                {
+                    System.out.println("m string in Null");
+                    return null;
+                }
+            }
+            return null;
         }
     }
 
@@ -76,13 +88,12 @@ public class CoordinatorAgent extends BaseAgent {
             if (informMessage != null) {
                 String data = informMessage.getContent();
                 messages.add(data);
-
-                System.out.println(String.format("\tReceived INFORM: %s", data));
-                System.out.println("\tCurrent messages list size: " + messages.size());
+                System.out.println("\t" + myAgent.getLocalName() + " received INFORM:" + data);
+                System.out.println("\t" + myAgent.getLocalName() + " current messages list size: " + messages.size());
                 ACLMessage reply = informMessage.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
-                reply.setContent("Got your Object.");
-                baseAgent.sendMessage(reply);
+                reply.setContent("Got your Message.");
+                myAgent.send(reply);
             }
             else {
                 block();
