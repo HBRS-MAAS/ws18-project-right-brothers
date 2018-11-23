@@ -40,8 +40,16 @@ public class Start {
             }
             if(arguments.get(0).equalsIgnoreCase("coordinatorTest")){
                 cmd.add("-agents");
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
                 agents.add("dummy:org.right_brothers.agents.DummyAgent");
                 agents.add("coordinator:org.right_brothers.agents.CoordinatorAgent");
+            }
+            if(arguments.get(0).equalsIgnoreCase("coordinatorTestVisualization")){
+                cmd.add("-agents");
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
+                agents.add("dummy:org.right_brothers.agents.DummyAgent");
+                agents.add("coordinator:org.right_brothers.agents.CoordinatorAgent");
+                agents.add("visualization:org.right_brothers.agents.VisualizationAgent");
             }
             if(arguments.get(0).equalsIgnoreCase("server")) {
                 for (int i = 1; i < arguments.size(); i++) {

@@ -8,39 +8,32 @@ import jade.domain.JADEAgentManagement.JADEManagementOntology;
 import jade.domain.JADEAgentManagement.ShutdownPlatform;
 import jade.domain.FIPANames;
 
-import jade.core.Agent;
+// import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.lang.acl.UnreadableException;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.right_brothers.data.messages.BakedProduct;
-import org.right_brothers.data.messages.CoordinatorMessage;
-import org.right_brothers.data.messages.Dough;
-import org.right_brothers.data.messages.UnbakedProduct;
-
+import org.right_brothers.agents.BaseAgent;
 
 @SuppressWarnings("serial")
-public class DummyAgent extends Agent {
+public class DummyAgent extends BaseAgent {
 
     private AID coordinator = new AID("coordinator", AID.ISLOCALNAME);
     private int counter = 0;
 
 	protected void setup() {
+        super.setup();
 		System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
 
+        this.register("Dummy-agent", "JADE-bakery");
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
-        List<CoordinatorMessage> informMessages = Arrays.asList(
-        		new Dough("dough-1"),
-        		new BakedProduct("baked-1"),
-        		new UnbakedProduct("unbaked-1")
-    		);
-        for(CoordinatorMessage msg: informMessages) {
+        List<String> informMessages = Arrays.asList("dough-1", "baked-1", "unbaked-1");
+        for(String msg: informMessages) {
         	this.addBehaviour(new InformPerformer(msg));
         	this.counter++;
         }
@@ -49,6 +42,7 @@ public class DummyAgent extends Agent {
     	this.counter++;
 	}
 	protected void takeDown() {
+        this.deRegister();
 		System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
 	}
 
@@ -62,6 +56,9 @@ public class DummyAgent extends Agent {
         }
 
         public void action() {
+            if (!baseAgent.getAllowAction()) {
+                return;
+            }
             switch (step) {
             case 0:
                 ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
@@ -69,7 +66,7 @@ public class DummyAgent extends Agent {
                 request.setContent(itemId);
                 request.setConversationId("testing");
                 request.setReplyWith("request"+System.currentTimeMillis()); // Unique value
-                myAgent.send(request);
+                baseAgent.sendMessage(request);
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("testing"),
                 MessageTemplate.MatchInReplyTo(request.getReplyWith()));
                 step = 1;
@@ -78,14 +75,9 @@ public class DummyAgent extends Agent {
                 ACLMessage reply = myAgent.receive(mt);
                 if (reply != null) {
                     if (reply.getPerformative() == ACLMessage.CONFIRM) {
-                        System.out.println("\t" + myAgent.getLocalName() + " received confirmation from " + reply.getSender().getLocalName());
-                        try {
-                            CoordinatorMessage data = (CoordinatorMessage)reply.getContentObject();
-                            System.out.println(String.format("\tReceived CONFIRM: %s", data.getClass()));
-                            System.out.println("\tReply Message: " + data.getId());
-                        } catch (UnreadableException e) {
-                            e.printStackTrace();
-                        }
+                        System.out.println("\t" + myAgent.getLocalName() + " received CONFIRM from " + reply.getSender().getLocalName());
+                        String data = (String)reply.getContent();
+                        System.out.println("\t" + myAgent.getLocalName() + " Reply Message: " + data);
                         step = 2;
                     }
                     if (reply.getPerformative() == ACLMessage.REFUSE) {
@@ -103,6 +95,7 @@ public class DummyAgent extends Agent {
         }
         public boolean done() {
             if (step == 2) {
+                baseAgent.finished();
                 counter --;
                 if (counter == 0){
                     myAgent.addBehaviour(new shutdown());
@@ -116,26 +109,24 @@ public class DummyAgent extends Agent {
     private class InformPerformer extends Behaviour {
         private MessageTemplate mt;
         private int step = 0;
-        private CoordinatorMessage message;
+        private String message;
         
-        public InformPerformer(CoordinatorMessage message) {
+        public InformPerformer(String message) {
         	this.message = message;
         }
 
         public void action() {
+            if (!baseAgent.getAllowAction()) {
+                return;
+            }
             switch (step) {
             case 0:
                 ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
                 inform.addReceiver(coordinator);
-
-                try {
-                    inform.setContentObject(message);
-                } catch(Exception e){
-                    e.printStackTrace();
-                }
+                inform.setContent(message);
                 inform.setConversationId("testing");
-                inform.setReplyWith("request"+ message.getId() +System.currentTimeMillis()); // Unique value
-                myAgent.send(inform);
+                inform.setReplyWith("request"+ message +System.currentTimeMillis()); // Unique value
+                baseAgent.sendMessage(inform);
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("testing"),
                 MessageTemplate.MatchInReplyTo(inform.getReplyWith()));
                 step = 1;
@@ -145,7 +136,7 @@ public class DummyAgent extends Agent {
                 if (reply != null) {
                     if (reply.getPerformative() == ACLMessage.CONFIRM) {
                         System.out.println("\t" + myAgent.getLocalName() + " received confirmation from " + reply.getSender().getLocalName());
-                        System.out.println("\tReply Message: " + reply.getContent());
+                        System.out.println("\t" + myAgent.getLocalName() + " Reply Message: " + reply.getContent());
                         step = 2;
                     }
                     if (reply.getPerformative() == ACLMessage.REFUSE) {
@@ -163,7 +154,11 @@ public class DummyAgent extends Agent {
         }
         public boolean done() {
             if (step == 2) {
-            	myAgent.addBehaviour(new RequestPerformer(this.message.getId()));
+                baseAgent.finished();
+                counter --;
+                if (counter == 0){
+                    myAgent.addBehaviour(new shutdown());
+                }
                 return true;
             }
             return false;
@@ -173,6 +168,7 @@ public class DummyAgent extends Agent {
     // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
     private class shutdown extends OneShotBehaviour{
         public void action() {
+            System.out.println(">>>>>>Inside shutdown");
             ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
             Codec codec = new SLCodec();
             myAgent.getContentManager().registerLanguage(codec);
