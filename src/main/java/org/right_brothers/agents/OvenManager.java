@@ -24,6 +24,7 @@ import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Step;
 import org.right_brothers.data.messages.BakedProductMessage;
 import org.right_brothers.data.messages.UnbakedProductMessage;
+import org.right_brothers.objects.UnbakedProduct;
 import org.right_brothers.utils.JsonConverter;
 
 @SuppressWarnings("serial")
@@ -32,10 +33,9 @@ public class OvenManager extends BaseAgent {
     private AID proofer = new AID("dummy", AID.ISLOCALNAME);
     private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
     private List<Product> availableProducts;
-    private List<String> availableProductNames;
     private String bakeryGuid = "bakery-001";
     private List<Oven> ovens;
-    private List<UnbakedProductMessage> unbakedProduct;
+    private List<UnbakedProduct> unbakedProduct;
 
     private List<Order> orders;
 
@@ -46,9 +46,8 @@ public class OvenManager extends BaseAgent {
         this.register("Oven-manager-agent", "JADE-bakery");
 
         this.orders = new ArrayList();
-        this.unbakedProduct = new ArrayList<UnbakedProductMessage> ();
+        this.unbakedProduct = new ArrayList<UnbakedProduct> ();
         this.availableProducts = new ArrayList<Product> ();
-        this.availableProductNames = new ArrayList<String> ();
 
         // TODO: get bakery guid as argument
         //         Object[] args = getArguments();
@@ -74,35 +73,36 @@ public class OvenManager extends BaseAgent {
                 this.ovens = b.getEquipment().getOvens();
             }
         }
-        System.out.println(this.ovens);
-        for (Product p : this.availableProducts) {
-            this.availableProductNames.add(p.getGuid());
-        }
+        System.out.println("Number of oven " + this.ovens.size());
     }
 
     private class BakeProducts extends CyclicBehaviour{
         public void action(){
+            if (!baseAgent.getAllowAction()) {
+                return;
+            }
             ArrayList<BakedProductMessage> message = new ArrayList<BakedProductMessage> ();
-            ArrayList<UnbakedProductMessage> temp = new ArrayList<UnbakedProductMessage> ();
-            for (UnbakedProductMessage pm : unbakedProduct) {
+            ArrayList<UnbakedProduct> temp = new ArrayList<UnbakedProduct> ();
+            for (UnbakedProduct pm : unbakedProduct) {
                 if (pm.getIsBaking())
                     continue;
+                //TODO: check if baking is done
+                //if (this.getCurrentHour() == pm.getProcessStartTime() + pm.getBakingDuration()){
+                System.out.println("\tBaked " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
+                BakedProductMessage bpm = new BakedProductMessage();
+                bpm.setGuid(pm.getGuid());
+                bpm.setQuantity(pm.getQuantity());
+                bpm.setCoolingDuration(pm.getCoolingDuration());
+                message.add(bpm);
+                temp.add(pm);
+                //}
+                //}
+                //else {
                 //TODO: check if the ovens are free or not
                 //TODO: check of the ovens are at correct temp or not
                 //TODO: start baking
                     //pm.setIsBaking(true);
                     //pm.setProcessStartTime(this.getCurrentHour());
-                //TODO: check if baking is done
-                //if (this.getCurrentHour() == pm.getProcessStartTime() + pm.getBakingDuration()){
-                System.out.println("\tBaked " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
-//                 block();
-                BakedProductMessage bpm = new BakedProductMessage();
-                bpm.setGuid(pm.getGuid());
-                bpm.setQuantity(pm.getQuantity());
-                bpm.setCoolingRate(pm.getCoolingRate());
-                bpm.setCoolingDuration(pm.getCoolingDuration());
-                message.add(bpm);
-                temp.add(pm);
                 //}
             }
             if (message.size() > 0) {
@@ -111,10 +111,11 @@ public class OvenManager extends BaseAgent {
                 inform.addReceiver(coolingRacksAgent);
                 inform.setContent(messageContent);
                 inform.setConversationId("Baked-products-001");
-                myAgent.send(inform);
+                baseAgent.sendMessage(inform);
             }
-            for (UnbakedProductMessage pm : temp)
+            for (UnbakedProduct pm : temp)
                 unbakedProduct.remove(pm);
+            baseAgent.finished();
         }
     }
 
@@ -134,61 +135,70 @@ public class OvenManager extends BaseAgent {
             MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("order_guid"));
             ACLMessage msg = myAgent.receive(mt2);
             if (msg != null) {
-                String order_guid = msg.getContent();
-                System.out.println("\tUnbaked Order guid: " + order_guid);
-                for (Order o : orders) {
-                    if (o.getGuid().equalsIgnoreCase(order_guid)){
-                        this.addUnbakedProducts(o.getProducts());
+                String messageContent = msg.getContent();
+                System.out.println("\tReceived Unbaked product " + messageContent);
+                UnbakedProductMessage upm = this.parseUnbakedProductMessage(messageContent);
+                /*
+                 * Just add quantity to already existing product if possible, otherwise
+                 * add the whole product to the queue
+                 */
+                boolean alreadyAdded = false;
+                for (UnbakedProduct up : unbakedProduct) {
+                    if (up.getGuid().equals(upm.getProductType()) && !up.getIsBaking()){
+                        up.setQuantity(this.getTotalQuantity(upm.getProductQuantities()));
+                        alreadyAdded = true;
                     }
+                }
+                if (!alreadyAdded){
+                    UnbakedProduct up = this.getUnbakedProductFromUnbakedProductMessage(upm);
+                    unbakedProduct.add(up);
                 }
             }
             else {
                 block();
             }
         }
-        private void addUnbakedProducts(Hashtable<String, Integer> products){
-            Enumeration e = products.keys();
-            while (e.hasMoreElements()){
-                String productName = (String) e.nextElement();
-                boolean alreadyAdded = false;
-                if (availableProductNames.contains(productName)){
-                    for (UnbakedProductMessage p : unbakedProduct) {
-                        if (p.getGuid().equals(productName) && !p.getIsBaking()){
-                            p.setQuantity(p.getQuantity() + products.get(productName));
-                            alreadyAdded = true;
-                            break;
-                        }
-                    }
-                    if (!alreadyAdded) {
-                        for (Product p : availableProducts) {
-                            if (p.getGuid().equals(productName)){
-                                UnbakedProductMessage pm = this.getUnbakedProductMessageFromProduct(p);
-                                pm.setQuantity(products.get(productName));
-                                unbakedProduct.add(pm);
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    System.out.println("Product with name " + productName + " is not offered by " + bakeryGuid);
-                    // TODO: make codacy approved Error
-                    // throw new Error("Product with name " + productName + " is not offered by " + bakeryGuid);
-                }
+        private UnbakedProductMessage parseUnbakedProductMessage(String orderString){
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                UnbakedProductMessage data = mapper.readValue(orderString, UnbakedProductMessage.class);
+                return data;
+            } catch(IOException e) {
+                e.printStackTrace();
             }
+            return null;
         }
-        private UnbakedProductMessage getUnbakedProductMessageFromProduct(Product p) {
-            UnbakedProductMessage pm = new UnbakedProductMessage();
-            pm.setGuid(p.getGuid());
-            pm.setCoolingRate(p.getRecipe().getCoolingRate());
-            pm.setBakingTemp(p.getRecipe().getBakingTemp());
-            pm.setBreadsPerOven(p.getBatch().getBreadsPerOven());
+        private UnbakedProduct getUnbakedProductFromUnbakedProductMessage(UnbakedProductMessage upm){
+            UnbakedProduct up = new UnbakedProduct();
+            Product p = this.getProductWithSameGuid(upm.getProductType());
+            up.setGuid(p.getGuid());
+            up.setBakingTemp(p.getRecipe().getBakingTemp());
+            up.setBreadsPerOven(p.getBatch().getBreadsPerOven());
+            up.setQuantity(this.getTotalQuantity(upm.getProductQuantities()));
             for (Step s : p.getRecipe().getSteps()) {
                 if (s.getAction().equals("cooling"))
-                    pm.setCoolingDuration(s.getDuration());
+                    up.setCoolingDuration(s.getDuration());
                 if (s.getAction().equals("baking"))
-                    pm.setBakingDuration(s.getDuration());
+                    up.setBakingDuration(s.getDuration());
             }
-            return pm;
+            return up;
+        }
+        private Product getProductWithSameGuid(String productName){
+            for (Product p : availableProducts) {
+                if (p.getGuid().equals(productName)){
+                    return p;
+                }
+            }
+            System.out.println("Product with name " + productName + " is not offered by " + bakeryGuid);
+            // TODO: make codacy approved Error
+            // throw new Error("Product with name " + productName + " is not offered by " + bakeryGuid);
+            return null;
+        }
+        private int getTotalQuantity(Vector<Integer> vec){
+            int sum = 0;
+            for (int i : vec)
+                sum += i;
+            return sum;
         }
     }
     /*

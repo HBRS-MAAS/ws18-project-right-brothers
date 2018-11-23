@@ -9,20 +9,22 @@ import java.util.*;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.right_brothers.data.messages.BakedProductMessage;
+import org.right_brothers.agents.BaseAgent;
+import org.right_brothers.objects.BakedProduct;
 import org.right_brothers.data.messages.ProductMessage;
 import org.right_brothers.utils.JsonConverter;
 
 @SuppressWarnings("serial")
 public class CoolingRackAgent extends BaseAgent{
     private AID LOADING_BAY_AGENT = new AID("dummy", AID.ISLOCALNAME);
-    private List<BakedProductMessage> bakedProducts;
+    private List<BakedProduct> bakedProducts;
     
     protected void setup() {
+        super.setup();
         System.out.println("\tHello! cooling-rack "+getAID().getLocalName()+" is ready.");
         
         this.register("cooling-rack-agent", "JADE-bakery");
-        this.bakedProducts = new ArrayList<BakedProductMessage> ();
+        this.bakedProducts = new ArrayList<BakedProduct> ();
         addBehaviour(new BakedProdutsServer());
         addBehaviour(new CoolProducts());
     }
@@ -33,11 +35,14 @@ public class CoolingRackAgent extends BaseAgent{
     
     private class CoolProducts extends CyclicBehaviour{
         public void action(){
-            ArrayList<BakedProductMessage> temp = new ArrayList<BakedProductMessage> ();
-            for (BakedProductMessage pm : bakedProducts) {
+            if (!baseAgent.getAllowAction()) {
+                return;
+            }
+            ArrayList<BakedProduct> temp = new ArrayList<BakedProduct> ();
+            for (BakedProduct pm : bakedProducts) {
                 //if (this.getCurrentHour() == pm.getProcessStartTime() + pm.getBakingDuration()){
                 //if (pm.getCooled()){
-                System.out.println("\tBaked " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
+                System.out.println("\tCooled " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
                 temp.add(pm);
                 //}
                 //else {
@@ -48,7 +53,7 @@ public class CoolingRackAgent extends BaseAgent{
             }
             if (temp.size() > 0) {
                 Hashtable<String,Integer> outMsg = new Hashtable<String,Integer> ();
-                for (BakedProductMessage pm : temp) {
+                for (BakedProduct pm : temp) {
                     outMsg.put(pm.getGuid(), pm.getQuantity());
                 }
                 ProductMessage p = new ProductMessage();
@@ -60,8 +65,9 @@ public class CoolingRackAgent extends BaseAgent{
                 loadingBayMessage.setContent(messageContent);
                 baseAgent.sendMessage(loadingBayMessage);
             }
-            for (BakedProductMessage pm : temp)
+            for (BakedProduct pm : temp)
                 bakedProducts.remove(pm);
+            baseAgent.finished();
         }
     }
 
@@ -74,18 +80,18 @@ public class CoolingRackAgent extends BaseAgent{
                         msg.getSender().getName()));
                 String messageContent = msg.getContent();
                 System.out.println(String.format("\tmessage:: %s", messageContent));
-                ArrayList<BakedProductMessage> receivedBakedProducts = this.parseBakedProducts(messageContent);
+                ArrayList<BakedProduct> receivedBakedProducts = this.parseBakedProducts(messageContent);
                 bakedProducts.addAll(receivedBakedProducts);
             }
             else {
                 block();
             }
         }
-        private ArrayList<BakedProductMessage> parseBakedProducts(String orderString){
+        private ArrayList<BakedProduct> parseBakedProducts(String orderString){
             ObjectMapper mapper = new ObjectMapper();
-            TypeReference<?> type = new TypeReference<ArrayList<BakedProductMessage>>(){};
+            TypeReference<?> type = new TypeReference<ArrayList<BakedProduct>>(){};
             try {
-                ArrayList<BakedProductMessage> data = mapper.readValue(orderString, type);
+                ArrayList<BakedProduct> data = mapper.readValue(orderString, type);
                 return data;
             } catch(IOException e) {
                 e.printStackTrace();

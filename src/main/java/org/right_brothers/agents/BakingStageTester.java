@@ -15,27 +15,40 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 // import jade.lang.acl.UnreadableException;
 
-// import java.util.Arrays;
-// import java.util.List;
+import org.right_brothers.utils.JsonConverter;
+import org.right_brothers.data.messages.UnbakedProductMessage;
+
+import java.util.*;
 
 
 @SuppressWarnings("serial")
-public class BakingStageTester extends Agent {
+public class BakingStageTester extends BaseAgent {
 
     private AID ovenManager = new AID("ovenManager", AID.ISLOCALNAME);
     private AID coolingRackAgent = new AID("cooling-rack", AID.ISLOCALNAME);
     private int counter = 0;
 
     protected void setup() {
+        super.setup();
         System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
         String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }"; 
-        String orderGuid = "order-331";
+
+        UnbakedProductMessage upm = new UnbakedProductMessage();
+        Vector<String> guids = new Vector<String> ();
+        guids.add("Order-123"); guids.add("Order-456");
+        upm.setGuids(guids);
+        upm.setProductType("Multigrain Bread");
+        Vector<Integer> vec = new Vector<Integer> ();
+        vec.add(5); vec.add(7);
+        upm.setProductQuantities(vec);
+        String unbakedProduct = JsonConverter.getJsonString(upm);
+//         String orderGuid = "order-331";
  
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
         this.addBehaviour(new StringInformSender(orderString, ovenManager, "order"));
         this.counter++;
-        this.addBehaviour(new StringInformSender(orderGuid, ovenManager, "order_guid"));
+        this.addBehaviour(new StringInformSender(unbakedProduct, ovenManager, "order_guid"));
         this.counter++;
         this.addBehaviour(new InformServer(ovenManager));
         this.addBehaviour(new InformServer(coolingRackAgent));
@@ -53,6 +66,7 @@ public class BakingStageTester extends Agent {
             this.sender = orderProcessor;
         }
         public void action() {
+            baseAgent.finished();
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
             ACLMessage msg = myAgent.receive(mt);
@@ -68,6 +82,9 @@ public class BakingStageTester extends Agent {
         }
     }
 
+    /* 
+     * Note: Even though the behaviour below is generic, it is not being blocked with allowAction
+     */
     private class StringInformSender extends Behaviour {
         private MessageTemplate mt;
         private String message;

@@ -1,102 +1,40 @@
 package org.right_brothers.data.messages;
 
+import java.util.Vector;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UnbakedProductMessage implements java.io.Serializable {
-    private String guid;
-    private int coolingRate;
-    private int coolingDuration;
-    private int bakingDuration;
-    private int bakingTemp;
-    private int quantity;
-    private int breadsPerOven;
-    private boolean isBaking;
-    private boolean cooled;
-    private int processStartTime;
+    private String productType;
+    private Vector<String> guids; 
+    private Vector<Integer> productQuantities;
     
 	public UnbakedProductMessage() {
-//         this.guid = guid;
-        this.isBaking = false;
-        this.cooled = false;
+        this.guids = new Vector<String> ();
+        this.productQuantities = new Vector<Integer> ();
 	}
-    public void setGuid(String id) {
-        this.guid = id;
+
+    public void setProductType(String productType) {
+        this.productType = productType;
     }
 
-    public String getGuid() {
-        return this.guid;
+    public String getProductType() {
+        return productType;
     }
 
-    public void setCoolingRate(int coolingRate) {
-        this.coolingRate = coolingRate;
+    public void setGuids(Vector<String> guids) {
+        this.guids = guids;
     }
 
-    public int getCoolingRate() {
-        return coolingRate;
+    public Vector<String> getGuids() {
+        return guids;
     }
 
-    public void setCoolingDuration(int coolingDuration) {
-        this.coolingDuration = coolingDuration;
+    public void setProductQuantities(Vector<Integer> productQuantities) {
+        this.productQuantities = productQuantities;
     }
 
-    public int getCoolingDuration() {
-        return coolingDuration;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setIsBaking(boolean isBaking) {
-        this.isBaking = isBaking;
-    }
-
-    public boolean getIsBaking() {
-        return this.isBaking;
-    }
-
-    public void setCooled(boolean cooled) {
-        this.cooled = cooled;
-    }
-
-    public boolean getCooled() {
-        return cooled;
-    }
-
-    public void setBakingDuration(int bakingDuration) {
-        this.bakingDuration = bakingDuration;
-    }
-
-    public int getBakingDuration() {
-        return bakingDuration;
-    }
-
-    public void setBakingTemp(int bakingTemp) {
-        this.bakingTemp = bakingTemp;
-    }
-
-    public int getBakingTemp() {
-        return bakingTemp;
-    }
-
-    public void setBreadsPerOven(int breadsPerOven) {
-        this.breadsPerOven = breadsPerOven;
-    }
-
-    public int getBreadsPerOven() {
-        return breadsPerOven;
-    }
-
-    public void setProcessStartTime(int processStartTime) {
-        this.processStartTime = processStartTime;
-    }
-
-    public int getProcessStartTime() {
-        return processStartTime;
+    public Vector<Integer> getProductQuantities() {
+        return productQuantities;
     }
 }
