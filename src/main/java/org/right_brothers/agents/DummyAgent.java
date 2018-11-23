@@ -8,7 +8,7 @@ import jade.domain.JADEAgentManagement.JADEManagementOntology;
 import jade.domain.JADEAgentManagement.ShutdownPlatform;
 import jade.domain.FIPANames;
 
-import jade.core.Agent;
+// import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
@@ -17,16 +17,19 @@ import jade.lang.acl.MessageTemplate;
 import java.util.Arrays;
 import java.util.List;
 
+import org.right_brothers.agents.BaseAgent;
 
 @SuppressWarnings("serial")
-public class DummyAgent extends Agent {
+public class DummyAgent extends BaseAgent {
 
     private AID coordinator = new AID("coordinator", AID.ISLOCALNAME);
     private int counter = 0;
 
 	protected void setup() {
+        super.setup();
 		System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
 
+        this.register("Dummy-agent", "JADE-bakery");
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
         List<String> informMessages = Arrays.asList("dough-1", "baked-1", "unbaked-1");
@@ -39,6 +42,7 @@ public class DummyAgent extends Agent {
     	this.counter++;
 	}
 	protected void takeDown() {
+        this.deRegister();
 		System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
 	}
 
@@ -52,6 +56,9 @@ public class DummyAgent extends Agent {
         }
 
         public void action() {
+            if (!baseAgent.getAllowAction()) {
+                return;
+            }
             switch (step) {
             case 0:
                 ACLMessage request = new ACLMessage(ACLMessage.REQUEST);
@@ -88,6 +95,7 @@ public class DummyAgent extends Agent {
         }
         public boolean done() {
             if (step == 2) {
+                baseAgent.finished();
                 counter --;
                 if (counter == 0){
                     myAgent.addBehaviour(new shutdown());
@@ -108,6 +116,9 @@ public class DummyAgent extends Agent {
         }
 
         public void action() {
+            if (!baseAgent.getAllowAction()) {
+                return;
+            }
             switch (step) {
             case 0:
                 ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
@@ -143,6 +154,7 @@ public class DummyAgent extends Agent {
         }
         public boolean done() {
             if (step == 2) {
+                baseAgent.finished();
                 counter --;
                 if (counter == 0){
                     myAgent.addBehaviour(new shutdown());

@@ -74,7 +74,7 @@ public abstract class BaseAgent extends Agent {
     }
 
     protected boolean getAllowAction() {
-        return allowAction;
+        return this.allowAction;
     }
     protected int getCurrentDay() {
         return currentDay;
@@ -118,7 +118,7 @@ public abstract class BaseAgent extends Agent {
         private MessageTemplate mt;
 
         public void action(){
-            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(55),
                     MessageTemplate.MatchSender(baseAgent.clockAgent));
             ACLMessage msg = myAgent.receive(this.mt);
             if (msg != null) {

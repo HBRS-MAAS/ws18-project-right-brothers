@@ -40,6 +40,7 @@ public class Start {
             }
             if(arguments.get(0).equalsIgnoreCase("coordinatorTest")){
                 cmd.add("-agents");
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
                 agents.add("dummy:org.right_brothers.agents.DummyAgent");
                 agents.add("coordinator:org.right_brothers.agents.CoordinatorAgent");
             }
