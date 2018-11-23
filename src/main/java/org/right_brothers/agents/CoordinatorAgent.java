@@ -93,7 +93,7 @@ public class CoordinatorAgent extends BaseAgent {
                 ACLMessage reply = informMessage.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
                 reply.setContent("Got your Message.");
-                myAgent.send(reply);
+                baseAgent.sendMessage(reply);
             }
             else {
                 block();

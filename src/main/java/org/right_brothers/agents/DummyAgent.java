@@ -126,7 +126,7 @@ public class DummyAgent extends BaseAgent {
                 inform.setContent(message);
                 inform.setConversationId("testing");
                 inform.setReplyWith("request"+ message +System.currentTimeMillis()); // Unique value
-                myAgent.send(inform);
+                baseAgent.sendMessage(inform);
                 mt = MessageTemplate.and(MessageTemplate.MatchConversationId("testing"),
                 MessageTemplate.MatchInReplyTo(inform.getReplyWith()));
                 step = 1;
