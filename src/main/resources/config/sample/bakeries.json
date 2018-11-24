@@ -2436,53 +2436,53 @@
     "equipment": {
       "ovens": [
         {
-          "heating_rate": 4,
-          "cooling_rate": 4,
+          "heatingRate": 4,
+          "coolingRate": 4,
           "guid": "oven-001"
         },
         {
-          "heating_rate": 5,
-          "cooling_rate": 4,
+          "heatingRate": 5,
+          "coolingRate": 4,
           "guid": "oven-002"
         },
         {
-          "heating_rate": 4,
-          "cooling_rate": 2,
+          "heatingRate": 4,
+          "coolingRate": 2,
           "guid": "oven-003"
         },
         {
-          "heating_rate": 4,
-          "cooling_rate": 2,
+          "heatingRate": 4,
+          "coolingRate": 2,
           "guid": "oven-004"
         },
         {
-          "heating_rate": 4,
-          "cooling_rate": 2,
+          "heatingRate": 4,
+          "coolingRate": 2,
           "guid": "oven-005"
         },
         {
-          "heating_rate": 4,
-          "cooling_rate": 5,
+          "heatingRate": 4,
+          "coolingRate": 5,
           "guid": "oven-006"
         },
         {
-          "heating_rate": 2,
-          "cooling_rate": 3,
+          "heatingRate": 2,
+          "coolingRate": 3,
           "guid": "oven-007"
         },
         {
-          "heating_rate": 3,
-          "cooling_rate": 2,
+          "heatingRate": 3,
+          "coolingRate": 2,
           "guid": "oven-008"
         },
         {
-          "heating_rate": 2,
-          "cooling_rate": 4,
+          "heatingRate": 2,
+          "coolingRate": 4,
           "guid": "oven-009"
         },
         {
-          "heating_rate": 3,
-          "cooling_rate": 3,
+          "heatingRate": 3,
+          "coolingRate": 3,
           "guid": "oven-010"
         }
       ],

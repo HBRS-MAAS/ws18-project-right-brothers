@@ -25,6 +25,7 @@ public class CoolingRackAgent extends BaseAgent{
         
         this.register("cooling-rack-agent", "JADE-bakery");
         this.bakedProducts = new ArrayList<BakedProduct> ();
+
         addBehaviour(new BakedProdutsServer());
         addBehaviour(new CoolProducts());
     }
@@ -40,34 +41,35 @@ public class CoolingRackAgent extends BaseAgent{
             }
             ArrayList<BakedProduct> temp = new ArrayList<BakedProduct> ();
             for (BakedProduct pm : bakedProducts) {
-                //if (this.getCurrentHour() == pm.getProcessStartTime() + pm.getBakingDuration()){
-                //if (pm.getCooled()){
-                System.out.println("\tCooled " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
-                temp.add(pm);
-                //}
-                //else {
-                    //TODO: start cooling
-                    //pm.setIsBaking(true);
-                    //pm.setProcessStartTime(this.getCurrentHour());
-                //}
-            }
-            if (temp.size() > 0) {
-                Hashtable<String,Integer> outMsg = new Hashtable<String,Integer> ();
-                for (BakedProduct pm : temp) {
-                    outMsg.put(pm.getGuid(), pm.getQuantity());
+                if (pm.getProcessStartTime() < 0){
+                    pm.setProcessStartTime(baseAgent.getCurrentHour());
+                    System.out.println("\tStarted cooling " + pm.getQuantity() + " " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
                 }
-                ProductMessage p = new ProductMessage();
-                p.setProducts(outMsg);
-                String messageContent = JsonConverter.getJsonString(p);
-                ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
-                loadingBayMessage.addReceiver(LOADING_BAY_AGENT);
-                loadingBayMessage.setConversationId("baked-products-152");
-                loadingBayMessage.setContent(messageContent);
-                baseAgent.sendMessage(loadingBayMessage);
+                if (baseAgent.getCurrentHour() >= pm.getProcessStartTime() + pm.getCoolingDuration() + 1){
+                    System.out.println("\tCooled " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
+                    temp.add(pm);
+                }
             }
             for (BakedProduct pm : temp)
                 bakedProducts.remove(pm);
+            if (temp.size() > 0) {
+                this.sendProducts(temp);
+            }
             baseAgent.finished();
+        }
+        private void sendProducts(ArrayList<BakedProduct> temp){
+            Hashtable<String,Integer> outMsg = new Hashtable<String,Integer> ();
+            for (BakedProduct pm : temp) {
+                outMsg.put(pm.getGuid(), pm.getQuantity());
+            }
+            ProductMessage p = new ProductMessage();
+            p.setProducts(outMsg);
+            String messageContent = JsonConverter.getJsonString(p);
+            ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
+            loadingBayMessage.addReceiver(LOADING_BAY_AGENT);
+            loadingBayMessage.setConversationId("baked-products-152");
+            loadingBayMessage.setContent(messageContent);
+            baseAgent.sendMessage(loadingBayMessage);
         }
     }
 

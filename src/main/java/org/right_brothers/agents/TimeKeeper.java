@@ -14,10 +14,19 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+// for shutdown behaviour
+import jade.content.lang.Codec;
+import jade.content.lang.sl.SLCodec;
+import jade.content.onto.basic.Action;
+import jade.domain.JADEAgentManagement.JADEManagementOntology;
+import jade.domain.JADEAgentManagement.ShutdownPlatform;
+import jade.domain.FIPANames;
+
 @SuppressWarnings("serial")
 public class TimeKeeper extends Agent{
 	private int currentTimeStep;
 	private int countAgentsReplied;
+    private int endTime;
 	
 	protected void setup() {
 		System.out.println("\tHello! time-teller-agent "+getAID().getLocalName()+" is ready.");
@@ -29,6 +38,9 @@ public class TimeKeeper extends Agent{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        Object[] args = getArguments();
+        endTime = Integer.parseInt((String) args[0]);
 
 		addBehaviour(new SendTimeStep());
 		addBehaviour(new TimeStepConfirmationBehaviour());
@@ -60,6 +72,10 @@ public class TimeKeeper extends Agent{
 		public void action() {
             List<DFAgentDescription> agents = getAllAgents();
             currentTimeStep++;
+            if (currentTimeStep > endTime) {
+                myAgent.addBehaviour(new shutdown());
+                return;
+            }
             countAgentsReplied = agents.size();
             System.out.println(">>>>> " + currentTimeStep + " <<<<<");
             for (DFAgentDescription agent : agents) {
@@ -99,4 +115,22 @@ public class TimeKeeper extends Agent{
 			}
 		}
 	}
+    
+    // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
+    private class shutdown extends OneShotBehaviour{
+        public void action() {
+            ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
+            Codec codec = new SLCodec();
+            myAgent.getContentManager().registerLanguage(codec);
+            myAgent.getContentManager().registerOntology(JADEManagementOntology.getInstance());
+            shutdownMessage.addReceiver(myAgent.getAMS());
+            shutdownMessage.setLanguage(FIPANames.ContentLanguage.FIPA_SL);
+            shutdownMessage.setOntology(JADEManagementOntology.getInstance().getName());
+            try {
+                myAgent.getContentManager().fillContent(shutdownMessage,new Action(myAgent.getAID(), new ShutdownPlatform()));
+                myAgent.send(shutdownMessage);
+            }
+            catch (Exception e) {}
+        }
+    }
 }

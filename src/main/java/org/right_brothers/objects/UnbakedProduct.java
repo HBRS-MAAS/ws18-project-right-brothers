@@ -1,8 +1,7 @@
 package org.right_brothers.objects;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.right_brothers.objects.Tray;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class UnbakedProduct implements java.io.Serializable {
     private String guid;
     private int coolingDuration;
@@ -10,12 +9,26 @@ public class UnbakedProduct implements java.io.Serializable {
     private int bakingTemp;
     private int quantity;
     private int breadsPerOven;
-    private boolean isBaking;
+    private Tray scheduled;
     private int processStartTime;
     
 	public UnbakedProduct() {
-        this.isBaking = false;
+        this.scheduled = null;
 	}
+
+    public UnbakedProduct clone() {
+        UnbakedProduct up = new UnbakedProduct();
+        up.setGuid(this.getGuid());
+        up.setCoolingDuration(this.getCoolingDuration());
+        up.setBakingDuration(this.getBakingDuration());
+        up.setBakingTemp(this.getBakingTemp());
+        up.setQuantity(this.getQuantity());
+        up.setBreadsPerOven(this.getBreadsPerOven());
+        up.setScheduled(this.getScheduled());
+        up.setProcessStartTime(this.getProcessStartTime());
+        return up;
+    }
+
     public void setGuid(String id) {
         this.guid = id;
     }
@@ -40,12 +53,16 @@ public class UnbakedProduct implements java.io.Serializable {
         return quantity;
     }
 
-    public void setIsBaking(boolean isBaking) {
-        this.isBaking = isBaking;
+    public void setScheduled(Tray scheduled) {
+        this.scheduled = scheduled;
     }
 
-    public boolean getIsBaking() {
-        return this.isBaking;
+    public Tray getScheduled() {
+        return scheduled;
+    }
+
+    public boolean isScheduled(){
+        return this.scheduled!=null;
     }
 
     public void setBakingDuration(int bakingDuration) {
@@ -78,5 +95,14 @@ public class UnbakedProduct implements java.io.Serializable {
 
     public int getProcessStartTime() {
         return processStartTime;
+    }
+
+    public String toString() {
+        String s = "<";
+        s += this.guid ;
+        s += ", quantity: " + Integer.toString(this.quantity);
+        s += ", scheduled: " + Boolean.toString(this.isScheduled());
+        s += ">";
+        return s;
     }
 }

@@ -31,6 +31,8 @@ public class BakingStageTester extends BaseAgent {
     protected void setup() {
         super.setup();
         System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
+        this.register("Baking-tester", "JADE-bakery");
+
         String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }"; 
 
         UnbakedProductMessage upm = new UnbakedProductMessage();
@@ -39,7 +41,7 @@ public class BakingStageTester extends BaseAgent {
         upm.setGuids(guids);
         upm.setProductType("Multigrain Bread");
         Vector<Integer> vec = new Vector<Integer> ();
-        vec.add(5); vec.add(7);
+        vec.add(8); vec.add(7);
         upm.setProductQuantities(vec);
         String unbakedProduct = JsonConverter.getJsonString(upm);
 //         String orderGuid = "order-331";
@@ -72,13 +74,26 @@ public class BakingStageTester extends BaseAgent {
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                System.out.println("\tReceived msg : " + messageContent);
-                if (this.sender == coolingRackAgent)
-                    myAgent.addBehaviour(new shutdown());
+                System.out.println("\tReceived msg : " + messageContent + " at " + baseAgent.getCurrentHour());
+                if (this.sender == coolingRackAgent){
+                    //this.sendUnbakedProduct();
+                }
             }
             else {
                 block();
             }
+        }
+        private void sendUnbakedProduct(){
+            UnbakedProductMessage upm = new UnbakedProductMessage();
+            Vector<String> guids = new Vector<String> ();
+            guids.add("Order-123"); guids.add("Order-456");
+            upm.setGuids(guids);
+            upm.setProductType("Multigrain Bread");
+            Vector<Integer> vec = new Vector<Integer> ();
+            vec.add(8);
+            upm.setProductQuantities(vec);
+            String unbakedProduct = JsonConverter.getJsonString(upm);
+            myAgent.addBehaviour(new StringInformSender(unbakedProduct, ovenManager, "order_guid"));
         }
     }
 

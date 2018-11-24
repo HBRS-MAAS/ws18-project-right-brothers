@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class BakedProduct implements java.io.Serializable {
     private String guid;
     private int coolingDuration;
-    private boolean isCooling;
     private int quantity;
+    private int processStartTime;
 
     public BakedProduct(){
-        this.isCooling = false;
+        this.processStartTime = -1;
     }
     
     public void setGuid(String id) {
@@ -19,14 +19,6 @@ public class BakedProduct implements java.io.Serializable {
 
     public String getGuid() {
         return this.guid;
-    }
-
-    public void setIsCooling(boolean isCooling) {
-        this.isCooling = isCooling;
-    }
-
-    public boolean getIsCooling() {
-        return isCooling;
     }
 
     public void setCoolingDuration(int coolingDuration) {
@@ -43,6 +35,14 @@ public class BakedProduct implements java.io.Serializable {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public void setProcessStartTime(int processStartTime) {
+        this.processStartTime = processStartTime;
+    }
+
+    public int getProcessStartTime() {
+        return processStartTime;
     }
 
 }
