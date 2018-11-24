@@ -38,7 +38,6 @@ public class OvenManager extends BaseAgent {
 //     private List<Oven> ovens;
     private List<Tray> trays;
     private List<UnbakedProduct> unbakedProduct;
-    private int availableTray = 1;
 
     private List<Order> orders;
 
@@ -130,7 +129,7 @@ public class OvenManager extends BaseAgent {
             inform.setConversationId("Baked-products-001");
             baseAgent.sendMessage(inform);
         }
-        private void BakeProducts(){
+        private void bakeProducts(){
             ArrayList<UnbakedProduct> temp = new ArrayList<UnbakedProduct> ();
             for (UnbakedProduct pm : unbakedProduct) {
                 //TODO: check if baking will last longer than allowed (can't bake in afternoon)
@@ -151,7 +150,7 @@ public class OvenManager extends BaseAgent {
                 unbakedProduct.remove(p);
             }
         }
-        private void ScheduleProducts(){
+        private void scheduleProducts(){
             for (UnbakedProduct pm : unbakedProduct) {
                 if (pm.isScheduled())
                     continue;
@@ -266,7 +265,8 @@ public class OvenManager extends BaseAgent {
                 sum += i;
             return sum;
         }
-        private void iterativelyAddUnbakedProducts(int newQuantity, UnbakedProduct up) {
+        private void iterativelyAddUnbakedProducts(int quantity, UnbakedProduct up) {
+            int newQuantity = quantity;
             while (newQuantity > 0) {
                 UnbakedProduct newUp = up.clone();
                 int quantityToBeAdded = ((newQuantity <= up.getBreadsPerOven()) ? newQuantity : newQuantity - up.getBreadsPerOven());

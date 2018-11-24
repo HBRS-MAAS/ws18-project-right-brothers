@@ -75,9 +75,9 @@ public class BakingStageTester extends BaseAgent {
             if (msg != null) {
                 String messageContent = msg.getContent();
                 System.out.println("\tReceived msg : " + messageContent + " at " + baseAgent.getCurrentHour());
-                if (this.sender == coolingRackAgent){
+//                 if (this.sender == coolingRackAgent){
                     //this.sendUnbakedProduct();
-                }
+//                 }
             }
             else {
                 block();
