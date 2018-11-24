@@ -49,9 +49,7 @@ public class Intermediater extends BaseAgent{
         private ArrayList<ProcessedProductMessage> processProducts (){
             ArrayList<BakedProduct> temp = new ArrayList<BakedProduct> ();
             ArrayList<ProcessedProductMessage> message = new ArrayList<ProcessedProductMessage> ();
-            System.out.println(bakedProducts);
             for (BakedProduct bp : bakedProducts) {
-                //TODO: check if process will last longer than allowed (can't process in afternoon)
                 if (bp.getProcessStartTime() < 0){
                     if (baseAgent.getCurrentHour() + bp.getIntermediateSteps().get(0).getDuration() + 1 > 12)
                         continue;

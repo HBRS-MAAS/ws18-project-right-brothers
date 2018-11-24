@@ -129,13 +129,14 @@ public class OvenManager extends BaseAgent {
             baseAgent.sendMessage(inform);
         }
         private void bakeProducts(){
-            System.out.println(unbakedProducts);
             ArrayList<UnbakedProduct> temp = new ArrayList<UnbakedProduct> ();
             for (UnbakedProduct pm : unbakedProducts) {
-                //TODO: check if baking will last longer than allowed (can't bake in afternoon)
                 if (pm.isScheduled()) {
                     Tray t = pm.getScheduled();
                     if (t.getTemp() == pm.getBakingTemp()){
+                        if (baseAgent.getCurrentHour() + pm.getBakingDuration() + 1 > 12){
+                            continue;
+                        }
                         temp.add(pm);
                         pm.setScheduled(null);
                         pm.setProcessStartTime(baseAgent.getCurrentHour());

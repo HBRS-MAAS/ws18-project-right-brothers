@@ -17,7 +17,7 @@ import org.right_brothers.utils.JsonConverter;
 @SuppressWarnings("serial")
 public class CoolingRackAgent extends BaseAgent{
     private AID LOADING_BAY_AGENT = new AID("dummy", AID.ISLOCALNAME);
-    private AID ovenManager = new AID("OvenManager", AID.ISLOCALNAME);
+    private AID intermediater = new AID("intermediater", AID.ISLOCALNAME);
     private List<ProcessedProduct> processedProducts;
     
     protected void setup() {
@@ -27,7 +27,7 @@ public class CoolingRackAgent extends BaseAgent{
         this.register("cooling-rack-agent", "JADE-bakery");
         this.processedProducts = new ArrayList<ProcessedProduct> ();
 
-        addBehaviour(new ProcessedProductsServer(this.ovenManager));
+        addBehaviour(new ProcessedProductsServer(this.intermediater));
         addBehaviour(new CoolProducts());
     }
     protected void takeDown() {

@@ -13,7 +13,7 @@ public class Start {
     public static void main(String[] args) {
         List<String> agents = new Vector<>();
         List<String> cmd = new Vector<>();
-        int endTime = 50;
+        int endTime = 90;
 
         List<String> arguments = Arrays.asList(args);
 
