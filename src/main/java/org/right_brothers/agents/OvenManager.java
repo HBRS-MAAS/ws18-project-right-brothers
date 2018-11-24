@@ -97,8 +97,8 @@ public class OvenManager extends BaseAgent {
             if (message.size() > 0) {
                 this.sendBakedProducts(message);
             }
-            this.BakeProducts();
-            this.ScheduleProducts();
+            this.bakeProducts();
+            this.scheduleProducts();
             baseAgent.finished();
         }
         private ArrayList<BakedProductMessage> getBakedProducts() {
