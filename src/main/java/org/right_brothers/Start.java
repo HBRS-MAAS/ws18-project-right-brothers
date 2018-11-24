@@ -32,7 +32,13 @@ public class Start {
 
         if(arguments.size() > 0) {
             String customArgument = String.join(" ", arguments).trim();
-            if(arguments.get(0).equalsIgnoreCase("OvenManagerTest")){
+            if(arguments.get(0).equalsIgnoreCase("packagingStageTest")){
+                cmd.add("-agents");
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + 10 + ")");
+                agents.add("dummy:org.right_brothers.agents.PackagingStageTester");
+                agents.add("postBakingProcessor:org.right_brothers.agents.PostBakingProcessor");
+            }
+            if(arguments.get(0).equalsIgnoreCase("ovenManagerTest")){
                 cmd.add("-agents");
                 agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + endTime + ")");
                 agents.add("dummy:org.right_brothers.agents.BakingStageTester");
