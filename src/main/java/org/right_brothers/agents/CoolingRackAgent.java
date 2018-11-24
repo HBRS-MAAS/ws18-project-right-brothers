@@ -43,6 +43,8 @@ public class CoolingRackAgent extends BaseAgent{
             ArrayList<ProcessedProduct> temp = new ArrayList<ProcessedProduct> ();
             for (ProcessedProduct pm : processedProducts) {
                 if (pm.getProcessStartTime() < 0){
+                    if (baseAgent.getCurrentHour() + pm.getCoolingDuration() + 1 > 12)
+                        continue;
                     pm.setProcessStartTime(baseAgent.getCurrentHour());
                     System.out.println("\tStarted cooling " + pm.getQuantity() + " " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
                 }
