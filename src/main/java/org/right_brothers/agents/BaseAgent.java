@@ -112,7 +112,8 @@ public abstract class BaseAgent extends Agent {
         msg.addReceiver(orderBoardAgent);
         this.send(msg);
         try {
-            Thread.sleep(2000);
+//             Thread.sleep(2000);
+            Thread.sleep(2);
         } catch (InterruptedException e){
             e.printStackTrace();
         }
