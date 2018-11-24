@@ -13,7 +13,7 @@ public class Start {
     public static void main(String[] args) {
         List<String> agents = new Vector<>();
         List<String> cmd = new Vector<>();
-        int endTime = 30;
+        int endTime = 50;
 
         List<String> arguments = Arrays.asList(args);
 
@@ -37,6 +37,7 @@ public class Start {
                 agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + endTime + ")");
                 agents.add("dummy:org.right_brothers.agents.BakingStageTester");
                 agents.add("ovenManager:org.right_brothers.agents.OvenManager");
+                agents.add("intermediater:org.right_brothers.agents.Intermediater");
                 agents.add("cooling-rack:org.right_brothers.agents.CoolingRackAgent");
             }
             if(arguments.get(0).equalsIgnoreCase("coordinatorTest")){

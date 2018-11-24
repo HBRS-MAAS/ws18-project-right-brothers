@@ -39,9 +39,7 @@ public class TimeKeeper extends Agent{
             e.printStackTrace();
         }
 
-        System.out.println("in here");
         Object[] args = getArguments();
-        System.out.println(args);
         if (args != null && args.length > 0) {
             endTime = Integer.parseInt((String) args[0]);
         }else {
