@@ -1,7 +1,7 @@
-package org.right_brothers.objects;
+package org.right_brothers.bakery_objects;
 
+import org.right_brothers.bakery_objects.UnbakedProduct;
 import org.right_brothers.data.models.Oven;
-import org.right_brothers.objects.UnbakedProduct;
 
 public class Tray {
     private int temp;

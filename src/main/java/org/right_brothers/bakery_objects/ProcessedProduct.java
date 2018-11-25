@@ -1,15 +1,15 @@
-package org.right_brothers.objects;
+package org.right_brothers.bakery_objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BakedProduct implements java.io.Serializable {
+public class ProcessedProduct implements java.io.Serializable {
     private String guid;
     private int coolingDuration;
     private int quantity;
     private int processStartTime;
 
-    public BakedProduct(){
+    public ProcessedProduct(){
         this.processStartTime = -1;
     }
     

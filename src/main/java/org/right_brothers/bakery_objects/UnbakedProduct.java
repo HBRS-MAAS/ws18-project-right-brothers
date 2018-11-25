@@ -1,10 +1,13 @@
-package org.right_brothers.objects;
+package org.right_brothers.bakery_objects;
 
-import org.right_brothers.objects.Tray;
+import org.right_brothers.bakery_objects.Tray;
+import org.right_brothers.data.models.Step;
+import java.util.Vector;
 
 public class UnbakedProduct implements java.io.Serializable {
     private String guid;
     private int coolingDuration;
+    private Vector<Step> intermediateSteps;
     private int bakingDuration;
     private int bakingTemp;
     private int quantity;
@@ -14,6 +17,7 @@ public class UnbakedProduct implements java.io.Serializable {
     
 	public UnbakedProduct() {
         this.scheduled = null;
+        this.intermediateSteps = new Vector<Step> ();
 	}
 
     public UnbakedProduct clone() {
@@ -26,6 +30,7 @@ public class UnbakedProduct implements java.io.Serializable {
         up.setBreadsPerOven(this.getBreadsPerOven());
         up.setScheduled(this.getScheduled());
         up.setProcessStartTime(this.getProcessStartTime());
+        up.setIntermediateSteps(this.getIntermediateSteps());
         return up;
     }
 
@@ -97,11 +102,20 @@ public class UnbakedProduct implements java.io.Serializable {
         return processStartTime;
     }
 
+    public void setIntermediateSteps(Vector<Step> intermediateSteps) {
+        this.intermediateSteps = intermediateSteps;
+    }
+
+    public Vector<Step> getIntermediateSteps() {
+        return intermediateSteps;
+    }
+
     public String toString() {
         String s = "<";
         s += this.guid ;
         s += ", quantity: " + Integer.toString(this.quantity);
         s += ", scheduled: " + Boolean.toString(this.isScheduled());
+        s += ", intermediateSteps: " + Integer.toString(this.intermediateSteps.size());
         s += ">";
         return s;
     }

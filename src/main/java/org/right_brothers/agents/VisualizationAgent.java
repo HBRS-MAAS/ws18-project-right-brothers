@@ -2,6 +2,8 @@ package org.right_brothers.agents;
 
 import javafx.application.Application;
 
+import org.right_brothers.utils.Animation;
+
 import jade.core.Agent;
 // import jade.core.AID;
 import jade.core.behaviours.*;
@@ -10,8 +12,6 @@ import jade.lang.acl.ACLMessage;
 
 // import java.util.Arrays;
 // import java.util.List;
-
-import org.right_brothers.agents.Animation;
 
 
 @SuppressWarnings("serial")
