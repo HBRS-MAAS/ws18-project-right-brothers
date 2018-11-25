@@ -1,5 +1,6 @@
 package org.right_brothers.objects;
 
+import org.right_brothers.data.messages.CompletedProductMessage;
 import org.right_brothers.data.models.Step;
 import java.util.Vector;
 
@@ -13,6 +14,13 @@ public class CooledProduct implements java.io.Serializable {
         this.processStartTime = -1;
         this.intermediateSteps = new Vector<Step> ();
 	}
+
+    public CompletedProductMessage getCompletedProductMessage() {
+        CompletedProductMessage completedProductMessage = new CompletedProductMessage();
+        completedProductMessage.setGuid(this.guid);
+        completedProductMessage.setQuantity(this.quantity);
+        return completedProductMessage;
+    }
 
     public void setGuid(String id) {
         this.guid = id;

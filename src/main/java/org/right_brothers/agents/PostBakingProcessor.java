@@ -19,21 +19,21 @@ import org.right_brothers.agents.BaseAgent;
 import org.right_brothers.utils.InputParser; 
 import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Product;
-import org.right_brothers.data.models.Oven;
 import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Step;
 import org.right_brothers.data.messages.ProductMessage;
+import org.right_brothers.data.messages.CompletedProductMessage;
 import org.right_brothers.objects.CooledProduct;
 import org.right_brothers.utils.JsonConverter;
 
 @SuppressWarnings("serial")
 public class PostBakingProcessor extends BaseAgent {
-    private AID intermediater = new AID("intermediater", AID.ISLOCALNAME);
     private AID coolingRackAgent = new AID("dummy", AID.ISLOCALNAME);
     private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
+    private AID packagingAgent = new AID("dummy", AID.ISLOCALNAME);
     private List<Product> availableProducts;
     private String bakeryGuid = "bakery-001";
-    private List<CooledProduct> cooledProducts;
+    private List<CooledProduct> cooledProductsList;
     private List<Order> orders;
 
     protected void setup() {
@@ -43,7 +43,7 @@ public class PostBakingProcessor extends BaseAgent {
         this.register("PostBakingProcessor", "JADE-bakery");
 
         this.orders = new ArrayList();
-        this.cooledProducts = new ArrayList<CooledProduct> ();
+        this.cooledProductsList = new ArrayList<CooledProduct> ();
         this.availableProducts = new ArrayList<Product> ();
 
         // TODO: get bakery guid as argument
@@ -53,7 +53,7 @@ public class PostBakingProcessor extends BaseAgent {
 
         this.addBehaviour(new OrderServer(orderProcessor));
         this.addBehaviour(new CooledProductsServer(coolingRackAgent));
-//         this.addBehaviour(new Bake());
+        this.addBehaviour(new Process());
     }
 
     protected void takeDown() {
@@ -72,6 +72,64 @@ public class PostBakingProcessor extends BaseAgent {
         }
     }
 
+    private class Process extends CyclicBehaviour{
+        public void action(){
+            if (!baseAgent.getAllowAction()) {
+                return;
+            }
+            if (baseAgent.getCurrentHour() <= 12){
+                ArrayList<CompletedProductMessage> message = this.processProducts();
+                if (message.size() > 0) {
+                    this.sendCompletedProducts(message);
+                }
+            }
+            if (baseAgent.getCurrentHour() == 12) {
+                this.haltProcessing();
+            }
+            baseAgent.finished();
+        }
+        private void haltProcessing(){
+            for (CooledProduct cooledProduct : cooledProductsList) {
+                if (cooledProduct.getProcessStartTime() >= 0){
+                    int alreadyProcessed = baseAgent.getCurrentHour() - cooledProduct.getProcessStartTime();
+                    int oldDuration = cooledProduct.getIntermediateSteps().get(0).getDuration();
+                    cooledProduct.getIntermediateSteps().get(0).setDuration(oldDuration - alreadyProcessed);
+                    cooledProduct.setProcessStartTime(-1);
+                    System.out.println("\tHalted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                }
+            }
+        }
+        private ArrayList<CompletedProductMessage> processProducts (){
+            ArrayList<CooledProduct> temp = new ArrayList<CooledProduct> ();
+            ArrayList<CompletedProductMessage> message = new ArrayList<CompletedProductMessage> ();
+            for (CooledProduct cooledProduct : cooledProductsList) {
+                if (cooledProduct.getProcessStartTime() < 0){
+                    cooledProduct.setProcessStartTime(baseAgent.getCurrentHour());
+                    System.out.println("\tStarted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                }
+                if (baseAgent.getCurrentHour() >= cooledProduct.getProcessStartTime() + cooledProduct.getIntermediateSteps().get(0).getDuration() + 1){
+                    System.out.println("\tFinished " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                    cooledProduct.finishedStep();
+                    cooledProduct.setProcessStartTime(-1);
+                    if (cooledProduct.getIntermediateSteps().size() == 0) {
+                        message.add(cooledProduct.getCompletedProductMessage());
+                        temp.add(cooledProduct);
+                    }
+                }
+            }
+            for (CooledProduct cooledProduct : temp)
+                cooledProductsList.remove(cooledProduct);
+            return message;
+        }
+        private void sendCompletedProducts(ArrayList<CompletedProductMessage> message){
+            String messageContent = JsonConverter.getJsonString(message);
+            ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
+            loadingBayMessage.addReceiver(packagingAgent);
+            loadingBayMessage.setConversationId("baked-products-152");
+            loadingBayMessage.setContent(messageContent);
+            baseAgent.sendMessage(loadingBayMessage);
+        }
+    }
     /*
      * Server for the order guid for the dough preparation stage agent's(proofer) message
      * */
@@ -94,8 +152,9 @@ public class PostBakingProcessor extends BaseAgent {
                 ProductMessage pm = this.parseProductMessage(messageContent);
                 Set<String> keys = pm.getProducts().keySet();
                 for(String productName: keys){
-                    CooledProduct cp = this.getCooledProductFromProductName(productName);
-                    System.out.println(cp);
+                    CooledProduct cooledProduct = this.getCooledProductFromProductName(productName);
+                    cooledProduct.setQuantity(pm.getProducts().get(productName));
+                    cooledProductsList.add(cooledProduct);
                 }
             }
             else {
@@ -142,23 +201,6 @@ public class PostBakingProcessor extends BaseAgent {
             // throw new Error("Product with name " + productName + " is not offered by " + bakeryGuid);
             return null;
         }
-//         private int getTotalQuantity(Vector<Integer> vec){
-//             int sum = 0;
-//             for (int i : vec)
-//                 sum += i;
-//             return sum;
-//         }
-//         private void iterativelyAddUnbakedProducts(int quantity, UnbakedProduct up) {
-//             int newQuantity = quantity;
-//             while (newQuantity > 0) {
-//                 UnbakedProduct newUp = up.clone();
-//                 int quantityToBeAdded = ((newQuantity <= up.getBreadsPerOven()) ? newQuantity : newQuantity - up.getBreadsPerOven());
-//                 newQuantity -= quantityToBeAdded;
-//                 newUp.setQuantity(quantityToBeAdded);
-//                 unbakedProducts.add(newUp);
-//             }
-//         }
-
     }
     /*
      * Server for the order from order processing agent's message
