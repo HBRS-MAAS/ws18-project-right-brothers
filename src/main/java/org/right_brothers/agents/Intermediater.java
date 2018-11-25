@@ -40,19 +40,33 @@ public class Intermediater extends BaseAgent{
             if (!baseAgent.getAllowAction()) {
                 return;
             }
-            ArrayList<ProcessedProductMessage> message = this.processProducts();
-            if (message.size() > 0) {
-                this.sendBakedProducts(message);
+            if (baseAgent.getCurrentHour() <= 12){
+                ArrayList<ProcessedProductMessage> message = this.processProducts();
+                if (message.size() > 0) {
+                    this.sendBakedProducts(message);
+                }
+            }
+            if (baseAgent.getCurrentHour() == 12) {
+                this.haltProcessing();
             }
             baseAgent.finished();
+        }
+        private void haltProcessing(){
+            for (BakedProduct bp : bakedProducts) {
+                if (bp.getProcessStartTime() >= 0){
+                    int alreadyProcessed = baseAgent.getCurrentHour() - bp.getProcessStartTime();
+                    int oldDuration = bp.getIntermediateSteps().get(0).getDuration();
+                    bp.getIntermediateSteps().get(0).setDuration(oldDuration - alreadyProcessed);
+                    bp.setProcessStartTime(-1);
+                    System.out.println("\tHalted " + bp.getIntermediateSteps().get(0).getAction() + " " + bp.getQuantity() + " " + bp.getGuid() + " at time " + baseAgent.getCurrentHour());
+                }
+            }
         }
         private ArrayList<ProcessedProductMessage> processProducts (){
             ArrayList<BakedProduct> temp = new ArrayList<BakedProduct> ();
             ArrayList<ProcessedProductMessage> message = new ArrayList<ProcessedProductMessage> ();
             for (BakedProduct bp : bakedProducts) {
                 if (bp.getProcessStartTime() < 0){
-                    if (baseAgent.getCurrentHour() + bp.getIntermediateSteps().get(0).getDuration() + 1 > 12)
-                        continue;
                     bp.setProcessStartTime(baseAgent.getCurrentHour());
                     System.out.println("\tStarted " + bp.getIntermediateSteps().get(0).getAction() + " " + bp.getQuantity() + " " + bp.getGuid() + " at time " + baseAgent.getCurrentHour());
                 }
@@ -100,7 +114,7 @@ public class Intermediater extends BaseAgent{
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                System.out.println("\tReceived intermediate product: " + messageContent);
+                System.out.println("\tReceived intermediate product: " + messageContent + " at " + baseAgent.getCurrentHour());
                 ArrayList<BakedProduct> receivedBakedProducts = this.parseBakedProducts(messageContent);
                 bakedProducts.addAll(receivedBakedProducts);
             }

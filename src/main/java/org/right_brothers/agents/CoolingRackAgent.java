@@ -40,6 +40,29 @@ public class CoolingRackAgent extends BaseAgent{
             if (!baseAgent.getAllowAction()) {
                 return;
             }
+            if (baseAgent.getCurrentHour() <= 12) {
+                ArrayList<ProcessedProduct> message = this.getCooledProducts();
+                if (message.size() > 0) {
+                    this.sendProducts(message);
+                }
+            }
+            if (baseAgent.getCurrentHour() == 12){
+                this.haltCooling();
+            }
+            baseAgent.finished();
+        }
+        private void haltCooling() {
+            for (ProcessedProduct pp : processedProducts) {
+                if (pp.getProcessStartTime() >= 0){
+                    int alreadyProcessed = baseAgent.getCurrentHour() - pp.getProcessStartTime();
+                    int oldDuration = pp.getCoolingDuration();
+                    pp.setCoolingDuration(oldDuration - alreadyProcessed);
+                    pp.setProcessStartTime(-1);
+                    System.out.println("\tHalted Cooling " + pp.getQuantity() + " " + pp.getGuid() + " at time " + baseAgent.getCurrentHour());
+                }
+            }
+        }
+        private ArrayList<ProcessedProduct> getCooledProducts() {
             ArrayList<ProcessedProduct> temp = new ArrayList<ProcessedProduct> ();
             for (ProcessedProduct pm : processedProducts) {
                 if (pm.getProcessStartTime() < 0){
@@ -55,10 +78,7 @@ public class CoolingRackAgent extends BaseAgent{
             }
             for (ProcessedProduct pm : temp)
                 processedProducts.remove(pm);
-            if (temp.size() > 0) {
-                this.sendProducts(temp);
-            }
-            baseAgent.finished();
+            return temp;
         }
         private void sendProducts(ArrayList<ProcessedProduct> temp){
             Hashtable<String,Integer> outMsg = new Hashtable<String,Integer> ();

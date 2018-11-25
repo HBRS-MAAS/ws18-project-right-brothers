@@ -91,6 +91,9 @@ public class OvenManager extends BaseAgent {
             if (!baseAgent.getAllowAction()) {
                 return;
             }
+            if (baseAgent.getCurrentHour() == 0) {
+                this.resumeBaking();
+            }
             if (baseAgent.getCurrentHour() <= 12) {
                 ArrayList<BakedProductMessage> message = this.getBakedProducts();
                 if (message.size() > 0) {
@@ -103,6 +106,17 @@ public class OvenManager extends BaseAgent {
                 this.haltBaking();
             }
             baseAgent.finished();
+        }
+        private void resumeBaking(){
+            for (Tray t : trays) {
+                if (t.isFree())
+                    continue;
+                UnbakedProduct pm = t.getUsedFor();
+                if (pm.isScheduled())
+                    continue;
+                pm.setProcessStartTime(baseAgent.getCurrentHour());
+                System.out.println("\tResumed Baking " + pm.getQuantity() + " " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
+            }
         }
         private void haltBaking(){
             for (Tray t : trays) {
