@@ -1,4 +1,4 @@
-package org.right_brothers.objects;
+package org.right_brothers.bakery_objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

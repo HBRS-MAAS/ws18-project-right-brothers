@@ -1,4 +1,4 @@
-package org.right_brothers.agents;
+package org.right_brothers.utils;
 
 
 // import javafx.animation.TranslateTransition;

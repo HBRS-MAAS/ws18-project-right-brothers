@@ -10,8 +10,8 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.right_brothers.agents.BaseAgent;
+import org.right_brothers.bakery_objects.BakedProduct;
 import org.right_brothers.data.messages.ProcessedProductMessage;
-import org.right_brothers.objects.BakedProduct;
 import org.right_brothers.utils.JsonConverter;
 
 @SuppressWarnings("serial")

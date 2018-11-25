@@ -1,6 +1,6 @@
-package org.right_brothers.objects;
+package org.right_brothers.bakery_objects;
 
-import org.right_brothers.objects.Tray;
+import org.right_brothers.bakery_objects.Tray;
 import org.right_brothers.data.models.Step;
 import java.util.Vector;
 

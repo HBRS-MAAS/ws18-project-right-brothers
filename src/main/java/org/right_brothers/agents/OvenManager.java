@@ -16,6 +16,8 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import org.right_brothers.agents.BaseAgent;
+import org.right_brothers.bakery_objects.Tray;
+import org.right_brothers.bakery_objects.UnbakedProduct;
 import org.right_brothers.utils.InputParser; 
 import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Product;
@@ -24,8 +26,6 @@ import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Step;
 import org.right_brothers.data.messages.UnbakedProductMessage;
 import org.right_brothers.data.messages.BakedProductMessage;
-import org.right_brothers.objects.UnbakedProduct;
-import org.right_brothers.objects.Tray;
 import org.right_brothers.utils.JsonConverter;
 
 @SuppressWarnings("serial")
