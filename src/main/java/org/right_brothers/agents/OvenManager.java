@@ -91,13 +91,31 @@ public class OvenManager extends BaseAgent {
             if (!baseAgent.getAllowAction()) {
                 return;
             }
-            ArrayList<BakedProductMessage> message = this.getBakedProducts();
-            if (message.size() > 0) {
-                this.sendBakedProducts(message);
+            if (baseAgent.getCurrentHour() <= 12) {
+                ArrayList<BakedProductMessage> message = this.getBakedProducts();
+                if (message.size() > 0) {
+                    this.sendBakedProducts(message);
+                }
+                this.scheduleProducts();
+                this.bakeProducts();
             }
-            this.scheduleProducts();
-            this.bakeProducts();
+            if (baseAgent.getCurrentHour() == 12) {
+                this.haltBaking();
+            }
             baseAgent.finished();
+        }
+        private void haltBaking(){
+            for (Tray t : trays) {
+                if (t.isFree())
+                    continue;
+                UnbakedProduct pm = t.getUsedFor();
+                if (pm.isScheduled())
+                    continue;
+                int alreadyBakedTime = baseAgent.getCurrentHour() - pm.getProcessStartTime();
+                pm.setBakingDuration(pm.getBakingDuration() - alreadyBakedTime);
+                pm.setProcessStartTime(-1);
+                System.out.println("\tHalted Baking " + pm.getQuantity() + " " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
+            }
         }
         private ArrayList<BakedProductMessage> getBakedProducts() {
             ArrayList<BakedProductMessage> message = new ArrayList<BakedProductMessage> ();
@@ -134,9 +152,6 @@ public class OvenManager extends BaseAgent {
                 if (pm.isScheduled()) {
                     Tray t = pm.getScheduled();
                     if (t.getTemp() == pm.getBakingTemp()){
-                        if (baseAgent.getCurrentHour() + pm.getBakingDuration() + 1 > 12){
-                            continue;
-                        }
                         temp.add(pm);
                         pm.setScheduled(null);
                         pm.setProcessStartTime(baseAgent.getCurrentHour());
