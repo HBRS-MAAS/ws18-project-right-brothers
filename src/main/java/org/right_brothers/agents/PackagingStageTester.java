@@ -1,6 +1,5 @@
 package org.right_brothers.agents;
 
-import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
