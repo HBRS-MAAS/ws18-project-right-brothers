@@ -8,7 +8,6 @@ import jade.lang.acl.MessageTemplate;
 // import jade.lang.acl.UnreadableException;
 
 import org.right_brothers.utils.JsonConverter;
-import org.right_brothers.data.messages.UnbakedProductMessage;
 import org.right_brothers.data.messages.ProductMessage;
 
 import java.util.*;
