@@ -34,7 +34,7 @@ public class Start {
             String customArgument = String.join(" ", arguments).trim();
             if(arguments.get(0).equalsIgnoreCase("packagingStageTest")){
                 cmd.add("-agents");
-                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + 130 + ")");
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + 150 + ")");
                 agents.add("dummy:org.right_brothers.agents.PackagingStageTester");
                 agents.add("postBakingProcessor:org.right_brothers.agents.PostBakingProcessor");
                 agents.add("packaging-agent:org.right_brothers.agents.PackagingAgent");

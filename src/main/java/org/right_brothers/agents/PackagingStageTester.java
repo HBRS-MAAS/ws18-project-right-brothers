@@ -24,12 +24,13 @@ public class PackagingStageTester extends BaseAgent {
         System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
         this.register("Packaging-test", "JADE-bakery");
 
-        String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }"; 
+        String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }";
+        String orderString1 = " { \"customerId\": \"customer-015\", \"guid\": \"order-354\", \"orderDate\": { \"day\": 8, \"hour\": 0 }, \"deliveryDate\": { \"day\": 10, \"hour\": 0 }, \"products\": { \"Multigrain Bread\": 3, \"Donut\":4} }"; 
 
         ProductMessage pm = new ProductMessage();
         Hashtable products = new Hashtable<String, Integer> ();
         products.put("Multigrain Bread", 10);
-        products.put("Donut", 5);
+        products.put("Donut", 10);
         pm.setProducts(products);
         String messageContent = JsonConverter.getJsonString(pm);
  
@@ -37,12 +38,17 @@ public class PackagingStageTester extends BaseAgent {
         // This dummy agent acts like test agent
         this.addBehaviour(new StringInformSender(orderString, postBakingProcessor, "order"));
         this.counter++;
+        this.addBehaviour(new StringInformSender(orderString1, postBakingProcessor, "order"));
+        this.counter++;
         this.addBehaviour(new StringInformSender(messageContent, postBakingProcessor, "order_guid"));
         this.counter++;
         this.addBehaviour(new StringInformSender(orderString, packagingAgent, "order"));
         this.counter++;
+        this.addBehaviour(new StringInformSender(orderString1, packagingAgent, "order"));
+        this.counter++;
         
         this.addBehaviour(new InformServer(postBakingProcessor));
+        this.addBehaviour(new InformServer(packagingAgent));
 //         this.addBehaviour(new InformServer(coolingRackAgent));
     }
     protected void takeDown() {
