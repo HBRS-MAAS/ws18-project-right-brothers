@@ -1,4 +1,4 @@
-package org.right_brothers.objects;
+package org.right_brothers.bakery_objects;
 
 import org.right_brothers.data.messages.CompletedProductMessage;
 import org.right_brothers.data.models.Step;
