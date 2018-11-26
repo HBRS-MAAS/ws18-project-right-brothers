@@ -2,6 +2,7 @@ package org.right_brothers.agents;
 
 import org.right_brothers.data.messages.TimeStep;
 
+import java.util.*;
 import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
@@ -22,6 +23,7 @@ public abstract class BaseAgent extends Agent {
     private int currentHour;
     private boolean allowAction = false;
     protected AID clockAgent = new AID("TimeKeeper", AID.ISLOCALNAME);
+    protected AID orderBoardAgent = new AID("visualization", AID.ISLOCALNAME);
     protected BaseAgent baseAgent = this;
 	
     /* Setup to add behaviour to talk with clockAgent
@@ -74,7 +76,7 @@ public abstract class BaseAgent extends Agent {
     }
 
     protected boolean getAllowAction() {
-        return allowAction;
+        return this.allowAction;
     }
     protected int getCurrentDay() {
         return currentDay;
@@ -93,7 +95,7 @@ public abstract class BaseAgent extends Agent {
 //         this.visualiseHistoricalView(msg);
 //         this.visualiseIndividualOrderStatus(msg);
 //         this.visualiseMessageQueuesByAgent(msg);
-//         this.visualiseOrderBoard(msg);
+        this.visualiseOrderBoard(msg);
 //         this.visualiseStreetNetwork(msg);
     }
 
@@ -105,8 +107,17 @@ public abstract class BaseAgent extends Agent {
 //     }
 //     protected void visualiseMessageQueuesByAgent(ACLMessage msg) {
 //     }
-//     protected void visualiseOrderBoard(ACLMessage msg) {
-//     }
+    protected void visualiseOrderBoard(ACLMessage msg) {
+        msg.clearAllReceiver();
+        msg.addReceiver(orderBoardAgent);
+        this.send(msg);
+        try {
+//             Thread.sleep(2000);
+            Thread.sleep(2);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+    }
 //     protected void visualiseStreetNetwork(ACLMessage msg) {
 //     }
 
@@ -118,7 +129,7 @@ public abstract class BaseAgent extends Agent {
         private MessageTemplate mt;
 
         public void action(){
-            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(55),
                     MessageTemplate.MatchSender(baseAgent.clockAgent));
             ACLMessage msg = myAgent.receive(this.mt);
             if (msg != null) {

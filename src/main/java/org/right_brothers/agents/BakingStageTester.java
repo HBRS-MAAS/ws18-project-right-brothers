@@ -15,56 +15,91 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 // import jade.lang.acl.UnreadableException;
 
-// import java.util.Arrays;
-// import java.util.List;
+import org.right_brothers.utils.JsonConverter;
+import org.right_brothers.data.messages.UnbakedProductMessage;
+
+import java.util.*;
 
 
 @SuppressWarnings("serial")
-public class OvenManagerTester extends Agent {
+public class BakingStageTester extends BaseAgent {
 
     private AID ovenManager = new AID("ovenManager", AID.ISLOCALNAME);
+    private AID coolingRackAgent = new AID("cooling-rack", AID.ISLOCALNAME);
     private int counter = 0;
 
     protected void setup() {
+        super.setup();
         System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
-        String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7} }"; 
-        String orderGuid = "order-331";
+        this.register("Baking-tester", "JADE-bakery");
+
+        String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }"; 
+
+        UnbakedProductMessage upm = new UnbakedProductMessage();
+        Vector<String> guids = new Vector<String> ();
+        guids.add("Order-123"); guids.add("Order-456");
+        upm.setGuids(guids);
+        upm.setProductType("Multigrain Bread");
+        Vector<Integer> vec = new Vector<Integer> ();
+        vec.add(8); vec.add(7);
+        upm.setProductQuantities(vec);
+        String unbakedProduct = JsonConverter.getJsonString(upm);
+//         String orderGuid = "order-331";
  
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
         this.addBehaviour(new StringInformSender(orderString, ovenManager, "order"));
         this.counter++;
-        this.addBehaviour(new StringInformSender(orderGuid, ovenManager, "order_guid"));
+        this.addBehaviour(new StringInformSender(unbakedProduct, ovenManager, "order_guid"));
         this.counter++;
-        this.addBehaviour(new BakedProductServer(ovenManager));
+        this.addBehaviour(new InformServer(ovenManager));
+        this.addBehaviour(new InformServer(coolingRackAgent));
     }
     protected void takeDown() {
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
 
 
-    private class BakedProductServer extends CyclicBehaviour {
+    private class InformServer extends CyclicBehaviour {
         private MessageTemplate mt;
         private AID sender;
 
-        public BakedProductServer (AID orderProcessor){
+        public InformServer (AID orderProcessor){
             this.sender = orderProcessor;
         }
         public void action() {
+            baseAgent.finished();
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
-                String bakedProduct = msg.getContent();
-                System.out.println("\tReceived products : " + bakedProduct);
-                myAgent.addBehaviour(new shutdown());
+                String messageContent = msg.getContent();
+                System.out.println("\tReceived msg : " + messageContent + " at " + baseAgent.getCurrentHour());
+//                 if (this.sender == coolingRackAgent){
+                    //this.sendUnbakedProduct();
+//                 }
             }
             else {
                 block();
             }
         }
+        private void sendUnbakedProduct(){
+            UnbakedProductMessage upm = new UnbakedProductMessage();
+            Vector<String> guids = new Vector<String> ();
+            guids.add("Order-123"); guids.add("Order-456");
+            upm.setGuids(guids);
+            upm.setProductType("Multigrain Bread");
+            Vector<Integer> vec = new Vector<Integer> ();
+            vec.add(8);
+            upm.setProductQuantities(vec);
+            String unbakedProduct = JsonConverter.getJsonString(upm);
+            myAgent.addBehaviour(new StringInformSender(unbakedProduct, ovenManager, "order_guid"));
+        }
     }
 
+    /* 
+     * Note: Even though the behaviour below is generic, it is not being blocked with allowAction
+     */
     private class StringInformSender extends Behaviour {
         private MessageTemplate mt;
         private String message;
@@ -88,7 +123,6 @@ public class OvenManagerTester extends Agent {
             counter --;
             if (counter == 0){
                 System.out.println("No more inform messages left");
-//                 myAgent.addBehaviour(new shutdown());
             }
             return true;
         }

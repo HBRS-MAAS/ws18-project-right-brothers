@@ -1,10 +1,10 @@
 language: java
 jdk:
-    - openjdk8
+    - oraclejdk8
 group: stable
 dist: trusty
 os: linux
 script: 
     - ./gradlew run
-    - ./gradlew run --args="coordinatorTest"
-    - ./gradlew run --args="ovenManagerTest"
+    - ./gradlew run --args="bakingStageTest"
+    - ./gradlew run --args="packagingStageTest"

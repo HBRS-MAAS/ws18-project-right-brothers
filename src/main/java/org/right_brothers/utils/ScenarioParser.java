@@ -1,4 +1,4 @@
-package org.right_brothers.objects;
+package org.right_brothers.utils;
 
 import java.util.*;
 import org.json.simple.JSONObject;

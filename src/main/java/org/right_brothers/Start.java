@@ -13,6 +13,7 @@ public class Start {
     public static void main(String[] args) {
         List<String> agents = new Vector<>();
         List<String> cmd = new Vector<>();
+        int endTime = 90;
 
         List<String> arguments = Arrays.asList(args);
 
@@ -31,17 +32,32 @@ public class Start {
 
         if(arguments.size() > 0) {
             String customArgument = String.join(" ", arguments).trim();
-            if(arguments.get(0).equalsIgnoreCase("OvenManagerTest")){
+            if(arguments.get(0).equalsIgnoreCase("packagingStageTest")){
                 cmd.add("-agents");
-                agents.add("dummy:org.right_brothers.agents.OvenManagerTester");
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + 130 + ")");
+                agents.add("dummy:org.right_brothers.agents.PackagingStageTester");
+                agents.add("postBakingProcessor:org.right_brothers.agents.PostBakingProcessor");
+            }
+            if(arguments.get(0).equalsIgnoreCase("bakingStageTest")){
+                cmd.add("-agents");
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + endTime + ")");
+                agents.add("dummy:org.right_brothers.agents.BakingStageTester");
                 agents.add("ovenManager:org.right_brothers.agents.OvenManager");
+                agents.add("intermediater:org.right_brothers.agents.Intermediater");
                 agents.add("cooling-rack:org.right_brothers.agents.CoolingRackAgent");
-                agents.add("dummy-loading-bay:org.right_brothers.agents.DummyLoadingBayAgent");
             }
             if(arguments.get(0).equalsIgnoreCase("coordinatorTest")){
                 cmd.add("-agents");
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
                 agents.add("dummy:org.right_brothers.agents.DummyAgent");
                 agents.add("coordinator:org.right_brothers.agents.CoordinatorAgent");
+            }
+            if(arguments.get(0).equalsIgnoreCase("coordinatorTestVisualization")){
+                cmd.add("-agents");
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
+                agents.add("dummy:org.right_brothers.agents.DummyAgent");
+                agents.add("coordinator:org.right_brothers.agents.CoordinatorAgent");
+                agents.add("visualization:org.right_brothers.agents.VisualizationAgent");
             }
             if(arguments.get(0).equalsIgnoreCase("server")) {
                 for (int i = 1; i < arguments.size(); i++) {

@@ -3,23 +3,30 @@ package org.right_brothers.agents;
 import java.util.List;
 import java.util.Vector;
 import jade.core.behaviours.*;
-import jade.core.Agent;
+// import jade.core.Agent;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import org.right_brothers.agents.BaseAgent;
+
 @SuppressWarnings("serial")
-public class CoordinatorAgent extends Agent {
+public class CoordinatorAgent extends BaseAgent {
     private List<String> messages;
 
     protected void setup() {
+        super.setup();
         System.out.println("\tCoordinator-agent "+getAID().getLocalName()+" is born.");
+
         messages = new Vector<String>();
+
+        this.register("Coordinator-agent", "JADE-bakery");
 
         addBehaviour(new RequestsServer());
         addBehaviour(new InformServer());
     }
 
     protected void takeDown() {
+        this.deRegister();
         System.out.println("\t"+getAID().getLocalName()+" terminating.");
     }
 
@@ -29,6 +36,7 @@ public class CoordinatorAgent extends Agent {
      */
     private class RequestsServer extends CyclicBehaviour {
         public void action() {
+            baseAgent.finished();
             MessageTemplate requestTemplate = MessageTemplate.MatchPerformative(ACLMessage.REQUEST);
 
             ACLMessage requestMessage = myAgent.receive(requestTemplate);
@@ -44,7 +52,7 @@ public class CoordinatorAgent extends Agent {
                     reply.setPerformative(ACLMessage.CONFIRM);
                     reply.setContent(mess);
                 }
-                myAgent.send(reply);
+                baseAgent.sendMessage(reply);
             }
             else {
                 block();
@@ -84,8 +92,8 @@ public class CoordinatorAgent extends Agent {
                 System.out.println("\t" + myAgent.getLocalName() + " current messages list size: " + messages.size());
                 ACLMessage reply = informMessage.createReply();
                 reply.setPerformative(ACLMessage.CONFIRM);
-                reply.setContent("Got your Object.");
-                myAgent.send(reply);
+                reply.setContent("Got your Message.");
+                baseAgent.sendMessage(reply);
             }
             else {
                 block();

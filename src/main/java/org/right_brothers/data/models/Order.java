@@ -9,6 +9,7 @@ public class Order implements java.io.Serializable {
     private String customerId;
     private String guid;
     private Date deliveryDate;
+    private Date orderDate;
     private Hashtable<String,Integer> products;
 
     public Order() {
@@ -46,5 +47,13 @@ public class Order implements java.io.Serializable {
 
     public void setProducts(Hashtable<String,Integer> products) {
         this.products = products;
+    }
+
+    public void setOrderDate(Date orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public Date getOrderDate() {
+        return orderDate;
     }
 }
