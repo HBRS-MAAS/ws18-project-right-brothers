@@ -16,7 +16,7 @@ import java.util.*;
 public class PackagingStageTester extends BaseAgent {
 
     private AID postBakingProcessor = new AID("postBakingProcessor", AID.ISLOCALNAME);
-//     private AID coolingRackAgent = new AID("cooling-rack", AID.ISLOCALNAME);
+    private AID packagingAgent = new AID("packaging-agent", AID.ISLOCALNAME);
     private int counter = 0;
 
     protected void setup() {
@@ -39,6 +39,9 @@ public class PackagingStageTester extends BaseAgent {
         this.counter++;
         this.addBehaviour(new StringInformSender(messageContent, postBakingProcessor, "order_guid"));
         this.counter++;
+        this.addBehaviour(new StringInformSender(orderString, packagingAgent, "order"));
+        this.counter++;
+        
         this.addBehaviour(new InformServer(postBakingProcessor));
 //         this.addBehaviour(new InformServer(coolingRackAgent));
     }
