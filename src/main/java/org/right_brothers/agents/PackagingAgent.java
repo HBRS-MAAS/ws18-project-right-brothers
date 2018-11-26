@@ -2,16 +2,10 @@ package org.right_brothers.agents;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
-import java.util.Vector;
-
-import org.right_brothers.bakery_objects.CooledProduct;
 import org.right_brothers.data.messages.CompletedProductMessage;
-import org.right_brothers.data.messages.ProductMessage;
 import org.right_brothers.data.models.Order;
-import org.right_brothers.data.models.Product;
-import org.right_brothers.data.models.Step;
 import org.right_brothers.utils.JsonConverter;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -28,6 +22,7 @@ public class PackagingAgent extends BaseAgent {
 	private AID postBakingProcessor = new AID("postBakingProcessor", AID.ISLOCALNAME);
 	
 	private List<Order> orderList = new ArrayList<>();
+	private Hashtable<String, Integer> productBuffer = new Hashtable<>();
 	
 	protected void setup() {
         super.setup();
@@ -97,8 +92,15 @@ public class PackagingAgent extends BaseAgent {
                 		new TypeReference<List<CompletedProductMessage>>() {});
                 
                 for(CompletedProductMessage messageItem: completedProductList) {
-                	System.out.println(String.format("\tReceived completed product with guid: %s, quantity: %S",
+                	System.out.println(String.format("\tReceived completed product: %s, quantity: %S",
                 			messageItem.getGuid(), messageItem.getQuantity()));
+                	
+                	String productName = messageItem.getGuid();
+                	if(productBuffer.containsKey(productName)) {
+                		productBuffer.put(productName, productBuffer.get(productName) + messageItem.getQuantity());
+                	}else {
+                		productBuffer.put(productName, messageItem.getQuantity());
+                	}
                 }
             }
             else {
