@@ -16,6 +16,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import org.right_brothers.agents.BaseAgent;
+import org.right_brothers.bakery_objects.CooledProduct;
 import org.right_brothers.utils.InputParser; 
 import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Product;
@@ -23,14 +24,13 @@ import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Step;
 import org.right_brothers.data.messages.ProductMessage;
 import org.right_brothers.data.messages.CompletedProductMessage;
-import org.right_brothers.objects.CooledProduct;
 import org.right_brothers.utils.JsonConverter;
 
 @SuppressWarnings("serial")
 public class PostBakingProcessor extends BaseAgent {
     private AID coolingRackAgent = new AID("dummy", AID.ISLOCALNAME);
     private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
-    private AID packagingAgent = new AID("dummy", AID.ISLOCALNAME);
+    private AID packagingAgent = new AID("packaging-agent", AID.ISLOCALNAME);
     private List<Product> availableProducts;
     private String bakeryGuid = "bakery-001";
     private List<CooledProduct> cooledProductsList;
