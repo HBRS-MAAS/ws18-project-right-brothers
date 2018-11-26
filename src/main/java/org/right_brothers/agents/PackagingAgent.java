@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
-import java.lang.Math;
 import org.right_brothers.data.messages.CompletedProductMessage;
 import org.right_brothers.data.messages.LoadingBayBox;
 import org.right_brothers.data.messages.LoadingBayMessage;
@@ -36,7 +35,6 @@ public class PackagingAgent extends BaseAgent {
     private int boxCounter = 0;
 	
 	private List<Order> orderList = new ArrayList<>();
-    private List<Order> completedOrderList = new ArrayList<>();
 	private Hashtable<String, Integer> productBuffer = new Hashtable<>();
 	
 	protected void setup() {
@@ -78,7 +76,8 @@ public class PackagingAgent extends BaseAgent {
         // Sorting in Ascending order of delivery time 
         public int compare(Order a, Order b) 
         {
-            int timeParam1, timeParam2;
+            int timeParam1;
+            int timeParam2;
             // Assuming orders do not arrive months in advance. Order has Date in only day and hours
             timeParam1 = (a.getDeliveryDate().getDay()*24)+(a.getDeliveryDate().getHour());
             timeParam2 = (b.getDeliveryDate().getDay()*24)+(b.getDeliveryDate().getHour());
@@ -193,11 +192,9 @@ public class PackagingAgent extends BaseAgent {
 
         private void checkProductOrderReady() {
             Hashtable<String,Integer> products;
-            LoadingBayMessage ldm;
-            List<LoadingBayBox> boxes;
-            int zero_counter = 0;
-            ldm = new LoadingBayMessage();
-            boxes = new ArrayList<LoadingBayBox>();
+            LoadingBayMessage ldm = new LoadingBayMessage();
+            List<LoadingBayBox> boxes = new ArrayList<LoadingBayBox>();
+            int zero_counter = 0; 
             if (orderList.size() > 0) {
                 System.out.println("\n_____________________________Inventory Check (Before Update)__________________________");
                 displayOrderStatus();
@@ -209,15 +206,13 @@ public class PackagingAgent extends BaseAgent {
                 Integer availableCount = productBuffer.get(key);
                 Integer orderProductCount = products.get(key);
                 if (orderProductCount > 0) {
-                    if ((availableCount != null)) {
-                        if (orderProductCount <= availableCount) {
-                            //Create message contents
-                            this.packTheProducts(key, products.get(key), boxes);
-                            productBuffer.put(key, productBuffer.get(key) - orderProductCount);
-                            products.put(key, 0);
-                            orderList.get(0).setProducts(products);
-                            zero_counter++;
-                        }
+                    if ((availableCount != null) && (orderProductCount <= availableCount)) {
+                        //Create message contents
+                        this.packTheProducts(key, products.get(key), boxes);
+                        productBuffer.put(key, productBuffer.get(key) - orderProductCount);
+                        products.put(key, 0);
+                        orderList.get(0).setProducts(products);
+                        zero_counter++;
                     }
                 } else {
                     zero_counter++;
@@ -244,12 +239,7 @@ public class PackagingAgent extends BaseAgent {
 
         private void displayOrderStatus() {
             Hashtable<String,Integer> products;
-            LoadingBayMessage ldm;
-            List<LoadingBayBox> boxes;
-            int zero_counter = 0;
             for (int i=0; i<orderList.size(); i++) {
-                ldm = new LoadingBayMessage();
-                boxes = new ArrayList<LoadingBayBox>();
                 products = orderList.get(i).getProducts();
                 System.out.println("Order Id: "+orderList.get(i).getGuid());
                 Set<String> keys = products.keySet();
@@ -264,12 +254,17 @@ public class PackagingAgent extends BaseAgent {
         private void packTheProducts(String productType, int quantity, List<LoadingBayBox> boxes) {
             int boxCapacity = productPackingLookup.get(productType);
             int numBoxes = (int) Math.ceil((float) quantity/ boxCapacity);
+            int residual = quantity;
             for (int i=1; i<=numBoxes; i++) {
                 boxCounter++;
                 LoadingBayBox box = new LoadingBayBox();
                 box.setBoxId(""+boxCounter);
                 box.setProductType(productType);
-                box.setQuantity(quantity);
+                if (residual < boxCapacity)
+                    box.setQuantity(residual);
+                else
+                    box.setQuantity(boxCapacity);
+                    residual = residual - boxCapacity;
                 boxes.add(box);
             }
         }
