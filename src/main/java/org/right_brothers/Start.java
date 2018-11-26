@@ -38,7 +38,7 @@ public class Start {
                 agents.add("dummy:org.right_brothers.agents.PackagingStageTester");
                 agents.add("postBakingProcessor:org.right_brothers.agents.PostBakingProcessor");
             }
-            if(arguments.get(0).equalsIgnoreCase("ovenManagerTest")){
+            if(arguments.get(0).equalsIgnoreCase("bakingStageTest")){
                 cmd.add("-agents");
                 agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + endTime + ")");
                 agents.add("dummy:org.right_brothers.agents.BakingStageTester");
