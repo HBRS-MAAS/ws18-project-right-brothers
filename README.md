@@ -31,11 +31,11 @@ In case you want to clean you workspace run
 
 #### Main Container
 
-    gradle run --args="server"
+    gradle run --args="server -host <server ip address>"
 
 #### Peripheral Container
 
-    gradle run --args="-host <host ip address>"
+    gradle run --args="-host <server ip address>"
 
 #### Coordinator Test
     
