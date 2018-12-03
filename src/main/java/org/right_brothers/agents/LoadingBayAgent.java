@@ -26,7 +26,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 @SuppressWarnings("serial")
-public class PackagingAgent extends BaseAgent {
+public class LoadingBayAgent extends BaseAgent {
 	private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
 	private AID postBakingProcessor = new AID("postBakingProcessor", AID.ISLOCALNAME);
     private Hashtable<String,Integer> productPackingLookup;
@@ -152,7 +152,7 @@ public class PackagingAgent extends BaseAgent {
 	/**
      * Receives completed products from post baking processor
      **/
-	private class CompletedProductReceiver extends CyclicBehaviour {
+    private class CompletedProductReceiver extends CyclicBehaviour {
         private AID sender;
 
         public CompletedProductReceiver(AID postBakingProcessor){

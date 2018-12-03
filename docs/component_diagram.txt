@@ -1,0 +1,61 @@
+@startuml
+
+package "Common Agents" {
+  [TimeKeeper] <-down-> TimeHandlingMessage
+  [Visualization]
+}
+note top of TimeHandlingMessage
+This message flow 
+represents both TimeStep 
+and Finished
+end note
+
+package "Order Processing" {
+  TimeHandlingMessage <.down.> [Customer]
+  TimeHandlingMessage <.down.> [OrderProcessor]  
+  [Customer] -down-> [OrderProcessor]
+  [OrderProcessor] -down-> Order
+}
+
+package "Dough Preparation" {
+  TimeHandlingMessage <.down.> [..] 
+  TimeHandlingMessage <.down.> [Proofer] 
+  Order -down-> [..]
+  [..] -down.> [Proofer] 
+  [Proofer] -down-> UnbakedProductMessage
+}
+
+package "Baking" {
+  TimeHandlingMessage <.down.> [OvenManager] 
+  TimeHandlingMessage <.down.> [PostBakingProcessor] 
+  TimeHandlingMessage <.down.> [CoolingRackAgent] 
+  Order -down-> [OvenManager] 
+  UnbakedProductMessage -down-> [OvenManager]
+  [OvenManager] -down-> BakedProductMessage 
+  BakedProductMessage -down-> [PostBakingProcessor]
+  [PostBakingProcessor] -down-> ProcessedProductMessage 
+  ProcessedProductMessage -down-> [CoolingRackAgent]
+  [CoolingRackAgent] -down-> ProductMessage
+}
+
+package "Packaging" {
+  TimeHandlingMessage <.down.> [PreLoadingProcessor] 
+  TimeHandlingMessage <.down.> [LoadingBayAgent] 
+  Order -down-> [LoadingBayAgent] 
+  ProductMessage -down-> [PreLoadingProcessor]
+  [PreLoadingProcessor] -down-> CompletedProductMessage
+  CompletedProductMessage -down-> [LoadingBayAgent]
+  [LoadingBayAgent] -down-> LoadingBayMessage
+}
+
+package "Delivery" {
+  TimeHandlingMessage <.down.> [...] 
+  TimeHandlingMessage <.down.> [OrderTracker] 
+  TimeHandlingMessage <.down.> [Mailbox] 
+  Order -down-> [OrderTracker]
+  LoadingBayMessage -down-> [OrderTracker]
+  [OrderTracker] .down.> [...] 
+  [...] .down.> [Mailbox]
+}
+
+@enduml

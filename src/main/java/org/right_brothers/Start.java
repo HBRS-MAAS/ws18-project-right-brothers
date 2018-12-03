@@ -36,15 +36,15 @@ public class Start {
                 cmd.add("-agents");
                 agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + 150 + ")");
                 agents.add("dummy:org.right_brothers.agents.PackagingStageTester");
-                agents.add("postBakingProcessor:org.right_brothers.agents.PostBakingProcessor");
-                agents.add("packaging-agent:org.right_brothers.agents.PackagingAgent");
+                agents.add("postBakingProcessor:org.right_brothers.agents.PreLoadingProcessor");
+                agents.add("packaging-agent:org.right_brothers.agents.LoadingBayAgent");
             }
             if(arguments.get(0).equalsIgnoreCase("bakingStageTest")){
                 cmd.add("-agents");
                 agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + endTime + ")");
                 agents.add("dummy:org.right_brothers.agents.BakingStageTester");
                 agents.add("ovenManager:org.right_brothers.agents.OvenManager");
-                agents.add("intermediater:org.right_brothers.agents.Intermediater");
+                agents.add("intermediater:org.right_brothers.agents.PostBakingProcessor");
                 agents.add("cooling-rack:org.right_brothers.agents.CoolingRackAgent");
             }
             if(arguments.get(0).equalsIgnoreCase("coordinatorTest")){
