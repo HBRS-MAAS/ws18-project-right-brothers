@@ -1,8 +1,7 @@
 package org.right_brothers.agents;
 
-import org.right_brothers.data.messages.TimeStep;
+import org.right_brothers.utils.Time;
 
-import java.util.*;
 import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
@@ -19,8 +18,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 @SuppressWarnings("serial")
 public abstract class BaseAgent extends Agent {
 
-	private int currentDay;
-    private int currentHour;
+    private Time currentTime;
     private boolean allowAction = false;
     protected AID clockAgent = new AID("TimeKeeper", AID.ISLOCALNAME);
     protected AID orderBoardAgent = new AID("visualization", AID.ISLOCALNAME);
@@ -79,10 +77,13 @@ public abstract class BaseAgent extends Agent {
         return this.allowAction;
     }
     protected int getCurrentDay() {
-        return currentDay;
+        return this.currentTime.getDay();
     }
     protected int getCurrentHour() {
-        return currentHour;
+        return this.currentTime.getHour();
+    }
+    protected int getCurrentMinute() {
+        return this.currentTime.getMinute();
     }
 
     /* This function is used as a middle man which uses the message
@@ -134,11 +135,7 @@ public abstract class BaseAgent extends Agent {
             ACLMessage msg = myAgent.receive(this.mt);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                int counter = Integer.parseInt(messageContent);
-                int day = counter / 24;
-                int hour = counter % 24;
-                currentDay = day;
-                currentHour = hour;
+                currentTime = new Time(messageContent);
                 allowAction = true;
             }
             else {

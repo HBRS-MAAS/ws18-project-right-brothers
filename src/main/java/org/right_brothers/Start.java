@@ -13,7 +13,7 @@ public class Start {
     public static void main(String[] args) {
         List<String> agents = new Vector<>();
         List<String> cmd = new Vector<>();
-        int endTime = 90;
+        int endTime = 60;
 
         List<String> arguments = Arrays.asList(args);
 
@@ -65,16 +65,21 @@ public class Start {
                    cmd.add(arguments.get(i)); 
                 }
                 cmd.add("-agents");
-                for (Bakery b : bakeries) {
-                    agents.add(b.getGuid() + ":org.right_brothers.agents.OrderProcessingAgent");
-                }
+                agents.add("ovenManager:org.right_brothers.agents.OvenManager");
+                agents.add("intermediater:org.right_brothers.agents.Intermediater");
+                agents.add("cooling-rack:org.right_brothers.agents.CoolingRackAgent");
+//                 for (Bakery b : bakeries) {
+//                     agents.add(b.getGuid() + ":org.right_brothers.agents.OrderProcessingAgent");
+//                 }
             } else if(arguments.get(0).equalsIgnoreCase("-host")) {
                 cmd.add("-container");
                 cmd.addAll(arguments);
                 cmd.add("-agents");
-                for (Client c : clients) {
-                    agents.add(c.getGuid() + ":org.right_brothers.agents.BakeryCustomerAgent");
-                }
+                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + endTime + ")");
+                agents.add("dummy:org.right_brothers.agents.BakingStageTester");
+//                 for (Client c : clients) {
+//                     agents.add(c.getGuid() + ":org.right_brothers.agents.BakeryCustomerAgent");
+//                 }
             }
         } else {
             cmd.add("-agents");
