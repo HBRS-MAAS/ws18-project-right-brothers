@@ -2,3 +2,8 @@
 .top-panel {
 	-fx-background-color: #eff1f3;
 }
+
+.stage-container{
+	-fx-width: 20%;
+	-fx-background-color: red
+}
