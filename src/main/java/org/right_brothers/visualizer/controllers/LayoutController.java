@@ -13,12 +13,18 @@ import javafx.scene.layout.AnchorPane;
 public class LayoutController implements Initializable {
 	@FXML
 	private AnchorPane backingStageContainer;
+	
+	@FXML
+	private AnchorPane packagingStageContainer;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
 			Parent bakingStage = FXMLLoader.load(getClass().getResource("../ui/BakingStage.fxml"));
 			backingStageContainer.getChildren().add(bakingStage);
+			
+			Parent packaging = FXMLLoader.load(getClass().getResource("../ui/PackagingStage.fxml"));
+			packagingStageContainer.getChildren().add(packaging);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

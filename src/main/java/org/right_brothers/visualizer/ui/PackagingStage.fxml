@@ -16,10 +16,10 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+<VBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1"  
 	layoutX="97.0" layoutY="10.0" style="-fx-background-color: #e6e6e6; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 5;" 
-	AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0" 
-	fx:controller="org.right_brothers.visualizer.controllers.BakingStageController">
+	AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0"
+	fx:controller="org.right_brothers.visualizer.controllers.PackagingStageController">
    <opaqueInsets>
       <Insets />
    </opaqueInsets>
@@ -40,7 +40,7 @@
                   </StackPane>
                   <StackPane style="-fx-padding: 0 0 0 10;">
                      <children>
-                        <Label text="Baking">
+                        <Label text="Packaging">
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
@@ -57,20 +57,29 @@
                <content>
                   <VBox spacing="10.0" style="-fx-background-color: #e6e6e6;">
                      <children>
-                        <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
+                        <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="2.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
                            <children>
                               <AnchorPane>
                                  <children>
-                                    <Label text="bakery-001" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                    <Label text="order-331" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                        <font>
                                           <Font name="System Bold" size="13.0" />
                                        </font>
                                     </Label>
                                  </children>
                               </AnchorPane>
+                              <AnchorPane>
+                                 <children>
+                                    <Label text="customer-001" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                       <font>
+                                          <Font name="System Bold" size="11.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </AnchorPane>
                               <AnchorPane prefWidth="200.0">
                                  <children>
-                                    <Label text="Bagel(7), Donut(1)" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                                    <Label text="Bagel(5), Bagel(2), Donut(1)" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                                  </children>
                               </AnchorPane>
                            </children>
