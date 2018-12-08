@@ -1,4 +1,4 @@
-package org.right_brothers.visualizer.controllers;
+package org.right_brothers.visualizer.ui;
 
 import java.net.URL;
 import java.util.ResourceBundle;

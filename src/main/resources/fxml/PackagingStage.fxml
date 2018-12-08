@@ -19,7 +19,7 @@
 <VBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1"  
 	layoutX="97.0" layoutY="10.0" style="-fx-background-color: #e6e6e6; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 5;" 
 	AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0"
-	fx:controller="org.right_brothers.visualizer.controllers.PackagingStageController">
+	fx:controller="org.right_brothers.visualizer.ui.PackagingStageController">
    <opaqueInsets>
       <Insets />
    </opaqueInsets>

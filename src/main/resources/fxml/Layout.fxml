@@ -18,7 +18,7 @@
 
 <BorderPane prefHeight="768.0" prefWidth="1024.0" 
 	xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1"
-	fx:controller="org.right_brothers.visualizer.controllers.LayoutController">
+	fx:controller="org.right_brothers.visualizer.ui.LayoutController">
    <top>
       <AnchorPane prefHeight="60.0" style="-fx-background-color: #cccccc;" styleClass="top-panel" BorderPane.alignment="CENTER">
          <children>
