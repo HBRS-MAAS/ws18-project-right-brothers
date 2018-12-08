@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -72,29 +73,65 @@
                               <Insets />
                            </opaqueInsets>
                            <children>
-                              <HBox>
+                              <AnchorPane>
                                  <children>
-                                    <StackPane>
+                                    <HBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                        <children>
-                                          <Circle fill="#bfbfbf" radius="12.0" stroke="#00000067" strokeType="INSIDE" />
-                                          <Label text="0">
-                                             <font>
-                                                <Font name="System Bold" size="8.0" />
-                                             </font>
-                                          </Label>
+                                          <StackPane>
+                                             <children>
+                                                <Circle fill="#bfbfbf" radius="12.0" stroke="#00000067" strokeType="INSIDE" />
+                                                <Label text="0">
+                                                   <font>
+                                                      <Font name="System Bold" size="8.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </StackPane>
+                                          <StackPane style="-fx-padding: 0 0 0 10;">
+                                             <children>
+                                                <Label text="Order Processing">
+                                                   <font>
+                                                      <Font name="System Bold" size="16.0" />
+                                                   </font>
+                                                </Label>
+                                             </children>
+                                          </StackPane>
                                        </children>
-                                    </StackPane>
-                                    <StackPane style="-fx-padding: 0 0 0 10;">
-                                       <children>
-                                          <Label text="Order Processing">
-                                             <font>
-                                                <Font name="System Bold" size="16.0" />
-                                             </font>
-                                          </Label>
-                                       </children>
-                                    </StackPane>
+                                    </HBox>
                                  </children>
-                              </HBox>
+                              </AnchorPane>
+                              <AnchorPane>
+                                 <children>
+                                    <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" style="-fx-padding: 10 10; -fx-background-color: transperent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <content>
+                                          <VBox spacing="5.0">
+                                             <children>
+                                                <VBox prefHeight="60.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10;">
+                                                   <children>
+                                                      <Label text="Label" />
+                                                   </children>
+                                                </VBox>
+                                                <VBox prefHeight="60.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10;">
+                                                   <children>
+                                                      <Label text="Label" />
+                                                   </children>
+                                                </VBox>
+                                                <VBox prefHeight="60.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10;">
+                                                   <children>
+                                                      <Label text="Label" />
+                                                   </children>
+                                                </VBox>
+                                                <VBox prefHeight="60.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10;">
+                                                   <children>
+                                                      <Label text="Label" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                    </ScrollPane>
+                                 </children>
+                              </AnchorPane>
                            </children>
                         </VBox>
                      </children>
