@@ -30,4 +30,7 @@ public class LayoutController implements Initializable {
 		}
 	}
 
+	public void updateBoard(String messageType, String message) {
+		
+	}
 }

@@ -13,8 +13,10 @@ import javafx.scene.layout.BorderPane;
 
 
 public class Visualizer extends Application {
-	public static final CountDownLatch countDownLatch = new CountDownLatch(1);
+	private static final CountDownLatch countDownLatch = new CountDownLatch(1);
 	public static Visualizer currentInstance = null;
+	
+	private LayoutController layoutController;
 	
 	public Visualizer() {
 		// setInstance(this);
@@ -42,7 +44,10 @@ public class Visualizer extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/fxml/Layout.fxml"));
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Layout.fxml"));
+			Parent root = fxmlLoader.load();
+			layoutController = fxmlLoader.getController();
+			
 			
 			Scene scene = new Scene(root);
 			scene.getStylesheets()
@@ -60,5 +65,9 @@ public class Visualizer extends Application {
 	@Override
 	public void stop() {
 		System.out.println("Closing application");
+	}
+	
+	public void updateBoard(String messageType, String message) {
+		layoutController.updateBoard(messageType, message);
 	}
 }
