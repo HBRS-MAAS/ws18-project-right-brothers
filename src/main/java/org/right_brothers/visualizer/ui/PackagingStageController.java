@@ -3,9 +3,13 @@ package org.right_brothers.visualizer.ui;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.VBox;
 
-public class PackagingStageController implements Initializable {
+public class PackagingStageController implements Initializable, StageController {
+	@FXML
+	private VBox dummyCard;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -13,4 +17,10 @@ public class PackagingStageController implements Initializable {
 		
 	}
 
+	@Override
+	public void updateStage(String messageType, String message) {
+		if(message!=null && message.equalsIgnoreCase("2")) {
+			dummyCard.setVisible(true);
+		}
+	}
 }

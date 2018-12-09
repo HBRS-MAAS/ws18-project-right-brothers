@@ -57,7 +57,8 @@
                <content>
                   <VBox spacing="10.0" style="-fx-background-color: #e6e6e6;">
                      <children>
-                        <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
+                        <VBox fx:id="dummyCard"
+                        	 maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
                            <children>
                               <AnchorPane>
                                  <children>
