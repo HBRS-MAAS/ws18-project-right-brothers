@@ -15,7 +15,7 @@ import jade.domain.FIPAAgentManagement.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-import org.right_brothers.agents.BaseAgent;
+import org.maas.agents.BaseAgent;
 import org.right_brothers.bakery_objects.CooledProduct;
 import org.right_brothers.utils.InputParser; 
 import org.right_brothers.data.models.Order;
