@@ -20,6 +20,7 @@ public abstract class BaseAgent extends Agent {
     private int currentHour;
     private boolean allowAction = false;
     protected AID clockAgent = new AID("TimeKeeper", AID.ISLOCALNAME);
+    protected AID orderBoardAgent = new AID("visualization", AID.ISLOCALNAME);
     protected BaseAgent baseAgent = this;
 	
     /* Setup to add behaviour to talk with clockAgent
@@ -70,7 +71,7 @@ public abstract class BaseAgent extends Agent {
      * This function should be called by every agent which implements BaseAgent
      * after the agent is done with the task it has to perform in a time step.
      */
-    protected void finished(){
+    public void finished(){
         this.allowAction = false;
         ACLMessage finish = new ACLMessage(ACLMessage.INFORM);
         finish.addReceiver(this.clockAgent);
@@ -78,13 +79,13 @@ public abstract class BaseAgent extends Agent {
         this.send(finish);
     }
 
-    protected boolean getAllowAction() {
+    public boolean getAllowAction() {
         return allowAction;
     }
-    protected int getCurrentDay() {
+    public int getCurrentDay() {
         return currentDay;
     }
-    protected int getCurrentHour() {
+    public int getCurrentHour() {
         return currentHour;
     }
 
@@ -93,7 +94,7 @@ public abstract class BaseAgent extends Agent {
      * Use `baseAgent.sendMessage(message)` instead of `myAgent.send(message)`
      * in every behaviour.
      * */
-    protected void sendMessage(ACLMessage msg) {
+    public void sendMessage(ACLMessage msg) {
         this.send(msg);
         this.visualiseHistoricalView(msg);
         this.visualiseIndividualOrderStatus(msg);
@@ -111,6 +112,15 @@ public abstract class BaseAgent extends Agent {
     protected void visualiseMessageQueuesByAgent(ACLMessage msg) {
     }
     protected void visualiseOrderBoard(ACLMessage msg) {
+        msg.clearAllReceiver();
+        msg.addReceiver(orderBoardAgent);
+        this.send(msg);
+        try {
+            //    Thread.sleep(2000);
+            Thread.sleep(2);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
     protected void visualiseStreetNetwork(ACLMessage msg) {
     }
