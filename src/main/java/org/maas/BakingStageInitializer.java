@@ -10,7 +10,7 @@ public class BakingStageInitializer extends Initializer {
 
         agents.add("dummy:org.right_brothers.agents.BakingStageTester");
         agents.add("ovenManager:org.right_brothers.agents.OvenManager");
-        agents.add("intermediater:org.right_brothers.agents.PostBakingProcessor");
+        agents.add("postBakingProcessor:org.right_brothers.agents.PostBakingProcessor");
         agents.add("cooling-rack:org.maas.agents.CoolingRackAgent");
 
         String agentInitString = String.join(";", agents);

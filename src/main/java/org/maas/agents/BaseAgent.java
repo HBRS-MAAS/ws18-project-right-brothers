@@ -24,19 +24,22 @@ public abstract class BaseAgent extends Agent {
     //protected AID visualisationAgent = new AID("visualisation", AID.ISLOCALNAME);
     protected BaseAgent baseAgent = this;
 	
-    /* Setup to add behaviour to talk with clockAgent
+    /* 
+     * Setup to add behaviour to talk with clockAgent
      * Call `super.setup()` from `setup()` function
      */
     protected void setup() {
         this.addBehaviour(new PermitAction());
     }
     
-    /**
-     * Template method - override this for the task in each time step. Don't forget to call {@link BaseAgent#finished()} at the end.
+    /*
+     * Template method - override this for the task in each time step. 
+     * Don't forget to call {@link BaseAgent#finished()} at the end.
      */
     protected void  stepAction() {}
 
-    /* This function registers the agent to yellow pages
+    /* 
+     * This function registers the agent to yellow pages
      * Call this in `setup()` function
      */
     protected void register(String type, String name){
@@ -54,7 +57,8 @@ public abstract class BaseAgent extends Agent {
         }
     }
     
-    /* This function removes the agent from yellow pages
+    /* 
+     * This function removes the agent from yellow pages
      * Call this in `doDelete()` function
      */
     protected void deRegister() {
@@ -66,7 +70,8 @@ public abstract class BaseAgent extends Agent {
         }
     }
 
-    /* This function sends finished message to clockAgent
+    /* 
+     * This function sends finished message to clockAgent
      * This function should be called by every agent which implements BaseAgent
      * after the agent is done with the task it has to perform in a time step.
      */
@@ -94,7 +99,8 @@ public abstract class BaseAgent extends Agent {
         return this.currentTime;
     }
 
-    /* This function is used as a middle man which uses the message
+    /* 
+     * This function is used as a middle man which uses the message
      * for different visualisation methods
      * Use `baseAgent.sendMessage(message)` instead of `myAgent.send(message)`
      * in every behaviour.
@@ -108,7 +114,8 @@ public abstract class BaseAgent extends Agent {
         this.visualiseStreetNetwork(msg);
     }
 
-    /* implementation skeleton code for different visualisation methods
+    /* 
+     * Implementation skeleton code for different visualisation methods
      */
     protected void visualiseHistoricalView(ACLMessage msg) {
     }
@@ -117,21 +124,18 @@ public abstract class BaseAgent extends Agent {
     protected void visualiseMessageQueuesByAgent(ACLMessage msg) {
     }
     protected void visualiseOrderBoard(ACLMessage msg) {
-        //        msg.clearAllReceiver();
-        //        msg.addReceiver(orderBoardAgent);
-        //        this.send(msg);
-        //        try {
-        //            //    Thread.sleep(2000);
-        //            Thread.sleep(2);
-        //        } catch (InterruptedException e){
-        //            e.printStackTrace();
-        //        }
+       /*
+       msg.clearAllReceiver();
+       msg.addReceiver(visualisationAgent);
+       this.send(msg);
+       */
     }
     protected void visualiseStreetNetwork(ACLMessage msg) {
     }
 
 
-    /* Behaviour to receive message from clockAgent to proceed further with
+    /* 
+     * Behaviour to receive message from clockAgent to proceed further with
      * tasks of next time step
      */
     private class PermitAction extends CyclicBehaviour {
