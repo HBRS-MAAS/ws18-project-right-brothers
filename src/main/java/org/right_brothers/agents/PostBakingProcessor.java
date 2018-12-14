@@ -30,62 +30,60 @@ public class PostBakingProcessor extends BaseAgent{
         this.bakedProductList = new ArrayList<BakedProduct> ();
 
         addBehaviour(new BakedProductsServer(ovenManager));
-        addBehaviour(new Process());
     }
     protected void takeDown() {
         this.deRegister();
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
     
-    private class Process extends CyclicBehaviour{
-        public void action(){
-            if (!baseAgent.getAllowAction()) {
-                return;
+    /*
+     * Process products
+     */
+    @Override
+    protected void stepAction(){
+        if (baseAgent.getCurrentTime().lessThan(new Time(baseAgent.getCurrentDay(), 12, 0))){
+            ArrayList<ProcessedProductMessage> message = this.processProducts();
+            if (message.size() > 0) {
+                this.sendBakedProducts(message);
             }
-            if (baseAgent.getCurrentTime().lessThan(new Time(baseAgent.getCurrentDay(), 12, 0))){
-                ArrayList<ProcessedProductMessage> message = this.processProducts();
-                if (message.size() > 0) {
-                    this.sendBakedProducts(message);
+        }
+        baseAgent.finished();
+    }
+    private ArrayList<ProcessedProductMessage> processProducts (){
+        ArrayList<BakedProduct> temp = new ArrayList<BakedProduct> ();
+        ArrayList<ProcessedProductMessage> message = new ArrayList<ProcessedProductMessage> ();
+        for (BakedProduct bakedProduct : bakedProductList) {
+            if (bakedProduct.getRemainingTimeDuration() < 0){
+                bakedProduct.setRemainingTimeDuration(bakedProduct.getIntermediateSteps().get(0).getDuration());
+                System.out.println("\tStarted " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+            }
+            if (bakedProduct.getRemainingTimeDuration() == 0){
+                System.out.println("\tFinished " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                bakedProduct.finishedStep();
+                bakedProduct.setRemainingTimeDuration(-1);
+                if (bakedProduct.getIntermediateSteps().size() == 0) {
+                    ProcessedProductMessage processedProductMessage = new ProcessedProductMessage();
+                    processedProductMessage.setGuid(bakedProduct.getGuid());
+                    processedProductMessage.setQuantity(bakedProduct.getQuantity());
+                    processedProductMessage.setCoolingDuration(bakedProduct.getCoolingDuration());
+                    message.add(processedProductMessage);
+                    temp.add(bakedProduct);
+                    continue;
                 }
             }
-            baseAgent.finished();
+            bakedProduct.setRemainingTimeDuration(bakedProduct.getRemainingTimeDuration() - 1);
         }
-        private ArrayList<ProcessedProductMessage> processProducts (){
-            ArrayList<BakedProduct> temp = new ArrayList<BakedProduct> ();
-            ArrayList<ProcessedProductMessage> message = new ArrayList<ProcessedProductMessage> ();
-            for (BakedProduct bakedProduct : bakedProductList) {
-                if (bakedProduct.getRemainingTimeDuration() < 0){
-                    bakedProduct.setRemainingTimeDuration(bakedProduct.getIntermediateSteps().get(0).getDuration());
-                    System.out.println("\tStarted " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
-                }
-                if (bakedProduct.getRemainingTimeDuration() == 0){
-                    System.out.println("\tFinished " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
-                    bakedProduct.finishedStep();
-                    bakedProduct.setRemainingTimeDuration(-1);
-                    if (bakedProduct.getIntermediateSteps().size() == 0) {
-                        ProcessedProductMessage processedProductMessage = new ProcessedProductMessage();
-                        processedProductMessage.setGuid(bakedProduct.getGuid());
-                        processedProductMessage.setQuantity(bakedProduct.getQuantity());
-                        processedProductMessage.setCoolingDuration(bakedProduct.getCoolingDuration());
-                        message.add(processedProductMessage);
-                        temp.add(bakedProduct);
-                        continue;
-                    }
-                }
-                bakedProduct.setRemainingTimeDuration(bakedProduct.getRemainingTimeDuration() - 1);
-            }
-            for (BakedProduct bp : temp)
-                bakedProductList.remove(bp);
-            return message;
-        }
-        private void sendBakedProducts(ArrayList<ProcessedProductMessage> message){
-            String messageContent = JsonConverter.getJsonString(message);
-            ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
-            loadingBayMessage.addReceiver(coolingRacksAgent);
-            loadingBayMessage.setConversationId("baked-products-152");
-            loadingBayMessage.setContent(messageContent);
-            baseAgent.sendMessage(loadingBayMessage);
-        }
+        for (BakedProduct bp : temp)
+            bakedProductList.remove(bp);
+        return message;
+    }
+    private void sendBakedProducts(ArrayList<ProcessedProductMessage> message){
+        String messageContent = JsonConverter.getJsonString(message);
+        ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
+        loadingBayMessage.addReceiver(coolingRacksAgent);
+        loadingBayMessage.setConversationId("baked-products-152");
+        loadingBayMessage.setContent(messageContent);
+        baseAgent.sendMessage(loadingBayMessage);
     }
 
     /*

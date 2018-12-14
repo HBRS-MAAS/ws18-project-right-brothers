@@ -35,7 +35,7 @@ public class OvenManager extends BaseAgent {
     private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
     private List<Product> availableProductList;
     private String bakeryGuid = "bakery-001";
-    private List<Tray> trays;
+    private List<Tray> trayList;
     private List<UnbakedProduct> unbakedProductList;
     private int bakedProductConversationNumber = 0;
 
@@ -55,7 +55,6 @@ public class OvenManager extends BaseAgent {
 
         //         this.addBehaviour(new OrderServer(orderProcessor));
         this.addBehaviour(new UnbakedProductsServer(proofer));
-        this.addBehaviour(new Bake());
     }
 
     protected void takeDown() {
@@ -75,104 +74,103 @@ public class OvenManager extends BaseAgent {
             }
         }
         System.out.println("Number of oven " + ovens.size());
-        this.trays = new ArrayList<Tray> (ovens.size() * 4);
+        this.trayList = new ArrayList<Tray> (ovens.size() * 4);
         for (Oven o : ovens) {
             for (int i = 0; i < 4; i++) {
                 Tray t = new Tray(o, Integer.toString(i));
-                this.trays.add(t);
+                this.trayList.add(t);
             }
         }
-        System.out.println("Number of trays " + this.trays.size());
+        System.out.println("Number of trayList " + this.trayList.size());
     }
 
-    private class Bake extends CyclicBehaviour{
-        public void action(){
-            if (!baseAgent.getAllowAction()) {
-                return;
+    /*
+     * Baking products
+     */
+    @Override
+    protected void stepAction(){
+        if (baseAgent.getCurrentTime().lessThan(new Time(baseAgent.getCurrentDay(), 12, 0))){
+            ArrayList<BakedProductMessage> message = this.getBakedProducts();
+            if (message.size() > 0) {
+                this.sendBakedProducts(message);
             }
-            if (baseAgent.getCurrentTime().lessThan(new Time(baseAgent.getCurrentDay(), 12, 0))){
-                ArrayList<BakedProductMessage> message = this.getBakedProducts();
-                if (message.size() > 0) {
-                    this.sendBakedProducts(message);
-                }
-                this.scheduleProducts();
-                this.startBakingProducts();
-            }
-            baseAgent.finished();
+            this.scheduleProducts();
+            this.startBakingProducts();
         }
-        private ArrayList<BakedProductMessage> getBakedProducts() {
-            ArrayList<BakedProductMessage> message = new ArrayList<BakedProductMessage> ();
-            for (Tray t : trays) {
-                if (t.isFree())
-                    continue;
-                UnbakedProduct unbakedProduct = t.getUsedFor();
-                if (unbakedProduct.isScheduled())
-                    continue;
-                if (unbakedProduct.getRemainingTimeDuration() == 0){
-                    System.out.println("\tBaked " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
-                    BakedProductMessage bakedProductMessage = new BakedProductMessage();
-                    bakedProductMessage.setGuid(unbakedProduct.getGuid());
-                    bakedProductMessage.setQuantity(unbakedProduct.getQuantity());
-                    bakedProductMessage.setCoolingDuration(unbakedProduct.getCoolingDuration());
-                    bakedProductMessage.setIntermediateSteps(unbakedProduct.getIntermediateSteps());
-                    message.add(bakedProductMessage);
-                    t.setUsedFor(null);
+        baseAgent.finished();
+    }
+    private ArrayList<BakedProductMessage> getBakedProducts() {
+        ArrayList<BakedProductMessage> message = new ArrayList<BakedProductMessage> ();
+        for (Tray t : trayList) {
+            if (t.isFree())
+                continue;
+            UnbakedProduct unbakedProduct = t.getUsedFor();
+            if (unbakedProduct.isScheduled())
+                continue;
+            if (unbakedProduct.getRemainingTimeDuration() == 0){
+                System.out.println("\tBaked " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                BakedProductMessage bakedProductMessage = new BakedProductMessage();
+                bakedProductMessage.setGuid(unbakedProduct.getGuid());
+                bakedProductMessage.setQuantity(unbakedProduct.getQuantity());
+                bakedProductMessage.setCoolingDuration(unbakedProduct.getCoolingDuration());
+                bakedProductMessage.setIntermediateSteps(unbakedProduct.getIntermediateSteps());
+                message.add(bakedProductMessage);
+                t.setUsedFor(null);
+            }
+            else {
+                unbakedProduct.setRemainingTimeDuration(unbakedProduct.getRemainingTimeDuration() - 1);
+            }
+        }
+        return message;
+    }
+    private void sendBakedProducts(ArrayList<BakedProductMessage> message) {
+        String messageContent = JsonConverter.getJsonString(message);
+        ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
+        inform.addReceiver(intermediater);
+        inform.setContent(messageContent);
+        bakedProductConversationNumber ++;
+        inform.setConversationId("Baked-products-" + Integer.toString(bakedProductConversationNumber));
+        baseAgent.sendMessage(inform);
+    }
+    private void startBakingProducts(){
+        ArrayList<UnbakedProduct> temp = new ArrayList<UnbakedProduct> ();
+        for (UnbakedProduct unbakedProduct : unbakedProductList) {
+            if (unbakedProduct.isScheduled()) {
+                Tray tray = unbakedProduct.getScheduled();
+                if (tray.getTemp() == unbakedProduct.getBakingTemp()){
+                    temp.add(unbakedProduct);
+                    unbakedProduct.setScheduled(null);
+                    unbakedProduct.setRemainingTimeDuration(unbakedProduct.getBakingDuration());
+                    System.out.println("\tStarted Baking " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
                 }
                 else {
-                    unbakedProduct.setRemainingTimeDuration(unbakedProduct.getRemainingTimeDuration() - 1);
+                    tray.setNextTimeStepTemp();
                 }
             }
-            return message;
         }
-        private void sendBakedProducts(ArrayList<BakedProductMessage> message) {
-            String messageContent = JsonConverter.getJsonString(message);
-            ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
-            inform.addReceiver(intermediater);
-            inform.setContent(messageContent);
-            bakedProductConversationNumber ++;
-            inform.setConversationId("Baked-products-" + Integer.toString(bakedProductConversationNumber));
-            baseAgent.sendMessage(inform);
+        for (UnbakedProduct p : temp) {
+            unbakedProductList.remove(p);
         }
-        private void startBakingProducts(){
-            ArrayList<UnbakedProduct> temp = new ArrayList<UnbakedProduct> ();
-            for (UnbakedProduct unbakedProduct : unbakedProductList) {
-                if (unbakedProduct.isScheduled()) {
-                    Tray tray = unbakedProduct.getScheduled();
-                    if (tray.getTemp() == unbakedProduct.getBakingTemp()){
-                        temp.add(unbakedProduct);
-                        unbakedProduct.setScheduled(null);
-                        unbakedProduct.setRemainingTimeDuration(unbakedProduct.getBakingDuration());
-                        System.out.println("\tStarted Baking " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
-                    }
-                    else {
-                        tray.setNextTimeStepTemp();
-                    }
-                }
-            }
-            for (UnbakedProduct p : temp) {
-                unbakedProductList.remove(p);
+    }
+    private void scheduleProducts(){
+        for (UnbakedProduct unbakedProduct : unbakedProductList) {
+            if (unbakedProduct.isScheduled())
+                continue;
+            Tray tray = this.getFreeTray();
+            if (tray == null) 
+                break;
+            tray.setUsedFor(unbakedProduct);
+            unbakedProduct.setScheduled(tray);
+            System.out.println("\tScheduled " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
+        }
+    }
+    private Tray getFreeTray(){
+        for (Tray t : trayList) {
+            if (t.isFree()){
+                return t;
             }
         }
-        private void scheduleProducts(){
-            for (UnbakedProduct unbakedProduct : unbakedProductList) {
-                if (unbakedProduct.isScheduled())
-                    continue;
-                Tray tray = this.getFreeTray();
-                if (tray == null) 
-                    break;
-                tray.setUsedFor(unbakedProduct);
-                unbakedProduct.setScheduled(tray);
-                System.out.println("\tScheduled " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
-            }
-        }
-        private Tray getFreeTray(){
-            for (Tray t : trays) {
-                if (t.isFree()){
-                    return t;
-                }
-            }
-            return null;
-        }
+        return null;
     }
 
     /*
