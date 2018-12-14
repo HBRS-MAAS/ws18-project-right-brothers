@@ -6,6 +6,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 // import jade.lang.acl.UnreadableException;
 
+import org.maas.agents.BaseAgent;
 import org.right_brothers.utils.JsonConverter;
 import org.right_brothers.data.messages.ProductMessage;
 

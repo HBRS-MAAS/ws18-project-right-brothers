@@ -13,7 +13,7 @@ public class UnbakedProduct implements java.io.Serializable {
     private int quantity;
     private int breadsPerOven;
     private Tray scheduled;
-    private int processStartTime;
+    private int remainingTimeDuration;
     
 	public UnbakedProduct() {
         this.scheduled = null;
@@ -29,7 +29,7 @@ public class UnbakedProduct implements java.io.Serializable {
         up.setQuantity(this.getQuantity());
         up.setBreadsPerOven(this.getBreadsPerOven());
         up.setScheduled(this.getScheduled());
-        up.setProcessStartTime(this.getProcessStartTime());
+        up.setRemainingTimeDuration(this.getRemainingTimeDuration());
         up.setIntermediateSteps(this.getIntermediateSteps());
         return up;
     }
@@ -94,12 +94,12 @@ public class UnbakedProduct implements java.io.Serializable {
         return breadsPerOven;
     }
 
-    public void setProcessStartTime(int processStartTime) {
-        this.processStartTime = processStartTime;
+    public void setRemainingTimeDuration(int remainingTimeDuration) {
+        this.remainingTimeDuration = remainingTimeDuration;
     }
 
-    public int getProcessStartTime() {
-        return processStartTime;
+    public int getRemainingTimeDuration() {
+        return remainingTimeDuration;
     }
 
     public void setIntermediateSteps(Vector<Step> intermediateSteps) {

@@ -10,4 +10,4 @@ os: linux
 script: 
     - ./gradlew run
     - ./gradlew run --args="bakingStageTest"
-    - ./gradlew run --args="packagingStageTest"
+#    - ./gradlew run --args="packagingStageTest"
