@@ -30,7 +30,7 @@ import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class OvenManager extends BaseAgent {
-    private AID intermediater = new AID("intermediater", AID.ISLOCALNAME);
+    private AID postBakingProcessor = new AID("postBakingProcessor", AID.ISLOCALNAME);
     private AID proofer = new AID("dummy", AID.ISLOCALNAME);
     private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
     private List<Product> availableProductList;
@@ -126,7 +126,7 @@ public class OvenManager extends BaseAgent {
     private void sendBakedProducts(ArrayList<BakedProductMessage> message) {
         String messageContent = JsonConverter.getJsonString(message);
         ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
-        inform.addReceiver(intermediater);
+        inform.addReceiver(postBakingProcessor);
         inform.setContent(messageContent);
         bakedProductConversationNumber ++;
         inform.setConversationId("Baked-products-" + Integer.toString(bakedProductConversationNumber));

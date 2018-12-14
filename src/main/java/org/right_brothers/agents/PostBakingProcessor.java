@@ -24,9 +24,9 @@ public class PostBakingProcessor extends BaseAgent{
     
     protected void setup() {
         super.setup();
-        System.out.println("\tIntermediater "+getAID().getLocalName()+" is born.");
+        System.out.println("\t"+getAID().getLocalName()+" is born.");
         
-        this.register("intermediater-agent", "JADE-bakery");
+        this.register("postBakingProcessor-agent", "JADE-bakery");
         this.bakedProductList = new ArrayList<BakedProduct> ();
 
         addBehaviour(new BakedProductsServer(ovenManager));
