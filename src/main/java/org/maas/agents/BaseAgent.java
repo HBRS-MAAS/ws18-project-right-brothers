@@ -21,7 +21,7 @@ public abstract class BaseAgent extends Agent {
     private Time currentTime;
     private boolean allowAction = false;
     protected AID clockAgent = new AID("TimeKeeper", AID.ISLOCALNAME);
-    protected AID orderBoardAgent = new AID("visualization", AID.ISLOCALNAME);
+    //protected AID visualisationAgent = new AID("visualisation", AID.ISLOCALNAME);
     protected BaseAgent baseAgent = this;
 	
     /* Setup to add behaviour to talk with clockAgent
@@ -79,9 +79,18 @@ public abstract class BaseAgent extends Agent {
     }
 
     public boolean getAllowAction() {
-        return allowAction;
+        return this.allowAction;
     }
-    protected Time getCurrentTime(){
+    public int getCurrentDay() {
+        return this.currentTime.getDay();
+    }
+    public int getCurrentHour() {
+        return this.currentTime.getHour();
+    }
+    public int getCurrentMinute() {
+        return this.currentTime.getMinute();
+    }
+    public Time getCurrentTime(){
         return this.currentTime;
     }
 
@@ -108,15 +117,15 @@ public abstract class BaseAgent extends Agent {
     protected void visualiseMessageQueuesByAgent(ACLMessage msg) {
     }
     protected void visualiseOrderBoard(ACLMessage msg) {
-        msg.clearAllReceiver();
-        msg.addReceiver(orderBoardAgent);
-        this.send(msg);
-        try {
-            //    Thread.sleep(2000);
-            Thread.sleep(2);
-        } catch (InterruptedException e){
-            e.printStackTrace();
-        }
+        //        msg.clearAllReceiver();
+        //        msg.addReceiver(orderBoardAgent);
+        //        this.send(msg);
+        //        try {
+        //            //    Thread.sleep(2000);
+        //            Thread.sleep(2);
+        //        } catch (InterruptedException e){
+        //            e.printStackTrace();
+        //        }
     }
     protected void visualiseStreetNetwork(ACLMessage msg) {
     }

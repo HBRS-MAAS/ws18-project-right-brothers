@@ -13,6 +13,7 @@ import org.maas.agents.BaseAgent;
 import org.maas.objects.ProcessedProduct;
 import org.maas.data.messages.ProductMessage;
 import org.maas.utils.JsonConverter;
+import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class CoolingRackAgent extends BaseAgent{
@@ -41,41 +42,26 @@ public class CoolingRackAgent extends BaseAgent{
             if (!baseAgent.getAllowAction()) {
                 return;
             }
-            if (baseAgent.getCurrentHour() <= 12) {
+            if (baseAgent.getCurrentTime().lessThan(new Time(baseAgent.getCurrentDay(), 12, 0))){
                 ArrayList<ProcessedProduct> message = this.getCooledProducts();
                 if (message.size() > 0) {
                     this.sendProducts(message);
                 }
             }
-            if (baseAgent.getCurrentHour() == 12){
-                this.haltCooling();
-            }
             baseAgent.finished();
-        }
-        private void haltCooling() {
-            for (ProcessedProduct pp : processedProducts) {
-                if (pp.getProcessStartTime() >= 0){
-                    int alreadyProcessed = baseAgent.getCurrentHour() - pp.getProcessStartTime();
-                    int oldDuration = pp.getCoolingDuration();
-                    pp.setCoolingDuration(oldDuration - alreadyProcessed);
-                    pp.setProcessStartTime(-1);
-                    System.out.println("\tHalted Cooling " + pp.getQuantity() + " " + pp.getGuid() + " at time " + baseAgent.getCurrentHour());
-                }
-            }
         }
         private ArrayList<ProcessedProduct> getCooledProducts() {
             ArrayList<ProcessedProduct> temp = new ArrayList<ProcessedProduct> ();
-            for (ProcessedProduct pm : processedProducts) {
-                if (pm.getProcessStartTime() < 0){
-                    if (baseAgent.getCurrentHour() + pm.getCoolingDuration() + 1 > 12)
-                        continue;
-                    pm.setProcessStartTime(baseAgent.getCurrentHour());
-                    System.out.println("\tStarted cooling " + pm.getQuantity() + " " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
+            for (ProcessedProduct processedProduct : processedProducts) {
+                if (processedProduct.getRemainingTimeDuration() < 0){
+                    processedProduct.setRemainingTimeDuration(processedProduct.getCoolingDuration());
+                    System.out.println("\tStarted cooling " + processedProduct.getQuantity() + " " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 }
-                if (baseAgent.getCurrentHour() >= pm.getProcessStartTime() + pm.getCoolingDuration() + 1){
-                    System.out.println("\tCooled " + pm.getGuid() + " at time " + baseAgent.getCurrentHour());
-                    temp.add(pm);
+                if (processedProduct.getRemainingTimeDuration() == 0){
+                    System.out.println("\tCooled " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                    temp.add(processedProduct);
                 }
+                processedProduct.setRemainingTimeDuration(processedProduct.getRemainingTimeDuration() - 1);
             }
             for (ProcessedProduct pm : temp)
                 processedProducts.remove(pm);
@@ -84,7 +70,12 @@ public class CoolingRackAgent extends BaseAgent{
         private void sendProducts(ArrayList<ProcessedProduct> temp){
             Hashtable<String,Integer> outMsg = new Hashtable<String,Integer> ();
             for (ProcessedProduct pm : temp) {
-                outMsg.put(pm.getGuid(), pm.getQuantity());
+                if (outMsg.containsKey(pm.getGuid())){
+                    outMsg.put(pm.getGuid(), pm.getQuantity() + outMsg.get(pm.getGuid()));
+                }
+                else {
+                    outMsg.put(pm.getGuid(), pm.getQuantity());
+                }
             }
             ProductMessage p = new ProductMessage();
             p.setProducts(outMsg);

@@ -17,7 +17,7 @@ import jade.lang.acl.MessageTemplate;
 import java.util.Arrays;
 import java.util.List;
 
-import org.right_brothers.agents.BaseAgent;
+import org.maas.agents.BaseAgent;
 
 @SuppressWarnings("serial")
 public class DummyAgent extends BaseAgent {

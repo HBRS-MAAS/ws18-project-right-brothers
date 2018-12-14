@@ -15,7 +15,7 @@ import jade.domain.FIPAAgentManagement.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-import org.right_brothers.agents.BaseAgent;
+import org.maas.agents.BaseAgent;
 import org.right_brothers.bakery_objects.CooledProduct;
 import org.right_brothers.utils.InputParser; 
 import org.right_brothers.data.models.Order;
@@ -90,11 +90,11 @@ public class PreLoadingProcessor extends BaseAgent {
         }
         private void haltProcessing(){
             for (CooledProduct cooledProduct : cooledProductsList) {
-                if (cooledProduct.getProcessStartTime() >= 0){
-                    int alreadyProcessed = baseAgent.getCurrentHour() - cooledProduct.getProcessStartTime();
+                if (cooledProduct.getRemainingTimeDuration() >= 0){
+                    int alreadyProcessed = baseAgent.getCurrentHour() - cooledProduct.getRemainingTimeDuration();
                     int oldDuration = cooledProduct.getIntermediateSteps().get(0).getDuration();
                     cooledProduct.getIntermediateSteps().get(0).setDuration(oldDuration - alreadyProcessed);
-                    cooledProduct.setProcessStartTime(-1);
+                    cooledProduct.setRemainingTimeDuration(-1);
                     System.out.println("\tHalted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 }
             }
@@ -103,14 +103,14 @@ public class PreLoadingProcessor extends BaseAgent {
             ArrayList<CooledProduct> temp = new ArrayList<CooledProduct> ();
             ArrayList<CompletedProductMessage> message = new ArrayList<CompletedProductMessage> ();
             for (CooledProduct cooledProduct : cooledProductsList) {
-                if (cooledProduct.getProcessStartTime() < 0){
-                    cooledProduct.setProcessStartTime(baseAgent.getCurrentHour());
+                if (cooledProduct.getRemainingTimeDuration() < 0){
+                    cooledProduct.setRemainingTimeDuration(baseAgent.getCurrentHour());
                     System.out.println("\tStarted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 }
-                if (baseAgent.getCurrentHour() >= cooledProduct.getProcessStartTime() + cooledProduct.getIntermediateSteps().get(0).getDuration() + 1){
+                if (baseAgent.getCurrentHour() >= cooledProduct.getRemainingTimeDuration() + cooledProduct.getIntermediateSteps().get(0).getDuration() + 1){
                     System.out.println("\tFinished " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                     cooledProduct.finishedStep();
-                    cooledProduct.setProcessStartTime(-1);
+                    cooledProduct.setRemainingTimeDuration(-1);
                     if (cooledProduct.getIntermediateSteps().size() == 0) {
                         message.add(cooledProduct.getCompletedProductMessage());
                         temp.add(cooledProduct);

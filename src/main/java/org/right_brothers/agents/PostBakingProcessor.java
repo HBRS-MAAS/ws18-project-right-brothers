@@ -9,23 +9,25 @@ import java.util.*;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.right_brothers.agents.BaseAgent;
+
+import org.maas.agents.BaseAgent;
 import org.right_brothers.bakery_objects.BakedProduct;
 import org.right_brothers.data.messages.ProcessedProductMessage;
 import org.right_brothers.utils.JsonConverter;
+import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class PostBakingProcessor extends BaseAgent{
     private AID ovenManager = new AID("OvenManager", AID.ISLOCALNAME);
     private AID coolingRacksAgent = new AID("cooling-rack", AID.ISLOCALNAME);
-    private List<BakedProduct> bakedProducts;
+    private List<BakedProduct> bakedProductList;
     
     protected void setup() {
         super.setup();
         System.out.println("\tIntermediater "+getAID().getLocalName()+" is born.");
         
         this.register("intermediater-agent", "JADE-bakery");
-        this.bakedProducts = new ArrayList<BakedProduct> ();
+        this.bakedProductList = new ArrayList<BakedProduct> ();
 
         addBehaviour(new BakedProductsServer(ovenManager));
         addBehaviour(new Process());
@@ -40,52 +42,40 @@ public class PostBakingProcessor extends BaseAgent{
             if (!baseAgent.getAllowAction()) {
                 return;
             }
-            if (baseAgent.getCurrentHour() <= 12){
+            if (baseAgent.getCurrentTime().lessThan(new Time(baseAgent.getCurrentDay(), 12, 0))){
                 ArrayList<ProcessedProductMessage> message = this.processProducts();
                 if (message.size() > 0) {
                     this.sendBakedProducts(message);
                 }
             }
-            if (baseAgent.getCurrentHour() == 12) {
-                this.haltProcessing();
-            }
             baseAgent.finished();
-        }
-        private void haltProcessing(){
-            for (BakedProduct bp : bakedProducts) {
-                if (bp.getProcessStartTime() >= 0){
-                    int alreadyProcessed = baseAgent.getCurrentHour() - bp.getProcessStartTime();
-                    int oldDuration = bp.getIntermediateSteps().get(0).getDuration();
-                    bp.getIntermediateSteps().get(0).setDuration(oldDuration - alreadyProcessed);
-                    bp.setProcessStartTime(-1);
-                    System.out.println("\tHalted " + bp.getIntermediateSteps().get(0).getAction() + " " + bp.getQuantity() + " " + bp.getGuid() + " at time " + baseAgent.getCurrentHour());
-                }
-            }
         }
         private ArrayList<ProcessedProductMessage> processProducts (){
             ArrayList<BakedProduct> temp = new ArrayList<BakedProduct> ();
             ArrayList<ProcessedProductMessage> message = new ArrayList<ProcessedProductMessage> ();
-            for (BakedProduct bp : bakedProducts) {
-                if (bp.getProcessStartTime() < 0){
-                    bp.setProcessStartTime(baseAgent.getCurrentHour());
-                    System.out.println("\tStarted " + bp.getIntermediateSteps().get(0).getAction() + " " + bp.getQuantity() + " " + bp.getGuid() + " at time " + baseAgent.getCurrentHour());
+            for (BakedProduct bakedProduct : bakedProductList) {
+                if (bakedProduct.getRemainingTimeDuration() < 0){
+                    bakedProduct.setRemainingTimeDuration(bakedProduct.getIntermediateSteps().get(0).getDuration());
+                    System.out.println("\tStarted " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 }
-                if (baseAgent.getCurrentHour() >= bp.getProcessStartTime() + bp.getIntermediateSteps().get(0).getDuration() + 1){
-                    System.out.println("\tFinished " + bp.getIntermediateSteps().get(0).getAction() + " " + bp.getQuantity() + " " + bp.getGuid() + " at time " + baseAgent.getCurrentHour());
-                    bp.finishedStep();
-                    bp.setProcessStartTime(-1);
-                    if (bp.getIntermediateSteps().size() == 0) {
-                        ProcessedProductMessage ppm = new ProcessedProductMessage();
-                        ppm.setGuid(bp.getGuid());
-                        ppm.setQuantity(bp.getQuantity());
-                        ppm.setCoolingDuration(bp.getCoolingDuration());
-                        message.add(ppm);
-                        temp.add(bp);
+                if (bakedProduct.getRemainingTimeDuration() == 0){
+                    System.out.println("\tFinished " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                    bakedProduct.finishedStep();
+                    bakedProduct.setRemainingTimeDuration(-1);
+                    if (bakedProduct.getIntermediateSteps().size() == 0) {
+                        ProcessedProductMessage processedProductMessage = new ProcessedProductMessage();
+                        processedProductMessage.setGuid(bakedProduct.getGuid());
+                        processedProductMessage.setQuantity(bakedProduct.getQuantity());
+                        processedProductMessage.setCoolingDuration(bakedProduct.getCoolingDuration());
+                        message.add(processedProductMessage);
+                        temp.add(bakedProduct);
+                        continue;
                     }
                 }
+                bakedProduct.setRemainingTimeDuration(bakedProduct.getRemainingTimeDuration() - 1);
             }
             for (BakedProduct bp : temp)
-                bakedProducts.remove(bp);
+                bakedProductList.remove(bp);
             return message;
         }
         private void sendBakedProducts(ArrayList<ProcessedProductMessage> message){
@@ -116,7 +106,7 @@ public class PostBakingProcessor extends BaseAgent{
                 String messageContent = msg.getContent();
                 System.out.println("\tReceived intermediate product: " + messageContent + " at " + baseAgent.getCurrentHour());
                 ArrayList<BakedProduct> receivedBakedProducts = this.parseBakedProducts(messageContent);
-                bakedProducts.addAll(receivedBakedProducts);
+                bakedProductList.addAll(receivedBakedProducts);
             }
             else {
                 block();

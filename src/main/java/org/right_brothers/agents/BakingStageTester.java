@@ -1,12 +1,10 @@
 package org.right_brothers.agents;
 
-// for shutdown behaviour
-import jade.content.lang.Codec;
-import jade.content.lang.sl.SLCodec;
-import jade.content.onto.basic.Action;
-import jade.domain.JADEAgentManagement.JADEManagementOntology;
-import jade.domain.JADEAgentManagement.ShutdownPlatform;
-import jade.domain.FIPANames;
+import java.util.*;
+// import java.util.stream.Collectors;
+import java.io.IOException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import jade.core.Agent;
 import jade.core.AID;
@@ -15,6 +13,8 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 // import jade.lang.acl.UnreadableException;
 
+import org.maas.agents.BaseAgent;
+import org.right_brothers.data.models.Order;
 import org.right_brothers.utils.JsonConverter;
 import org.right_brothers.data.messages.UnbakedProductMessage;
 
@@ -27,12 +27,14 @@ public class BakingStageTester extends BaseAgent {
     private AID ovenManager = new AID("ovenManager", AID.ISLOCALNAME);
     private AID coolingRackAgent = new AID("cooling-rack", AID.ISLOCALNAME);
     private int counter = 0;
+    private List<Order> orders;
 
     protected void setup() {
         super.setup();
         System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
         this.register("Baking-tester", "JADE-bakery");
 
+        this.orders = new ArrayList();
         String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }"; 
 
         UnbakedProductMessage upm = new UnbakedProductMessage();
@@ -127,21 +129,40 @@ public class BakingStageTester extends BaseAgent {
             return true;
         }
     }
-    // Taken from http://www.rickyvanrijn.nl/2017/08/29/how-to-shutdown-jade-agent-platform-programmatically/
-    private class shutdown extends OneShotBehaviour{
+    /*
+     * Server for the order from order processing agent's message
+     * */
+    private class OrderServer extends CyclicBehaviour {
+        private MessageTemplate mt;
+        private AID sender;
+
+        public OrderServer(AID orderProcessor){
+            this.sender = orderProcessor;
+        }
         public void action() {
-            ACLMessage shutdownMessage = new ACLMessage(ACLMessage.REQUEST);
-            Codec codec = new SLCodec();
-            myAgent.getContentManager().registerLanguage(codec);
-            myAgent.getContentManager().registerOntology(JADEManagementOntology.getInstance());
-            shutdownMessage.addReceiver(myAgent.getAMS());
-            shutdownMessage.setLanguage(FIPANames.ContentLanguage.FIPA_SL);
-            shutdownMessage.setOntology(JADEManagementOntology.getInstance().getName());
-            try {
-                myAgent.getContentManager().fillContent(shutdownMessage,new Action(myAgent.getAID(), new ShutdownPlatform()));
-                myAgent.send(shutdownMessage);
+            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+                    MessageTemplate.MatchSender(sender));
+            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("order"));
+            ACLMessage msg = myAgent.receive(mt2);
+            if (msg != null) {
+                String order = msg.getContent();
+                Order o = this.parseOrder(order);
+                System.out.println("\tReceived Order with guid: " + o.getGuid());
+                orders.add(o);
             }
-            catch (Exception e) {}
+            else {
+                block();
+            }
+        }
+        private Order parseOrder(String orderString){
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                Order data = mapper.readValue(orderString, Order.class);
+                return data;
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
     }
 }
