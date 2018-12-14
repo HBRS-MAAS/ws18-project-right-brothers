@@ -1,5 +1,7 @@
 package org.maas.agents;
 
+import org.maas.utils.Time;
+
 import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
@@ -16,8 +18,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 @SuppressWarnings("serial")
 public abstract class BaseAgent extends Agent {
 
-	private int currentDay;
-    private int currentHour;
+    private Time currentTime;
     private boolean allowAction = false;
     protected AID clockAgent = new AID("TimeKeeper", AID.ISLOCALNAME);
     protected AID orderBoardAgent = new AID("visualization", AID.ISLOCALNAME);
@@ -51,7 +52,6 @@ public abstract class BaseAgent extends Agent {
         catch (FIPAException fe) {
             fe.printStackTrace();
         }
-        System.out.println("\nWARNING: getCurrentDay and getCurrentHour will be deprecated in future.\n");
     }
     
     /* This function removes the agent from yellow pages
@@ -64,7 +64,6 @@ public abstract class BaseAgent extends Agent {
         catch (FIPAException fe) {
             fe.printStackTrace();
         }
-        System.out.println("\nWARNING: getCurrentDay and getCurrentHour will be deprecated in future.\n");
     }
 
     /* This function sends finished message to clockAgent
@@ -82,11 +81,8 @@ public abstract class BaseAgent extends Agent {
     public boolean getAllowAction() {
         return allowAction;
     }
-    public int getCurrentDay() {
-        return currentDay;
-    }
-    public int getCurrentHour() {
-        return currentHour;
+    protected Time getCurrentTime(){
+        return this.currentTime;
     }
 
     /* This function is used as a middle man which uses the message
@@ -133,16 +129,12 @@ public abstract class BaseAgent extends Agent {
         private MessageTemplate mt;
 
         public void action(){
-            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(55),
+            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(TimeKeeper.BROADCAST_TIMESTEP_PERFORMATIVE),
                     MessageTemplate.MatchSender(baseAgent.clockAgent));
             ACLMessage msg = myAgent.receive(this.mt);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                int counter = Integer.parseInt(messageContent);
-                int day = counter / 24;
-                int hour = counter % 24;
-                currentDay = day;
-                currentHour = hour;
+                currentTime = new Time(messageContent);
                 allowAction = true;
                 
                 stepAction();
