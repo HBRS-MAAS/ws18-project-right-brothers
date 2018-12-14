@@ -15,7 +15,7 @@ import jade.lang.acl.MessageTemplate;
 
 import org.maas.agents.BaseAgent;
 import org.right_brothers.data.models.Order;
-import org.right_brothers.utils.JsonConverter;
+import org.maas.utils.JsonConverter;
 import org.right_brothers.data.messages.UnbakedProductMessage;
 
 import java.util.*;

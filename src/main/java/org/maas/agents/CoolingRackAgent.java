@@ -105,23 +105,13 @@ public class CoolingRackAgent extends BaseAgent{
                         msg.getSender().getName()));
                 String messageContent = msg.getContent();
                 System.out.println(String.format("\tmessage:: %s", messageContent));
-                ArrayList<ProcessedProduct> receivedProcessedProducts = this.parseProcessedProducts(messageContent);
+                TypeReference<?> type = new TypeReference<ArrayList<ProcessedProduct>>(){};
+                ArrayList<ProcessedProduct> receivedProcessedProducts = JsonConverter.getInstance(messageContent, type);
                 processedProducts.addAll(receivedProcessedProducts);
             }
             else {
                 block();
             }
-        }
-        private ArrayList<ProcessedProduct> parseProcessedProducts(String orderString){
-            ObjectMapper mapper = new ObjectMapper();
-            TypeReference<?> type = new TypeReference<ArrayList<ProcessedProduct>>(){};
-            try {
-                ArrayList<ProcessedProduct> data = mapper.readValue(orderString, type);
-                return data;
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-            return null;
         }
     }
 }

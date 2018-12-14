@@ -24,7 +24,7 @@ import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Step;
 import org.right_brothers.data.messages.ProductMessage;
 import org.right_brothers.data.messages.CompletedProductMessage;
-import org.right_brothers.utils.JsonConverter;
+import org.maas.utils.JsonConverter;
 
 @SuppressWarnings("serial")
 public class PreLoadingProcessor extends BaseAgent {
