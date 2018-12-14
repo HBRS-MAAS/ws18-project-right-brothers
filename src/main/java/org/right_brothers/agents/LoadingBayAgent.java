@@ -15,7 +15,7 @@ import org.right_brothers.data.messages.LoadingBayBox;
 import org.right_brothers.data.messages.LoadingBayMessage;
 import org.right_brothers.data.models.Order;
 import org.right_brothers.utils.InputParser; 
-import org.right_brothers.utils.JsonConverter;
+import org.maas.utils.JsonConverter;
 import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Product;
 

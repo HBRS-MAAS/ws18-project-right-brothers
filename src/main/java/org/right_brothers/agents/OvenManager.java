@@ -25,7 +25,7 @@ import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Step;
 import org.right_brothers.data.messages.UnbakedProductMessage;
 import org.right_brothers.data.messages.BakedProductMessage;
-import org.right_brothers.utils.JsonConverter;
+import org.maas.utils.JsonConverter;
 import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
@@ -193,15 +193,16 @@ public class OvenManager extends BaseAgent {
             if (msg != null) {
                 String messageContent = msg.getContent();
                 System.out.println("\tReceived Unbaked product " + messageContent);
-                UnbakedProductMessage upm = this.parseUnbakedProductMessage(messageContent);
+                TypeReference<?> type = new TypeReference<UnbakedProductMessage>(){};
+                UnbakedProductMessage unbakedProductMessage = JsonConverter.getInstance(messageContent, type);
                 /*
                  * Just add quantity to already existing product if possible, otherwise
                  * add the whole product to the queue
                  */
                 boolean alreadyAdded = false;
                 for (UnbakedProduct up : unbakedProductList) {
-                    if (up.getGuid().equals(upm.getProductType())){
-                        int newQuantity = this.getTotalQuantity(upm.getProductQuantities());
+                    if (up.getGuid().equals(unbakedProductMessage.getProductType())){
+                        int newQuantity = this.getTotalQuantity(unbakedProductMessage.getProductQuantities());
                         if (up.getQuantity() + newQuantity <= up.getBreadsPerOven()){
                             up.setQuantity(up.getQuantity() + newQuantity);
                             alreadyAdded = true;
@@ -218,24 +219,14 @@ public class OvenManager extends BaseAgent {
                     }
                 }
                 if (!alreadyAdded){
-                    UnbakedProduct up = this.getUnbakedProductFromProductName(upm.getProductType());
-                    int newQuantity = this.getTotalQuantity(upm.getProductQuantities());
+                    UnbakedProduct up = this.getUnbakedProductFromProductName(unbakedProductMessage.getProductType());
+                    int newQuantity = this.getTotalQuantity(unbakedProductMessage.getProductQuantities());
                     this.iterativelyAddUnbakedProducts(newQuantity, up);
                 }
             }
             else {
                 block();
             }
-        }
-        private UnbakedProductMessage parseUnbakedProductMessage(String orderString){
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                UnbakedProductMessage data = mapper.readValue(orderString, UnbakedProductMessage.class);
-                return data;
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-            return null;
         }
         private UnbakedProduct getUnbakedProductFromProductName(String productName){
             UnbakedProduct up = new UnbakedProduct();

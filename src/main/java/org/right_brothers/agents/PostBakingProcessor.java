@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.maas.agents.BaseAgent;
 import org.right_brothers.bakery_objects.BakedProduct;
 import org.right_brothers.data.messages.ProcessedProductMessage;
-import org.right_brothers.utils.JsonConverter;
+import org.maas.utils.JsonConverter;
 import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
@@ -105,23 +105,13 @@ public class PostBakingProcessor extends BaseAgent{
             if (msg != null) {
                 String messageContent = msg.getContent();
                 System.out.println("\tReceived intermediate product: " + messageContent + " at " + baseAgent.getCurrentHour());
-                ArrayList<BakedProduct> receivedBakedProducts = this.parseBakedProducts(messageContent);
+                TypeReference<?> type = new TypeReference<ArrayList<BakedProduct>>(){};
+                ArrayList<BakedProduct> receivedBakedProducts = JsonConverter.getInstance(messageContent, type);
                 bakedProductList.addAll(receivedBakedProducts);
             }
             else {
                 block();
             }
-        }
-        private ArrayList<BakedProduct> parseBakedProducts(String orderString){
-            ObjectMapper mapper = new ObjectMapper();
-            TypeReference<?> type = new TypeReference<ArrayList<BakedProduct>>(){};
-            try {
-                ArrayList<BakedProduct> data = mapper.readValue(orderString, type);
-                return data;
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-            return null;
         }
     }
 }
