@@ -41,14 +41,14 @@ public class Visualizer extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/Layout.fxml"));
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/Layout.fxml"));
 			Parent root = fxmlLoader.load();
 			layoutController = fxmlLoader.getController();
 			
 			
 			Scene scene = new Scene(root);
 			scene.getStylesheets()
-				.add(getClass().getResource("/fxml/application.css").toExternalForm());
+				.add(getClass().getResource("/fxml/right_brothers/application.css").toExternalForm());
 			
 			primaryStage.setScene(scene);
 			primaryStage.setMaximized(true);

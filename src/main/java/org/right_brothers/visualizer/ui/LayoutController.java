@@ -23,12 +23,12 @@ public class LayoutController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
-			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/BakingStage.fxml"));
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/BakingStage.fxml"));
 			Parent bakingStage = fxmlLoader.load();
 			backingStageContainer.getChildren().add(bakingStage);
 			controllers.add(fxmlLoader.getController());
 			
-			fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/PackagingStage.fxml"));
+			fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/PackagingStage.fxml"));
 			Parent packaging = fxmlLoader.load();
 			packagingStageContainer.getChildren().add(packaging);
 			controllers.add(fxmlLoader.getController());

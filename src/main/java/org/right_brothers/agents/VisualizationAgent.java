@@ -45,7 +45,7 @@ public class VisualizationAgent extends Agent {
             ACLMessage msg = myAgent.receive();
             if (msg != null) {
                 String msgString =  msg.getContent();
-                System.out.println("\tMessage inside VisualizationAgent " + msgString);
+                System.out.println("### \tMessage inside VisualizationAgent " + msgString);
                 counter ++;
                 guiWindow.updateBoard("", Integer.toString(counter));
             }
