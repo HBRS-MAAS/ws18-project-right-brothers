@@ -18,6 +18,9 @@ public class LayoutController implements Initializable {
 	@FXML
 	private AnchorPane packagingStageContainer;
 	
+	@FXML
+	private AnchorPane deliveryStageContainer;
+	
 	private List<StageController> controllers = new Vector<>();
 
 	@Override
@@ -32,6 +35,12 @@ public class LayoutController implements Initializable {
 			Parent packaging = fxmlLoader.load();
 			packagingStageContainer.getChildren().add(packaging);
 			controllers.add(fxmlLoader.getController());
+			
+			fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/DeliveryStage.fxml"));
+			Parent delivery = fxmlLoader.load();
+			deliveryStageContainer.getChildren().add(delivery);
+			controllers.add(fxmlLoader.getController());
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
