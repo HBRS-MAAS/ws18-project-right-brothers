@@ -20,7 +20,7 @@
 	xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1"
 	fx:controller="org.right_brothers.visualizer.ui.LayoutController">
    <top>
-      <AnchorPane prefHeight="60.0" style="-fx-background-color: #cccccc;" styleClass="top-panel" BorderPane.alignment="CENTER">
+      <AnchorPane prefHeight="60.0" style="-fx-background-color: #cccccc;" BorderPane.alignment="CENTER">
          <children>
             <HBox style="-fx-padding: 3 5 3 10;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>

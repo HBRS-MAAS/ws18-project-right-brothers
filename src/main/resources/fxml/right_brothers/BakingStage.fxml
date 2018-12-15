@@ -53,12 +53,12 @@
       </AnchorPane>
       <AnchorPane>
          <children>
-            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" style="-fx-padding: 10 10; -fx-background-color: transperent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" styleClass="card-container-anchor" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
-                  <VBox spacing="10.0" style="-fx-background-color: #e6e6e6;">
+                  <VBox spacing="10.0" styleClass="card-container">
                      <children>
                         <VBox fx:id="dummyCard"
-                        	 maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
+                        	 maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" styleClass="card">
                            <children>
                               <AnchorPane>
                                  <children>
