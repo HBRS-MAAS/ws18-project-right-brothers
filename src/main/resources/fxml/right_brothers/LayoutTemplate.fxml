@@ -229,7 +229,7 @@
                                                       </AnchorPane>
                                                       <AnchorPane prefWidth="200.0">
                                                          <children>
-                                                            <Label text="order-001()" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                                                            <Label text="order-001(10), order-002(20)" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                                                          </children>
                                                       </AnchorPane>
                                                    </children>

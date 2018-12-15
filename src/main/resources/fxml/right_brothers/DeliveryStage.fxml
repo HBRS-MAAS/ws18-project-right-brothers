@@ -17,7 +17,7 @@
 <?import javafx.scene.text.Font?>
 
 <VBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" 
-	layoutX="97.0" layoutY="10.0" style="-fx-background-color: #e6e6e6; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 5;" 
+	layoutX="97.0" layoutY="10.0" styleClass="stage-root" 
 	AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0"
 	fx:controller="org.right_brothers.visualizer.ui.DeliveryStageController">
    <opaqueInsets>
@@ -28,7 +28,7 @@
          <children>
             <HBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <children>
-                  <StackPane>
+                  <StackPane styleClass="stage-message-count">
                      <children>
                         <Circle fill="#bfbfbf" radius="12.0" stroke="#00000067" strokeType="INSIDE" />
                         <Label text="0">
@@ -38,7 +38,7 @@
                         </Label>
                      </children>
                   </StackPane>
-                  <StackPane style="-fx-padding: 0 0 0 10;">
+                  <StackPane styleClass="stage-label">
                      <children>
                         <Label text="Delivery">
                            <font>
@@ -53,15 +53,37 @@
       </AnchorPane>
       <AnchorPane>
          <children>
-            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" style="-fx-padding: 10 10; -fx-background-color: transperent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" styleClass="card-container-anchor" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
-                  <VBox spacing="10.0" style="-fx-background-color: #e6e6e6;">
+                  <VBox spacing="10.0" styleClass="card-container">
                      <children>
-                        <VBox prefHeight="60.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10;" visible="false">
+                     	<VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="2.0" styleClass="card">
                            <children>
-                              <Label />
+                              <AnchorPane>
+                                 <children>
+                                    <Label text="order-331" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                       <font>
+                                          <Font name="System Bold" size="13.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane>
+                                 <children>
+                                    <Label text="customer-001" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                       <font>
+                                          <Font name="System Bold" size="11.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane prefWidth="200.0">
+                                 <children>
+                                    <Label text="Bagel(5), Bagel(2), Donut(1)" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                                 </children>
+                              </AnchorPane>
                            </children>
-                        </VBox>
+                        </VBox>                     	
                      </children>
                   </VBox>
                </content>

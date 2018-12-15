@@ -79,7 +79,7 @@
                                  <children>
                                     <HBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                        <children>
-                                          <StackPane>
+                                          <StackPane styleClass="stage-message-count">
                                              <children>
                                                 <Circle fill="#bfbfbf" radius="12.0" stroke="#00000067" strokeType="INSIDE" />
                                                 <Label text="0">
@@ -89,7 +89,7 @@
                                                 </Label>
                                              </children>
                                           </StackPane>
-                                          <StackPane style="-fx-padding: 0 0 0 10;">
+                                          <StackPane styleClass="stage-label">
                                              <children>
                                                 <Label text="Order Processing">
                                                    <font>
@@ -134,7 +134,7 @@
                                  <children>
                                     <HBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                        <children>
-                                          <StackPane>
+                                          <StackPane styleClass="stage-message-count">
                                              <children>
                                                 <Circle fill="#bfbfbf" radius="12.0" stroke="#00000067" strokeType="INSIDE" />
                                                 <Label text="0">
@@ -144,7 +144,7 @@
                                                 </Label>
                                              </children>
                                           </StackPane>
-                                          <StackPane style="-fx-padding: 0 0 0 10;">
+                                          <StackPane styleClass="stage-label">
                                              <children>
                                                 <Label text="Dough Preperation">
                                                    <font>
@@ -201,7 +201,7 @@
                                  <children>
                                     <HBox AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                                        <children>
-                                          <StackPane>
+                                          <StackPane styleClass="stage-message-count">
                                              <children>
                                                 <Circle fill="#bfbfbf" radius="12.0" stroke="#00000067" strokeType="INSIDE" />
                                                 <Label text="0">
@@ -211,7 +211,7 @@
                                                 </Label>
                                              </children>
                                           </StackPane>
-                                          <StackPane style="-fx-padding: 0 0 0 10;">
+                                          <StackPane styleClass="stage-label">
                                              <children>
                                                 <Label text="Mailbox">
                                                    <font>
