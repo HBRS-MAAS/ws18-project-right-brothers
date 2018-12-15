@@ -8,17 +8,19 @@ import java.util.Set;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Vector;
+
+import org.maas.agents.BaseAgent;
 import org.right_brothers.data.messages.CompletedProductMessage;
 import org.right_brothers.data.messages.LoadingBayBox;
 import org.right_brothers.data.messages.LoadingBayMessage;
 import org.right_brothers.data.models.Order;
 import org.right_brothers.utils.InputParser; 
-import org.right_brothers.utils.JsonConverter;
+import org.maas.utils.JsonConverter;
+import org.right_brothers.data.models.Bakery;
+import org.right_brothers.data.models.Product;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.right_brothers.data.models.Bakery;
-import org.right_brothers.data.models.Product;
 
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;

@@ -21,7 +21,7 @@ import jade.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-import org.right_brothers.agents.BaseAgent;
+import org.maas.agents.BaseAgent;
 import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Location;
 import org.right_brothers.data.models.Client;

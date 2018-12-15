@@ -10,7 +10,7 @@ import jade.domain.FIPAAgentManagement.*;
 import jade.domain.FIPAException;
 import jade.domain.DFService;
 
-import org.right_brothers.agents.BaseAgent;
+import org.maas.agents.BaseAgent;
 import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Location;

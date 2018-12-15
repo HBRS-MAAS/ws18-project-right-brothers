@@ -7,7 +7,7 @@ import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-import org.right_brothers.agents.BaseAgent;
+import org.maas.agents.BaseAgent;
 
 @SuppressWarnings("serial")
 public class CoordinatorAgent extends BaseAgent {
