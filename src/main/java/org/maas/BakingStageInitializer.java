@@ -19,9 +19,9 @@ public class BakingStageInitializer extends Initializer {
 
         agents.add(bakeryNames.get(0) + "-dummy:org.right_brothers.agents.BakingStageTester(" + bakeryNames.get(0) + ")");
         for (String bakeryName : bakeryNames) {
-            agents.add(bakeryName + "-ovenManager:org.right_brothers.agents.OvenManager");
-            agents.add(bakeryName + "-postBakingProcessor:org.right_brothers.agents.PostBakingProcessor");
-            agents.add(bakeryName + "-cooling-rack:org.maas.agents.CoolingRackAgent");
+            agents.add(bakeryName + "-ovenManager:org.right_brothers.agents.OvenManager(" + bakeryName + ")");
+            agents.add(bakeryName + "-postBakingProcessor:org.right_brothers.agents.PostBakingProcessor(" + bakeryName + ")");
+            agents.add(bakeryName + "-cooling-rack:org.maas.agents.CoolingRackAgent(" + bakeryName + ")");
         }
 
         String agentInitString = String.join(";", agents);
