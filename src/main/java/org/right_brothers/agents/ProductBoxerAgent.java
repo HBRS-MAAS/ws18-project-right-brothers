@@ -25,10 +25,11 @@ import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.DFService;
+// TODO : This might be useful when we want to find agent from the services registered in the yellowbook.
+//import jade.domain.FIPAException;
+//import jade.domain.FIPAAgentManagement.DFAgentDescription;
+//import jade.domain.FIPAAgentManagement.ServiceDescription;
+//import jade.domain.DFService;
 
 @SuppressWarnings("serial")
 
