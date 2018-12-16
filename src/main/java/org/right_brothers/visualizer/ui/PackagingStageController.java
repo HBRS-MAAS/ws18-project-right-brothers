@@ -30,5 +30,6 @@ public class PackagingStageController implements Initializable, StageController 
 
 	@Override
 	public void updateStage(String messageType, String message) {
+		// TODO Auto-generated method stub
 	}
 }

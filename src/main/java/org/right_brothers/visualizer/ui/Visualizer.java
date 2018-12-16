@@ -15,10 +15,6 @@ public class Visualizer extends Application {
 	
 	private LayoutController layoutController;
 	
-	public Visualizer() {
-		// setInstance(this);
-	}
-	
 	public static void setInstance(Visualizer visulizer) {
         currentInstance = visulizer;
         countDownLatch.countDown();
