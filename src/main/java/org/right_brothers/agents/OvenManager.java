@@ -30,11 +30,11 @@ import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class OvenManager extends BaseAgent {
-    private AID postBakingProcessor = new AID("postBakingProcessor", AID.ISLOCALNAME);
-    private AID proofer = new AID("dummy", AID.ISLOCALNAME);
-    private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
+    private AID postBakingProcessor;
+    private AID proofer;
+    private AID orderProcessor;
     private List<Product> availableProductList;
-    private String bakeryGuid = "bakery-001";
+    private String bakeryGuid;
     private List<Tray> trayList;
     private List<UnbakedProduct> unbakedProductList;
     private int bakedProductConversationNumber = 0;
@@ -43,13 +43,20 @@ public class OvenManager extends BaseAgent {
         super.setup();
         System.out.println("\tOven-manager "+getAID().getLocalName()+" is born.");
 
+        Object[] args = getArguments();
+        if (args != null && args.length > 0) {
+            this.bakeryGuid = (String) args[0];
+        } else {
+            this.bakeryGuid = "bakery-001";
+        }
+        postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
+        proofer = new AID(this.bakeryGuid + "-dummy", AID.ISLOCALNAME);
+        orderProcessor = new AID(this.bakeryGuid + "-dummy", AID.ISLOCALNAME);
+
         this.register("Oven-manager-agent", "JADE-bakery");
 
         this.unbakedProductList = new ArrayList<UnbakedProduct> ();
         this.availableProductList = new ArrayList<Product> ();
-
-        // TODO: get bakery guid as argument
-        //         Object[] args = getArguments();
 
         this.getAllInformation();
 

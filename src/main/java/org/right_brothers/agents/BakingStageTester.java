@@ -24,15 +24,25 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class BakingStageTester extends BaseAgent {
 
-    private AID ovenManager = new AID("ovenManager", AID.ISLOCALNAME);
-    private AID coolingRackAgent = new AID("cooling-rack", AID.ISLOCALNAME);
+    private AID ovenManager;
+    private AID coolingRackAgent;
     private int counter = 0;
+    private String bakeryName;
     private List<Order> orders;
 
     protected void setup() {
         super.setup();
         System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
         this.register("Baking-tester", "JADE-bakery");
+
+        Object[] args = getArguments();
+        if (args != null && args.length > 0) {
+            bakeryName = (String) args[0];
+        } else {
+            bakeryName = "bakery-001";
+        }
+        this.ovenManager = new AID(bakeryName + "-ovenManager", AID.ISLOCALNAME);
+        this.coolingRackAgent = new AID(bakeryName + "-cooling-rack", AID.ISLOCALNAME);
 
         this.orders = new ArrayList();
         String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }"; 
