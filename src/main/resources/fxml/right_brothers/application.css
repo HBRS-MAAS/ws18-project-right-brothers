@@ -1,0 +1,31 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+.stage-root {
+	-fx-background-color: #e6e6e6; 
+	-fx-border-radius: 10; 
+	-fx-background-radius: 10; 
+	-fx-padding: 10 5;
+}
+
+.stage-message-count {
+	-fx-padding: 0 0 0 10;
+}
+
+.stage-label {
+	-fx-padding: 0 0 0 10;
+}
+
+.card-container-anchor {
+	-fx-padding: 10 10;
+	-fx-background-color: transparent;
+}
+
+.card-container {
+	-fx-background-color: #e6e6e6;
+}
+
+.card {
+	-fx-background-color: #ffffff;
+	-fx-border-radius: 10;
+	-fx-background-radius: 10;
+	-fx-padding: 5 5;
+}

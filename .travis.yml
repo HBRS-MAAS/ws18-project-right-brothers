@@ -3,8 +3,11 @@ jdk:
     - oraclejdk8
 group: stable
 dist: trusty
+before_script:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 os: linux
 script: 
     - ./gradlew run
-    - ./gradlew run --args="bakingStageTest"
-    - ./gradlew run --args="packagingStageTest"
+    - ./gradlew run --args="-baking"
+#    - ./gradlew run --args="-packaging"

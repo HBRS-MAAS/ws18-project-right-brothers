@@ -13,7 +13,7 @@ public class Start {
     public static void main(String[] args) {
         List<String> agents = new Vector<>();
         List<String> cmd = new Vector<>();
-        int endTime = 60;
+        String scenarioDir = "small";
 
         List<String> arguments = Arrays.asList(args);
 
@@ -34,56 +34,55 @@ public class Start {
             String customArgument = String.join(" ", arguments).trim();
             if(arguments.get(0).equalsIgnoreCase("packagingStageTest")){
                 cmd.add("-agents");
-                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + 150 + ")");
+                String endTime = "000.13.00";
                 agents.add("dummy:org.right_brothers.agents.PackagingStageTester");
                 agents.add("postBakingProcessor:org.right_brothers.agents.PreLoadingProcessor");
                 agents.add("packaging-agent:org.right_brothers.agents.LoadingBayAgent");
+                agents.add("TimeKeeper:org.maas.agents.TimeKeeper(" + scenarioDir + ", " + endTime + ")");
             }
             if(arguments.get(0).equalsIgnoreCase("bakingStageTest")){
                 cmd.add("-agents");
-                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + endTime + ")");
+                String endTime = "000.06.00";
                 agents.add("dummy:org.right_brothers.agents.BakingStageTester");
                 agents.add("ovenManager:org.right_brothers.agents.OvenManager");
                 agents.add("intermediater:org.right_brothers.agents.PostBakingProcessor");
-                agents.add("cooling-rack:org.right_brothers.agents.CoolingRackAgent");
+                agents.add("cooling-rack:org.maas.agents.CoolingRackAgent");
+                agents.add("TimeKeeper:org.maas.agents.TimeKeeper(" + scenarioDir + ", " + endTime + ")");
             }
             if(arguments.get(0).equalsIgnoreCase("coordinatorTest")){
                 cmd.add("-agents");
-                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
+                String endTime = "000.06.00";
                 agents.add("dummy:org.right_brothers.agents.DummyAgent");
                 agents.add("coordinator:org.right_brothers.agents.CoordinatorAgent");
+                agents.add("TimeKeeper:org.maas.agents.TimeKeeper(" + scenarioDir + ", " + endTime + ")");
             }
             if(arguments.get(0).equalsIgnoreCase("coordinatorTestVisualization")){
                 cmd.add("-agents");
-                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
+                String endTime = "000.06.00";
                 agents.add("dummy:org.right_brothers.agents.DummyAgent");
                 agents.add("coordinator:org.right_brothers.agents.CoordinatorAgent");
                 agents.add("visualization:org.right_brothers.agents.VisualizationAgent");
+                agents.add("TimeKeeper:org.maas.agents.TimeKeeper(" + scenarioDir + ", " + endTime + ")");
             }
             if(arguments.get(0).equalsIgnoreCase("server")) {
                 for (int i = 1; i < arguments.size(); i++) {
                    cmd.add(arguments.get(i)); 
                 }
                 cmd.add("-agents");
-                agents.add("ovenManager:org.right_brothers.agents.OvenManager");
-                agents.add("intermediater:org.right_brothers.agents.Intermediater");
-                agents.add("cooling-rack:org.right_brothers.agents.CoolingRackAgent");
-//                 for (Bakery b : bakeries) {
-//                     agents.add(b.getGuid() + ":org.right_brothers.agents.OrderProcessingAgent");
-//                 }
+                for (Bakery b : bakeries) {
+                    agents.add(b.getGuid() + ":org.right_brothers.agents.OrderProcessingAgent");
+                }
             } else if(arguments.get(0).equalsIgnoreCase("-host")) {
                 cmd.add("-container");
                 cmd.addAll(arguments);
                 cmd.add("-agents");
-                agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper(" + endTime + ")");
-                agents.add("dummy:org.right_brothers.agents.BakingStageTester");
-//                 for (Client c : clients) {
-//                     agents.add(c.getGuid() + ":org.right_brothers.agents.BakeryCustomerAgent");
-//                 }
+                for (Client c : clients) {
+                    agents.add(c.getGuid() + ":org.right_brothers.agents.BakeryCustomerAgent");
+                }
             }
         } else {
             cmd.add("-agents");
-            agents.add("TimeKeeper:org.right_brothers.agents.TimeKeeper");
+            agents.add("TimeKeeper:org.maas.agents.TimeKeeper");
             for (Bakery b : bakeries) {
                 agents.add(b.getGuid() + ":org.right_brothers.agents.OrderProcessingAgent");
             }

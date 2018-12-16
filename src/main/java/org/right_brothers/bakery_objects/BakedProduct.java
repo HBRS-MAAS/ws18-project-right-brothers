@@ -8,10 +8,10 @@ public class BakedProduct implements java.io.Serializable {
     private int coolingDuration;
     private Vector<Step> intermediateSteps;
     private int quantity;
-    private int processStartTime;
+    private int remainingTimeDuration;
     
 	public BakedProduct() {
-        this.processStartTime = -1;
+        this.remainingTimeDuration = -1;
         this.intermediateSteps = new Vector<Step> ();
 	}
 
@@ -20,7 +20,7 @@ public class BakedProduct implements java.io.Serializable {
         bp.setGuid(this.getGuid());
         bp.setCoolingDuration(this.getCoolingDuration());
         bp.setQuantity(this.getQuantity());
-        bp.setProcessStartTime(this.getProcessStartTime());
+        bp.setRemainingTimeDuration(this.getRemainingTimeDuration());
         bp.setIntermediateSteps(this.getIntermediateSteps());
         return bp;
     }
@@ -49,12 +49,12 @@ public class BakedProduct implements java.io.Serializable {
         return quantity;
     }
 
-    public void setProcessStartTime(int processStartTime) {
-        this.processStartTime = processStartTime;
+    public void setRemainingTimeDuration(int remainingTimeDuration) {
+        this.remainingTimeDuration = remainingTimeDuration;
     }
 
-    public int getProcessStartTime() {
-        return processStartTime;
+    public int getRemainingTimeDuration() {
+        return remainingTimeDuration;
     }
 
     public void setIntermediateSteps(Vector<Step> intermediateSteps) {
@@ -74,7 +74,7 @@ public class BakedProduct implements java.io.Serializable {
         s += this.guid ;
         s += ", quantity: " + Integer.toString(this.quantity);
         s += ", intermediateSteps: " + Integer.toString(this.intermediateSteps.size());
-        s += ", processStartTime: " + Integer.toString(this.processStartTime);
+        s += ", remainingTimeDuration: " + Integer.toString(this.remainingTimeDuration);
         s += ">";
         return s;
     }

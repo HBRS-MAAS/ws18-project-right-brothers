@@ -1,23 +1,15 @@
 package org.right_brothers.agents;
 
-import javafx.application.Application;
-
-import org.right_brothers.utils.Animation;
-
+import org.right_brothers.visualizer.ui.Visualizer;
 import jade.core.Agent;
-// import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
-// import jade.lang.acl.MessageTemplate;
-
-// import java.util.Arrays;
-// import java.util.List;
 
 
 @SuppressWarnings("serial")
 public class VisualizationAgent extends Agent {
 
-    private Animation guiWindow;
+    private Visualizer guiWindow;
     public int counter;
 
 	protected void setup() {
@@ -29,10 +21,10 @@ public class VisualizationAgent extends Agent {
         new Thread() {
             @Override
             public void run() {
-                Application.launch(Animation.class);
+                Visualizer.run(new String[] {});
             }
         }.start();
-        guiWindow = Animation.waitForStartUpTest();
+        guiWindow = Visualizer.waitForInstance();
 		addBehaviour(new MessageServer());
 	}
 	protected void takeDown() {
@@ -44,9 +36,9 @@ public class VisualizationAgent extends Agent {
             ACLMessage msg = myAgent.receive();
             if (msg != null) {
                 String msgString =  msg.getContent();
-                System.out.println("\tMessage inside VisualizationAgent " + msgString);
+                System.out.println("### \tMessage inside VisualizationAgent " + msgString);
                 counter ++;
-                guiWindow.editTextObject(counter);
+                guiWindow.updateBoard("", Integer.toString(counter));
             }
             else {
                 block();
