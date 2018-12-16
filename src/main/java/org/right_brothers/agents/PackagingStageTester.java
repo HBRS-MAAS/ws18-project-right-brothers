@@ -6,8 +6,8 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 // import jade.lang.acl.UnreadableException;
 
-import org.maas.agents.BaseAgent;
 import org.maas.utils.JsonConverter;
+import org.maas.agents.BaseAgent;
 import org.right_brothers.data.messages.ProductMessage;
 
 import java.util.*;
@@ -16,40 +16,57 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class PackagingStageTester extends BaseAgent {
 
-    private AID postBakingProcessor = new AID("postBakingProcessor", AID.ISLOCALNAME);
+    private AID preLoadingProcessor = new AID("preLoadingProcessor", AID.ISLOCALNAME);
     private AID packagingAgent = new AID("packaging-agent", AID.ISLOCALNAME);
+    private AID loadingBayAgent = new AID("loader-agent", AID.ISLOCALNAME);
     private int counter = 0;
 
     protected void setup() {
         super.setup();
         System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
-        this.register("Packaging-test", "JADE-bakery");
+        this.register("OrderProcessing", "OrderProcessing");
 
         String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }";
-        String orderString1 = " { \"customerId\": \"customer-015\", \"guid\": \"order-354\", \"orderDate\": { \"day\": 8, \"hour\": 0 }, \"deliveryDate\": { \"day\": 10, \"hour\": 0 }, \"products\": { \"Multigrain Bread\": 3, \"Donut\":4} }"; 
+        String orderString1 = " { \"customerId\": \"customer-015\", \"guid\": \"order-354\", \"orderDate\": { \"day\": 8, \"hour\": 0 }, \"deliveryDate\": { \"day\": 10, \"hour\": 0 }, \"products\": { \"Multigrain Bread\": 5, \"Donut\":4} }"; 
+        String orderString2 = " { \"customerId\": \"customer-014\", \"guid\": \"order-389\", \"orderDate\": { \"day\": 9, \"hour\": 0 }, \"deliveryDate\": { \"day\": 9, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 8, \"Donut\":11, \"Bun\":10} }"; 
+        // Below messages are the same three orders but in a format that is specific to loading bay 
+        String orderString3 = " { \"CustName\": \"customer-001\",\"Bakery\": \"bakery-001\", \"OrderID\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"delivery_date\": { \"day\": 11, \"hour\": 11 }, \"Products\": [{ \"Multigrain Bread\": 7}, {\"Donut\":5}]}";
+        String orderString4 = " { \"CustName\": \"customer-015\",\"Bakery\": \"bakery-001\", \"OrderID\": \"order-354\", \"orderDate\": { \"day\": 8, \"hour\": 0 }, \"delivery_date\": { \"day\": 10, \"hour\": 0 }, \"Products\": [{ \"Multigrain Bread\": 3}, {\"Donut\":4}]}";
+        String orderString5 = " { \"CustName\": \"customer-014\",\"Bakery\": \"bakery-001\", \"OrderID\": \"order-389\", \"orderDate\": { \"day\": 9, \"hour\": 0 }, \"delivery_date\": { \"day\": 9, \"hour\": 11 }, \"Products\": [{ \"Multigrain Bread\": 8}, {\"Donut\":11}, {\"Bun\":10}]}"; 
+
 
         ProductMessage pm = new ProductMessage();
         Hashtable products = new Hashtable<String, Integer> ();
-        products.put("Multigrain Bread", 10);
-        products.put("Donut", 10);
+        products.put("Multigrain Bread", 20);
+        products.put("Donut", 20);
+        products.put("Bun", 20);
         pm.setProducts(products);
         String messageContent = JsonConverter.getJsonString(pm);
  
         // TODO: always add counter after adding behaviour
         // This dummy agent acts like test agent
-        this.addBehaviour(new StringInformSender(orderString, postBakingProcessor, "order"));
+        this.addBehaviour(new StringInformSender(orderString, preLoadingProcessor, "order"));
         this.counter++;
-        this.addBehaviour(new StringInformSender(orderString1, postBakingProcessor, "order"));
+        this.addBehaviour(new StringInformSender(orderString1, preLoadingProcessor, "order"));
         this.counter++;
-        this.addBehaviour(new StringInformSender(messageContent, postBakingProcessor, "order_guid"));
+        this.addBehaviour(new StringInformSender(messageContent, preLoadingProcessor, "order_guid"));
         this.counter++;
         this.addBehaviour(new StringInformSender(orderString, packagingAgent, "order"));
         this.counter++;
         this.addBehaviour(new StringInformSender(orderString1, packagingAgent, "order"));
         this.counter++;
+        this.addBehaviour(new StringInformSender(orderString2, packagingAgent, "order"));
+        this.counter++;
+        this.addBehaviour(new StringInformSender(orderString3, loadingBayAgent, "order"));
+        this.counter++;
+        this.addBehaviour(new StringInformSender(orderString4, loadingBayAgent, "order"));
+        this.counter++;
+        this.addBehaviour(new StringInformSender(orderString5, loadingBayAgent, "order"));
+        this.counter++;
         
-        this.addBehaviour(new InformServer(postBakingProcessor));
+        this.addBehaviour(new InformServer(preLoadingProcessor));
         this.addBehaviour(new InformServer(packagingAgent));
+        this.addBehaviour(new InformServer(loadingBayAgent));
 //         this.addBehaviour(new InformServer(coolingRackAgent));
     }
     protected void takeDown() {

@@ -67,7 +67,7 @@ public class Start {
         if(packagingStage) {
 			Initializer init = new PackagingStageInitializer();
             sb.append(init.initialize());
-            endTime = "000.11.00";
+            endTime = "000.20.00";
         }
         if(deliveryStage) {
 

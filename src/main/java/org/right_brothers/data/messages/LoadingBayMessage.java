@@ -1,4 +1,5 @@
 package org.right_brothers.data.messages;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +19,7 @@ public class LoadingBayMessage {
 		this.orderId = orderId;
 		this.boxes = boxes;
 	}
-	
+	@JsonProperty("OrderID")
 	public String getOrderId() {
 		return orderId;
 	}
@@ -26,7 +27,7 @@ public class LoadingBayMessage {
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
-	
+	@JsonProperty("Boxes")
 	public List<LoadingBayBox> getBoxes() {
 		return boxes;
 	}
