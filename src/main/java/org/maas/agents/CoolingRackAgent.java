@@ -18,8 +18,8 @@ import org.maas.utils.Time;
 @SuppressWarnings("serial")
 public class CoolingRackAgent extends BaseAgent{
     private AID LOADING_BAY_AGENT = new AID("dummy", AID.ISLOCALNAME);
-    private AID intermediater = new AID("intermediater", AID.ISLOCALNAME);
-    private List<ProcessedProduct> processedProducts;
+    private AID postBakingProcessor = new AID("postBakingProcessor", AID.ISLOCALNAME);
+    private List<ProcessedProduct> processedProductList;
     private int cooledProductConvesationNumber = 0;
     
     protected void setup() {
@@ -27,68 +27,69 @@ public class CoolingRackAgent extends BaseAgent{
         System.out.println("\tHello! cooling-rack "+getAID().getLocalName()+" is ready.");
         
         this.register("cooling-rack-agent", "JADE-bakery");
-        this.processedProducts = new ArrayList<ProcessedProduct> ();
+        this.processedProductList = new ArrayList<ProcessedProduct> ();
 
-        addBehaviour(new ProcessedProductsServer(this.intermediater));
-        addBehaviour(new CoolProducts());
+        addBehaviour(new ProcessedProductsServer(this.postBakingProcessor));
     }
     protected void takeDown() {
         this.deRegister();
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
     
-    private class CoolProducts extends CyclicBehaviour{
-        public void action(){
-            if (!baseAgent.getAllowAction()) {
-                return;
+    /*
+     * Cooling products
+     */
+    @Override
+    protected void stepAction(){
+        if (baseAgent.getCurrentTime().lessThan(new Time(baseAgent.getCurrentDay(), 12, 0))){
+            ArrayList<ProcessedProduct> message = this.getCooledProducts();
+            if (message.size() > 0) {
+                this.sendProducts(message);
             }
-            if (baseAgent.getCurrentTime().lessThan(new Time(baseAgent.getCurrentDay(), 12, 0))){
-                ArrayList<ProcessedProduct> message = this.getCooledProducts();
-                if (message.size() > 0) {
-                    this.sendProducts(message);
-                }
-            }
-            baseAgent.finished();
         }
-        private ArrayList<ProcessedProduct> getCooledProducts() {
-            ArrayList<ProcessedProduct> temp = new ArrayList<ProcessedProduct> ();
-            for (ProcessedProduct processedProduct : processedProducts) {
-                if (processedProduct.getRemainingTimeDuration() < 0){
-                    processedProduct.setRemainingTimeDuration(processedProduct.getCoolingDuration());
-                    System.out.println("\tStarted cooling " + processedProduct.getQuantity() + " " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
-                }
-                if (processedProduct.getRemainingTimeDuration() == 0){
-                    System.out.println("\tCooled " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
-                    temp.add(processedProduct);
-                }
-                processedProduct.setRemainingTimeDuration(processedProduct.getRemainingTimeDuration() - 1);
+        baseAgent.finished();
+    }
+    private ArrayList<ProcessedProduct> getCooledProducts() {
+        ArrayList<ProcessedProduct> temp = new ArrayList<ProcessedProduct> ();
+        for (ProcessedProduct processedProduct : processedProductList) {
+            if (processedProduct.getRemainingTimeDuration() < 0){
+                processedProduct.setRemainingTimeDuration(processedProduct.getCoolingDuration());
+                System.out.println("\tStarted cooling " + processedProduct.getQuantity() + " " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
             }
-            for (ProcessedProduct pm : temp)
-                processedProducts.remove(pm);
-            return temp;
-        }
-        private void sendProducts(ArrayList<ProcessedProduct> temp){
-            Hashtable<String,Integer> outMsg = new Hashtable<String,Integer> ();
-            for (ProcessedProduct pm : temp) {
-                if (outMsg.containsKey(pm.getGuid())){
-                    outMsg.put(pm.getGuid(), pm.getQuantity() + outMsg.get(pm.getGuid()));
-                }
-                else {
-                    outMsg.put(pm.getGuid(), pm.getQuantity());
-                }
+            if (processedProduct.getRemainingTimeDuration() == 0){
+                System.out.println("\tCooled " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                temp.add(processedProduct);
             }
-            ProductMessage p = new ProductMessage();
-            p.setProducts(outMsg);
-            String messageContent = JsonConverter.getJsonString(p);
-            ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
-            loadingBayMessage.addReceiver(LOADING_BAY_AGENT);
-            cooledProductConvesationNumber ++;
-            loadingBayMessage.setConversationId("cooled-product-" + Integer.toString(cooledProductConvesationNumber));
-            loadingBayMessage.setContent(messageContent);
-            baseAgent.sendMessage(loadingBayMessage);
+            processedProduct.setRemainingTimeDuration(processedProduct.getRemainingTimeDuration() - 1);
         }
+        for (ProcessedProduct pm : temp)
+            processedProductList.remove(pm);
+        return temp;
+    }
+    private void sendProducts(ArrayList<ProcessedProduct> temp){
+        Hashtable<String,Integer> outMsg = new Hashtable<String,Integer> ();
+        for (ProcessedProduct pm : temp) {
+            if (outMsg.containsKey(pm.getGuid())){
+                outMsg.put(pm.getGuid(), pm.getQuantity() + outMsg.get(pm.getGuid()));
+            }
+            else {
+                outMsg.put(pm.getGuid(), pm.getQuantity());
+            }
+        }
+        ProductMessage p = new ProductMessage();
+        p.setProducts(outMsg);
+        String messageContent = JsonConverter.getJsonString(p);
+        ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
+        loadingBayMessage.addReceiver(LOADING_BAY_AGENT);
+        cooledProductConvesationNumber ++;
+        loadingBayMessage.setConversationId("cooled-product-" + Integer.toString(cooledProductConvesationNumber));
+        loadingBayMessage.setContent(messageContent);
+        baseAgent.sendMessage(loadingBayMessage);
     }
 
+    /*
+     * Server to receive processedProduct from the previous agent in baking stage
+     */
     private class ProcessedProductsServer extends CyclicBehaviour {
         private MessageTemplate mt;
         private AID sender;
@@ -107,7 +108,11 @@ public class CoolingRackAgent extends BaseAgent{
                 System.out.println(String.format("\tmessage:: %s", messageContent));
                 TypeReference<?> type = new TypeReference<ArrayList<ProcessedProduct>>(){};
                 ArrayList<ProcessedProduct> receivedProcessedProducts = JsonConverter.getInstance(messageContent, type);
+<<<<<<< HEAD
                 processedProducts.addAll(receivedProcessedProducts);
+=======
+                processedProductList.addAll(receivedProcessedProducts);
+>>>>>>> 79b1a199973e3ae694b3186fc1ed0f26af4102d5
             }
             else {
                 block();
