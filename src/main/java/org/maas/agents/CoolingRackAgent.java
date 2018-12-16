@@ -108,11 +108,7 @@ public class CoolingRackAgent extends BaseAgent{
                 System.out.println(String.format("\tmessage:: %s", messageContent));
                 TypeReference<?> type = new TypeReference<ArrayList<ProcessedProduct>>(){};
                 ArrayList<ProcessedProduct> receivedProcessedProducts = JsonConverter.getInstance(messageContent, type);
-<<<<<<< HEAD
-                processedProducts.addAll(receivedProcessedProducts);
-=======
                 processedProductList.addAll(receivedProcessedProducts);
->>>>>>> 79b1a199973e3ae694b3186fc1ed0f26af4102d5
             }
             else {
                 block();
