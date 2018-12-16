@@ -15,12 +15,6 @@ public class DeliveryStageController implements Initializable, StageController {
 	private VBox container;
 
 	@Override
-	public void updateStage(String messageType, String message) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/DeliveryCard.fxml"));
@@ -34,4 +28,9 @@ public class DeliveryStageController implements Initializable, StageController {
 		}
 	}
 
+	@Override
+	public void updateStage(String messageType, String message) {
+		// TODO Auto-generated method stub
+		
+	}
 }

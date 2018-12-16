@@ -55,36 +55,8 @@
          <children>
             <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" styleClass="card-container-anchor" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
-                  <VBox spacing="10.0" styleClass="card-container">
+                  <VBox fx:id="container" spacing="10.0" styleClass="card-container">
                      <children>
-                        <VBox fx:id="dummyCard"
-                         	maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="2.0" styleClass="card">
-                           <children>
-                              <AnchorPane>
-                                 <children>
-                                    <Label text="order-331" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                                       <font>
-                                          <Font name="System Bold" size="13.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </AnchorPane>
-                              <AnchorPane>
-                                 <children>
-                                    <Label text="customer-001" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                                       <font>
-                                          <Font name="System Bold" size="11.0" />
-                                       </font>
-                                    </Label>
-                                 </children>
-                              </AnchorPane>
-                              <AnchorPane prefWidth="200.0">
-                                 <children>
-                                    <Label text="Bagel(5), Bagel(2), Donut(1)" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                                 </children>
-                              </AnchorPane>
-                           </children>
-                        </VBox>
                      </children>
                   </VBox>
                </content>
