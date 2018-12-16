@@ -1,5 +1,6 @@
 package org.right_brothers.visualizer.ui;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -41,7 +42,7 @@ public class LayoutController implements Initializable {
 			deliveryStageContainer.getChildren().add(delivery);
 			controllers.add(fxmlLoader.getController());
 			
-		} catch(Exception e) {
+		} catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
