@@ -86,6 +86,8 @@ public class BakingStageTester extends BaseAgent {
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String messageContent = msg.getContent();
+                System.out.println(String.format("\tdummy agent::%s Received message from cooling-rack %s", 
+                        this.myAgent.getLocalName(), msg.getSender().getLocalName()));
                 System.out.println("\tReceived msg : " + messageContent + " at " + baseAgent.getCurrentHour());
 //                 if (this.sender == coolingRackAgent){
                     //this.sendUnbakedProduct();

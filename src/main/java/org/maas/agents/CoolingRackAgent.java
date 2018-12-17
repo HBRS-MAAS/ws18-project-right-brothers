@@ -29,7 +29,7 @@ public class CoolingRackAgent extends BaseAgent{
             this.bakeryGuid = (String) args[0];
         }
         
-        this.packagingAgent = new AID(this.bakeryGuid + "-dummy-packaging", AID.ISLOCALNAME);
+        this.packagingAgent = new AID(this.bakeryGuid + "-dummy", AID.ISLOCALNAME);
         this.postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
        
         this.register("cooling-rack-agent", "JADE-bakery");
