@@ -29,11 +29,6 @@ public class PackagingStageTester extends BaseAgent {
         String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }";
         String orderString1 = " { \"customerId\": \"customer-015\", \"guid\": \"order-354\", \"orderDate\": { \"day\": 8, \"hour\": 0 }, \"deliveryDate\": { \"day\": 10, \"hour\": 0 }, \"products\": { \"Multigrain Bread\": 5, \"Donut\":4} }"; 
         String orderString2 = " { \"customerId\": \"customer-014\", \"guid\": \"order-389\", \"orderDate\": { \"day\": 9, \"hour\": 0 }, \"deliveryDate\": { \"day\": 9, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 8, \"Donut\":11, \"Bun\":10} }"; 
-        // Below messages are the same three orders but in a format that is specific to loading bay 
-        String orderString3 = " { \"CustName\": \"customer-001\",\"Bakery\": \"bakery-001\", \"OrderID\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"delivery_date\": { \"day\": 11, \"hour\": 11 }, \"Products\": [{ \"Multigrain Bread\": 7}, {\"Donut\":5}]}";
-        String orderString4 = " { \"CustName\": \"customer-015\",\"Bakery\": \"bakery-001\", \"OrderID\": \"order-354\", \"orderDate\": { \"day\": 8, \"hour\": 0 }, \"delivery_date\": { \"day\": 10, \"hour\": 0 }, \"Products\": [{ \"Multigrain Bread\": 3}, {\"Donut\":4}]}";
-        String orderString5 = " { \"CustName\": \"customer-014\",\"Bakery\": \"bakery-001\", \"OrderID\": \"order-389\", \"orderDate\": { \"day\": 9, \"hour\": 0 }, \"delivery_date\": { \"day\": 9, \"hour\": 11 }, \"Products\": [{ \"Multigrain Bread\": 8}, {\"Donut\":11}, {\"Bun\":10}]}"; 
-
 
         ProductMessage pm = new ProductMessage();
         Hashtable products = new Hashtable<String, Integer> ();
@@ -57,11 +52,11 @@ public class PackagingStageTester extends BaseAgent {
         this.counter++;
         this.addBehaviour(new StringInformSender(orderString2, packagingAgent, "order"));
         this.counter++;
-        this.addBehaviour(new StringInformSender(orderString3, loadingBayAgent, "order"));
+        this.addBehaviour(new StringInformSender(orderString, loadingBayAgent, "order"));
         this.counter++;
-        this.addBehaviour(new StringInformSender(orderString4, loadingBayAgent, "order"));
+        this.addBehaviour(new StringInformSender(orderString1, loadingBayAgent, "order"));
         this.counter++;
-        this.addBehaviour(new StringInformSender(orderString5, loadingBayAgent, "order"));
+        this.addBehaviour(new StringInformSender(orderString2, loadingBayAgent, "order"));
         this.counter++;
         
         this.addBehaviour(new InformServer(preLoadingProcessor));
