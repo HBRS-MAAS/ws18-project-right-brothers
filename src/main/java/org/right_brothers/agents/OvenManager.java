@@ -221,8 +221,10 @@ public class OvenManager extends BaseAgent {
                 }
                 if (!alreadyAdded){
                     UnbakedProduct up = this.getUnbakedProductFromProductName(unbakedProductMessage.getProductType());
-                    int newQuantity = this.getTotalQuantity(unbakedProductMessage.getProductQuantities());
-                    this.iterativelyAddUnbakedProducts(newQuantity, up);
+                    if(up != null) {
+	                    int newQuantity = this.getTotalQuantity(unbakedProductMessage.getProductQuantities());
+	                    this.iterativelyAddUnbakedProducts(newQuantity, up);
+                    }
                 }
             }
             else {
@@ -232,29 +234,32 @@ public class OvenManager extends BaseAgent {
         private UnbakedProduct getUnbakedProductFromProductName(String productName){
             UnbakedProduct up = new UnbakedProduct();
             Product p = this.getProductWithSameGuid(productName);
-            up.setGuid(p.getGuid());
-            up.setBakingTemp(p.getRecipe().getBakingTemp());
-            up.setBreadsPerOven(p.getBatch().getBreadsPerOven());
-            Vector<Step> steps = new Vector<Step> ();
-            boolean addStep = false;
-            // ASSUMPTION: The steps are in order of recipe.
-            for (Step s : p.getRecipe().getSteps()) {
-                if (s.getAction().equals("baking")){
-                    up.setBakingDuration(s.getDuration());
-                    addStep = true;
-                    continue;
-                }
-                if (s.getAction().equals("cooling")){
-                    up.setCoolingDuration(s.getDuration());
-                    addStep = false;
-                    break;
-                }
-                if (addStep) {
-                    steps.add(s);
-                }
+            if(p != null) {
+	            up.setGuid(p.getGuid());
+	            up.setBakingTemp(p.getRecipe().getBakingTemp());
+	            up.setBreadsPerOven(p.getBatch().getBreadsPerOven());
+	            Vector<Step> steps = new Vector<Step> ();
+	            boolean addStep = false;
+	            // ASSUMPTION: The steps are in order of recipe.
+	            for (Step s : p.getRecipe().getSteps()) {
+	                if (s.getAction().equals("baking")){
+	                    up.setBakingDuration(s.getDuration());
+	                    addStep = true;
+	                    continue;
+	                }
+	                if (s.getAction().equals("cooling")){
+	                    up.setCoolingDuration(s.getDuration());
+	                    addStep = false;
+	                    break;
+	                }
+	                if (addStep) {
+	                    steps.add(s);
+	                }
+	            }
+	            up.setIntermediateSteps(steps);
+	            return up;
             }
-            up.setIntermediateSteps(steps);
-            return up;
+            return null;
         }
         private Product getProductWithSameGuid(String productName){
             for (Product p : availableProductList) {
