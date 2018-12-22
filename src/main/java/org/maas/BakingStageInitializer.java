@@ -8,7 +8,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.maas.Initializer;
 import org.maas.utils.JsonConverter;
-import org.maas.objects.Meta;
 import org.maas.data.models.Bakery;
 
 public class BakingStageInitializer extends Initializer {

@@ -15,7 +15,6 @@ import org.maas.utils.Time;
 @SuppressWarnings("serial")
 public class CoolingRackAgent extends BaseAgent{
     private AID packagingAgent;
-    private AID postBakingProcessor;
     private List<ProcessedProduct> processedProductList;
     private int cooledProductConvesationNumber = 0;
     private String bakeryGuid = "bakery-001";
@@ -30,12 +29,12 @@ public class CoolingRackAgent extends BaseAgent{
         }
         
         this.packagingAgent = new AID(this.bakeryGuid + "-dummy-packaging", AID.ISLOCALNAME);
-        this.postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
+        AID postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
        
         this.register("cooling-rack-agent", "JADE-bakery");
         this.processedProductList = new ArrayList<ProcessedProduct> ();
 
-        addBehaviour(new ProcessedProductsServer(this.postBakingProcessor));
+        addBehaviour(new ProcessedProductsServer(postBakingProcessor));
     }
     protected void takeDown() {
         this.deRegister();

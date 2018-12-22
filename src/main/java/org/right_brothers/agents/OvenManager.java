@@ -31,8 +31,6 @@ import org.maas.utils.Time;
 @SuppressWarnings("serial")
 public class OvenManager extends BaseAgent {
     private AID postBakingProcessor;
-    private AID proofer;
-    private AID orderProcessor;
     private List<Product> availableProductList;
     private String bakeryGuid;
     private List<Tray> trayList;
@@ -50,8 +48,7 @@ public class OvenManager extends BaseAgent {
             this.bakeryGuid = "bakery-001";
         }
         postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
-        proofer = new AID(this.bakeryGuid + "-dummy", AID.ISLOCALNAME);
-        orderProcessor = new AID(this.bakeryGuid + "-dummy", AID.ISLOCALNAME);
+        AID proofer = new AID(this.bakeryGuid + "-dummy", AID.ISLOCALNAME);
 
         this.register("Oven-manager-agent", "JADE-bakery");
 
@@ -60,7 +57,6 @@ public class OvenManager extends BaseAgent {
 
         this.getAllInformation();
 
-        //         this.addBehaviour(new OrderServer(orderProcessor));
         this.addBehaviour(new UnbakedProductsServer(proofer));
     }
 

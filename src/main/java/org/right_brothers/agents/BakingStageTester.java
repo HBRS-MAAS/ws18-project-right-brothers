@@ -25,7 +25,6 @@ import java.util.*;
 public class BakingStageTester extends BaseAgent {
 
     private AID ovenManager;
-    private AID coolingRackAgent;
     private int counter = 0;
     private String bakeryName;
     private List<Order> orders;
@@ -42,7 +41,7 @@ public class BakingStageTester extends BaseAgent {
             bakeryName = "bakery-001";
         }
         this.ovenManager = new AID(bakeryName + "-ovenManager", AID.ISLOCALNAME);
-        this.coolingRackAgent = new AID(bakeryName + "-cooling-rack", AID.ISLOCALNAME);
+        AID coolingRackAgent = new AID(bakeryName + "-cooling-rack", AID.ISLOCALNAME);
 
         this.orders = new ArrayList();
         String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }"; 
