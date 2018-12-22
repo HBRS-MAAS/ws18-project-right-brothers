@@ -6,12 +6,13 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Vector;
 import org.right_brothers.data.messages.CompletedProductMessage;
 import org.right_brothers.data.messages.LoadingBayBox;
 import org.right_brothers.data.messages.LoadingBayMessage;
 import org.right_brothers.data.models.Order;
+import org.right_brothers.data.models.OrderItem;
+import org.right_brothers.data.models.SortByDeliveryTime;
 import org.right_brothers.utils.InputParser; 
 import org.maas.utils.JsonConverter;
 import org.maas.agents.BaseAgent;
@@ -25,11 +26,6 @@ import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-// TODO : This might be useful when we want to find agent from the services registered in the yellowbook.
-//import jade.domain.FIPAException;
-//import jade.domain.FIPAAgentManagement.DFAgentDescription;
-//import jade.domain.FIPAAgentManagement.ServiceDescription;
-//import jade.domain.DFService;
 
 @SuppressWarnings("serial")
 
@@ -38,11 +34,11 @@ public class ProductBoxerAgent extends BaseAgent {
 	private AID postBakingProcessor = new AID("preLoadingProcessor", AID.ISLOCALNAME);
     private AID loadingBayAgent = new AID("loader-agent", AID.ISLOCALNAME);
     private Hashtable<String,Integer> productPackingLookup;
-    private static List<Product> availableProducts;
+    private static List<Product> availableProductList;
     private String bakeryGuid = "bakery-001";
     private int boxCounter = 0;
     private boolean useHardPriority = false;
-	
+    private boolean verbose = false;
 	private List<OrderItem> orderList = new ArrayList<>();
 	private Hashtable<String, Integer> productBuffer = new Hashtable<>();
 	
@@ -61,38 +57,12 @@ public class ProductBoxerAgent extends BaseAgent {
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
 
-    //TODO : This might be useful when we want to find agent from the services registered in the yellowbook.
-    // protected AID FindAgent(String serviceType) {
-    //     // Find the an agent for given service type
-    //     DFAgentDescription template = new DFAgentDescription();
-    //     ServiceDescription sd = new ServiceDescription();
-    //     sd.setType(serviceType);
-    //     template.addServices(sd);
-
-    //     AID agentFound = null;
-
-    //     try {
-    //         DFAgentDescription[] result = DFService.search(baseAgent, template);
-    //         if (result.length > 0) {
-    //             agentFound = result[0].getName();
-    //         } else {
-    //             agentFound = null;
-    //             System.out.println(
-    //                     getAID().getLocalName() + ": No agent with Service type (" + serviceType + ") found!");
-    //         }
-    //     } catch (FIPAException fe) {
-    //         fe.printStackTrace();
-    //     }
-
-    //     return agentFound;
-    // }
-
     /**
      * Setup knowledge about the boxing capacity of the products.
      **/
     private void setupPackagingKnowledgeBase() {
         this.productPackingLookup = new Hashtable<String, Integer>();
-        for (Product p : this.availableProducts) {
+        for (Product p : this.availableProductList) {
             this.productPackingLookup.put(p.getGuid(), p.getPackaging().getBreadsPerBox());
         }
     }
@@ -106,56 +76,10 @@ public class ProductBoxerAgent extends BaseAgent {
         List<Bakery> bakeries = parser.parse();
         for (Bakery b : bakeries) {
             if (b.getGuid().equalsIgnoreCase(this.bakeryGuid)){
-                this.availableProducts = b.getProducts();
+                this.availableProductList = b.getProducts();
                 break;
             }
         }
-    }
-
-    /**
-     * Wrapper class around the Orders.
-     **/
-    public class OrderItem {
-        private Order order;
-        private boolean isOrderComplete;
-
-        public OrderItem(Order newOrder, boolean isOrderComplete) {
-            this.order = newOrder;
-            this.isOrderComplete = isOrderComplete;
-        }
-
-        public Order getOrder() {
-            return order;
-        }
-
-        public boolean getIsOrderComplete() {
-            return isOrderComplete;
-        }
-
-        public void updateOrder(Order updatedOrder) {
-            this.order = updatedOrder;
-        }
-
-        public void setIsOrderComplete(boolean completionStatus) {
-            this.isOrderComplete = completionStatus;
-        }
-    }
-
-    /**
-     * Class used for sorting based on delivery dates.
-     **/
-    class sortByDeliveryTime implements Comparator<OrderItem> 
-    { 
-        // Sorting in Ascending order of delivery time 
-        public int compare(OrderItem a, OrderItem b) 
-        {
-            int timeParam1;
-            int timeParam2;
-            // Assuming orders do not arrive months in advance. Order has Date in only day and hours
-            timeParam1 = (a.getOrder().getDeliveryDate().getDay()*24)+(a.getOrder().getDeliveryDate().getHour());
-            timeParam2 = (b.getOrder().getDeliveryDate().getDay()*24)+(b.getOrder().getDeliveryDate().getHour());
-            return timeParam1 - timeParam2; 
-        } 
     }
 
     /**
@@ -173,7 +97,7 @@ public class ProductBoxerAgent extends BaseAgent {
             }
         }
 
-        Collections.sort(this.orderList, new sortByDeliveryTime());
+        Collections.sort(this.orderList, new SortByDeliveryTime());
 
         if (verbose) {
             System.out.println("\tOrder-list after prioritizing"); 
@@ -210,7 +134,7 @@ public class ProductBoxerAgent extends BaseAgent {
                 OrderItem newOrder = new OrderItem(o, false);
                 orderList.add(newOrder);
                 // New order received so re-prioritize the order list
-                prioritizeOrderList(true);
+                prioritizeOrderList(verbose);
                 // Maybe some products in new order can be satisfied with the already available products.
                 if (useHardPriority)
                     /*
@@ -266,7 +190,7 @@ public class ProductBoxerAgent extends BaseAgent {
                 		new TypeReference<List<CompletedProductMessage>>() {});
                 
                 for(CompletedProductMessage messageItem: completedProductList) {
-                	System.out.println(String.format("\tReceived completed product: %s, quantity: %S",
+                	System.out.println(String.format("\t"+getAID().getLocalName()+" :Received completed product: %s, quantity: %S",
                 			messageItem.getGuid(), messageItem.getQuantity()));
                 	
                 	String productName = messageItem.getGuid();
@@ -307,16 +231,17 @@ public class ProductBoxerAgent extends BaseAgent {
             }
         }
     }
+
     /**
      * Hard priority handler.
      **/
     private void checkProductOrderReadyHardPriority() {
         Hashtable<String,Integer> products;
-        LoadingBayMessage ldm = new LoadingBayMessage();
+        LoadingBayMessage loadingBayMessage = new LoadingBayMessage();
         List<LoadingBayBox> boxes = new ArrayList<LoadingBayBox>();
         int zeroCounter = 0;
 
-        displayInventory("Before Update", true);
+        displayInventory("Before Update", verbose);
 
         products = orderList.get(0).getOrder().getProducts();
         Set<String> keys = products.keySet();
@@ -326,8 +251,8 @@ public class ProductBoxerAgent extends BaseAgent {
             if (orderProductCount > 0) {
                 if ((availableCount != null) && (orderProductCount <= availableCount)) {
                     //Create message contents
-                    this.packTheProducts(key, products.get(key), boxes);
-                    productBuffer.put(key, productBuffer.get(key) - orderProductCount);
+                    this.packTheProducts(key, orderProductCount, boxes);
+                    productBuffer.put(key, availableCount - orderProductCount);
                     products.put(key, 0);
                     orderList.get(0).getOrder().setProducts(products);
                     zeroCounter++;
@@ -337,9 +262,9 @@ public class ProductBoxerAgent extends BaseAgent {
             }
         }
         if (!boxes.isEmpty()) {
-            ldm.setOrderId(orderList.get(0).getOrder().getGuid());
-            ldm.setBoxes(boxes);
-            this.sendPackedProducts(ldm, true);
+            loadingBayMessage.setOrderId(orderList.get(0).getOrder().getGuid());
+            loadingBayMessage.setBoxes(boxes);
+            this.sendPackedProducts(loadingBayMessage, verbose);
         }
         if (zeroCounter == products.size()) {
             System.out.println("Complete "+orderList.get(0).getOrder().getGuid()+" has been passed to the next stage");
@@ -349,7 +274,7 @@ public class ProductBoxerAgent extends BaseAgent {
             }
         }
 
-        displayInventory("After Update", true);
+        displayInventory("After Update", verbose);
 
     }
 
@@ -358,13 +283,13 @@ public class ProductBoxerAgent extends BaseAgent {
      **/
     private void checkProductOrderReadySoftPriority() {
         Hashtable<String,Integer> products;
-        LoadingBayMessage ldm;
+        LoadingBayMessage loadingBayMessage;
         List<LoadingBayBox> boxes;
         int zeroCounter;
-        displayInventory("Before Update", true);
+        displayInventory("Before Update", verbose);
         for (int i=0; i<orderList.size(); i++) {
             zeroCounter = 0;
-            ldm = new LoadingBayMessage();
+            loadingBayMessage = new LoadingBayMessage();
             boxes = new ArrayList<LoadingBayBox>();
             products = orderList.get(i).getOrder().getProducts();
             Set<String> keys = products.keySet();
@@ -377,8 +302,8 @@ public class ProductBoxerAgent extends BaseAgent {
                         //Create message contents
                         //Check if all products are ready then send one message with all of them
                         if(orderProductCount <= availableCount) {
-                            this.packTheProducts(key, products.get(key), boxes);
-                            productBuffer.put(key, productBuffer.get(key) - orderProductCount);
+                            this.packTheProducts(key, orderProductCount, boxes);
+                            productBuffer.put(key, availableCount - orderProductCount);
                             products.put(key, 0);
                             orderList.get(i).getOrder().setProducts(products);
                             zeroCounter++;
@@ -386,7 +311,7 @@ public class ProductBoxerAgent extends BaseAgent {
                             // If only a subset of products are ready, just send the complete boxes
                             int num_products = ((int) Math.floor((float) availableCount/ boxCapacity))*boxCapacity;
                             this.packTheProducts(key, num_products, boxes);
-                            productBuffer.put(key, productBuffer.get(key) - num_products);
+                            productBuffer.put(key, availableCount - num_products);
                             products.put(key, orderProductCount - num_products);
                             orderList.get(i).getOrder().setProducts(products);
                         }
@@ -398,9 +323,9 @@ public class ProductBoxerAgent extends BaseAgent {
             }
             if (!boxes.isEmpty()) {
                 // System.out.println("\n Boxes not empty");
-                ldm.setOrderId(orderList.get(i).getOrder().getGuid());
-                ldm.setBoxes(boxes);
-                this.sendPackedProducts(ldm, true);
+                loadingBayMessage.setOrderId(orderList.get(i).getOrder().getGuid());
+                loadingBayMessage.setBoxes(boxes);
+                this.sendPackedProducts(loadingBayMessage, verbose);
             }
             if (zeroCounter == products.size()) {
                 System.out.println("Order "+orderList.get(i).getOrder().getGuid()+" Complete");
@@ -419,7 +344,7 @@ public class ProductBoxerAgent extends BaseAgent {
             }
             l++;
         }
-        displayInventory("After Update", true);
+        displayInventory("After Update", verbose);
     }
 
     /**

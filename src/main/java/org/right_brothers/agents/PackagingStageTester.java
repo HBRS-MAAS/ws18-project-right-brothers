@@ -24,7 +24,8 @@ public class PackagingStageTester extends BaseAgent {
     protected void setup() {
         super.setup();
         System.out.println("\tHello! Dummy-agent "+getAID().getName()+" is ready.");
-        this.register("OrderProcessing", "OrderProcessing");
+        /*Need to register as OrderProcessor so that the upstream loading bay agent responds*/
+        this.register("OrderProcessing", "JADE-bakery"); 
 
         String orderString = " { \"customerId\": \"customer-001\", \"guid\": \"order-331\", \"orderDate\": { \"day\": 7, \"hour\": 0 }, \"deliveryDate\": { \"day\": 11, \"hour\": 11 }, \"products\": { \"Multigrain Bread\": 7, \"Donut\":5} }";
         String orderString1 = " { \"customerId\": \"customer-015\", \"guid\": \"order-354\", \"orderDate\": { \"day\": 8, \"hour\": 0 }, \"deliveryDate\": { \"day\": 10, \"hour\": 0 }, \"products\": { \"Multigrain Bread\": 5, \"Donut\":4} }"; 
