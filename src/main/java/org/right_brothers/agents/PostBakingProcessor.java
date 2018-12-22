@@ -18,14 +18,23 @@ import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class PostBakingProcessor extends BaseAgent{
-    private AID ovenManager = new AID("OvenManager", AID.ISLOCALNAME);
-    private AID coolingRacksAgent = new AID("cooling-rack", AID.ISLOCALNAME);
+    private AID coolingRacksAgent;
     private List<BakedProduct> bakedProductList;
+    private String bakeryGuid;
     
     protected void setup() {
         super.setup();
         System.out.println("\t"+getAID().getLocalName()+" is born.");
         
+        Object[] args = getArguments();
+        if (args != null && args.length > 0) {
+            this.bakeryGuid = (String) args[0];
+        } else {
+            this.bakeryGuid = "bakery-001";
+        }
+        AID ovenManager = new AID(this.bakeryGuid + "-ovenManager", AID.ISLOCALNAME);
+        this.coolingRacksAgent = new AID(this.bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
+
         this.register("postBakingProcessor-agent", "JADE-bakery");
         this.bakedProductList = new ArrayList<BakedProduct> ();
 

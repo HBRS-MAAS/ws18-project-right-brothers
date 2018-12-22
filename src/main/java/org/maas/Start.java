@@ -54,14 +54,14 @@ public class Start {
         }
         if(orderProcessingStage) {
 			Initializer init = new OrderProcessingInitializer();
-            sb.append(init.initialize());
+            sb.append(init.initialize(scenarioDirectory));
         }
         if(doughPrepStage) {
 
         }
         if(bakingStage) {
 			Initializer init = new BakingStageInitializer();
-            sb.append(init.initialize());
+            sb.append(init.initialize(scenarioDirectory));
             endTime = "000.06.00";
         }
         if(packagingStage) {
@@ -73,7 +73,8 @@ public class Start {
 
         }
         if(visualizationStage) {
-
+			Initializer init = new VisualisationInitializer();
+            sb.append(init.initialize(scenarioDirectory));
         }
 		if(isHost) {
 			sb.append("timekeeper:org.maas.agents.TimeKeeper(" + scenarioDirectory + ", " + endTime + ");");

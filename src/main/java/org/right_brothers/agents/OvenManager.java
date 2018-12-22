@@ -30,11 +30,9 @@ import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class OvenManager extends BaseAgent {
-    private AID postBakingProcessor = new AID("postBakingProcessor", AID.ISLOCALNAME);
-    private AID proofer = new AID("dummy", AID.ISLOCALNAME);
-    private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
+    private AID postBakingProcessor;
     private List<Product> availableProductList;
-    private String bakeryGuid = "bakery-001";
+    private String bakeryGuid;
     private List<Tray> trayList;
     private List<UnbakedProduct> unbakedProductList;
     private int bakedProductConversationNumber = 0;
@@ -43,17 +41,22 @@ public class OvenManager extends BaseAgent {
         super.setup();
         System.out.println("\tOven-manager "+getAID().getLocalName()+" is born.");
 
+        Object[] args = getArguments();
+        if (args != null && args.length > 0) {
+            this.bakeryGuid = (String) args[0];
+        } else {
+            this.bakeryGuid = "bakery-001";
+        }
+        postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
+        AID proofer = new AID(this.bakeryGuid + "-dummy", AID.ISLOCALNAME);
+
         this.register("Oven-manager-agent", "JADE-bakery");
 
         this.unbakedProductList = new ArrayList<UnbakedProduct> ();
         this.availableProductList = new ArrayList<Product> ();
 
-        // TODO: get bakery guid as argument
-        //         Object[] args = getArguments();
-
         this.getAllInformation();
 
-        //         this.addBehaviour(new OrderServer(orderProcessor));
         this.addBehaviour(new UnbakedProductsServer(proofer));
     }
 
@@ -218,8 +221,10 @@ public class OvenManager extends BaseAgent {
                 }
                 if (!alreadyAdded){
                     UnbakedProduct up = this.getUnbakedProductFromProductName(unbakedProductMessage.getProductType());
-                    int newQuantity = this.getTotalQuantity(unbakedProductMessage.getProductQuantities());
-                    this.iterativelyAddUnbakedProducts(newQuantity, up);
+                    if(up != null) {
+	                    int newQuantity = this.getTotalQuantity(unbakedProductMessage.getProductQuantities());
+	                    this.iterativelyAddUnbakedProducts(newQuantity, up);
+                    }
                 }
             }
             else {
@@ -229,29 +234,32 @@ public class OvenManager extends BaseAgent {
         private UnbakedProduct getUnbakedProductFromProductName(String productName){
             UnbakedProduct up = new UnbakedProduct();
             Product p = this.getProductWithSameGuid(productName);
-            up.setGuid(p.getGuid());
-            up.setBakingTemp(p.getRecipe().getBakingTemp());
-            up.setBreadsPerOven(p.getBatch().getBreadsPerOven());
-            Vector<Step> steps = new Vector<Step> ();
-            boolean addStep = false;
-            // ASSUMPTION: The steps are in order of recipe.
-            for (Step s : p.getRecipe().getSteps()) {
-                if (s.getAction().equals("baking")){
-                    up.setBakingDuration(s.getDuration());
-                    addStep = true;
-                    continue;
-                }
-                if (s.getAction().equals("cooling")){
-                    up.setCoolingDuration(s.getDuration());
-                    addStep = false;
-                    break;
-                }
-                if (addStep) {
-                    steps.add(s);
-                }
+            if(p != null) {
+	            up.setGuid(p.getGuid());
+	            up.setBakingTemp(p.getRecipe().getBakingTemp());
+	            up.setBreadsPerOven(p.getBatch().getBreadsPerOven());
+	            Vector<Step> steps = new Vector<Step> ();
+	            boolean addStep = false;
+	            // ASSUMPTION: The steps are in order of recipe.
+	            for (Step s : p.getRecipe().getSteps()) {
+	                if (s.getAction().equals("baking")){
+	                    up.setBakingDuration(s.getDuration());
+	                    addStep = true;
+	                    continue;
+	                }
+	                if (s.getAction().equals("cooling")){
+	                    up.setCoolingDuration(s.getDuration());
+	                    addStep = false;
+	                    break;
+	                }
+	                if (addStep) {
+	                    steps.add(s);
+	                }
+	            }
+	            up.setIntermediateSteps(steps);
+	            return up;
             }
-            up.setIntermediateSteps(steps);
-            return up;
+            return null;
         }
         private Product getProductWithSameGuid(String productName){
             for (Product p : availableProductList) {
