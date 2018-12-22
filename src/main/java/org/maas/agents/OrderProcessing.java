@@ -36,7 +36,7 @@ public class OrderProcessing extends BaseAgent {
         this.register("OrderProcessing", this.sBakeryId);
         findScheduler();
         try {
-            Thread.sleep(30000);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
