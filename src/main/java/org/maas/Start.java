@@ -53,35 +53,35 @@ public class Start {
             
         }
         if(orderProcessingStage) {
-			Initializer init = new OrderProcessingInitializer();
+            Initializer init = new OrderProcessingInitializer();
             sb.append(init.initialize(scenarioDirectory));
         }
         if(doughPrepStage) {
 
         }
         if(bakingStage) {
-			Initializer init = new BakingStageInitializer();
+            Initializer init = new BakingStageInitializer();
             sb.append(init.initialize(scenarioDirectory));
             endTime = "000.06.00";
         }
         if(packagingStage) {
-			Initializer init = new PackagingStageInitializer();
-            sb.append(init.initialize());
+            Initializer init = new PackagingStageInitializer();
+            sb.append(init.initialize(scenarioDirectory));
             endTime = "000.20.00";
         }
         if(deliveryStage) {
 
         }
         if(visualizationStage) {
-			Initializer init = new VisualisationInitializer();
+            Initializer init = new VisualisationInitializer();
             sb.append(init.initialize(scenarioDirectory));
         }
-		if(isHost) {
-			sb.append("timekeeper:org.maas.agents.TimeKeeper(" + scenarioDirectory + ", " + endTime + ");");
-			if(noAgentStarting) {
-			    sb.append("dummy:org.maas.agents.DummyAgent;");
+        if(isHost) {
+            sb.append("timekeeper:org.maas.agents.TimeKeeper(" + scenarioDirectory + ", " + endTime + ");");
+            if(noAgentStarting) {
+                sb.append("dummy:org.maas.agents.DummyAgent;");
             }
-		}
+        }
         cmd.add(sb.toString());
         return cmd;
     }
