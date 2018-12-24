@@ -53,14 +53,14 @@ public class Start {
             
         }
         if(orderProcessingStage) {
-            Initializer init = new OrderProcessingInitializer();
+			Initializer init = new OrderProcessingInitializer();
             sb.append(init.initialize(scenarioDirectory));
         }
         if(doughPrepStage) {
 
         }
         if(bakingStage) {
-            Initializer init = new BakingStageInitializer();
+			Initializer init = new BakingStageInitializer();
             sb.append(init.initialize(scenarioDirectory));
             endTime = "000.06.00";
         }
