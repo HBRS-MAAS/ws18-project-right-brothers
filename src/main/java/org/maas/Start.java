@@ -66,23 +66,23 @@ public class Start {
             endTime = "000.06.00";
         }
         if(packagingStage) {
-			Initializer init = new PackagingStageInitializer();
+            Initializer init = new PackagingStageInitializer();
             sb.append(init.initialize(scenarioDirectory));
-            endTime = "000.11.00";
+            endTime = "000.20.00";
         }
         if(deliveryStage) {
 
         }
         if(visualizationStage) {
-			Initializer init = new VisualisationInitializer();
+            Initializer init = new VisualisationInitializer();
             sb.append(init.initialize(scenarioDirectory));
         }
-		if(isHost) {
-			sb.append("timekeeper:org.maas.agents.TimeKeeper(" + scenarioDirectory + ", " + endTime + ");");
-			if(noAgentStarting) {
-			    sb.append("dummy:org.maas.agents.DummyAgent;");
+        if(isHost) {
+            sb.append("timekeeper:org.maas.agents.TimeKeeper(" + scenarioDirectory + ", " + endTime + ");");
+            if(noAgentStarting) {
+                sb.append("dummy:org.maas.agents.DummyAgent;");
             }
-		}
+        }
         cmd.add(sb.toString());
         return cmd;
     }
