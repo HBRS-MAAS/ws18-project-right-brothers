@@ -1,4 +1,4 @@
-package org.maas.Objects;
+package org.maas.objects;
 
 import java.util.Hashtable;
 

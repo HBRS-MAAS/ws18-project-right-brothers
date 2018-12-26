@@ -13,3 +13,4 @@ script:
     - ./gradlew run --args="-baking"
 #    - ./gradlew run --args="-packaging"
     - ./gradlew run --args="-orderProcessing"
+    - ./gradlew run --args="-customer"

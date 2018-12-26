@@ -40,7 +40,7 @@ public class PreLoadingProcessor extends BaseAgent {
         super.setup();
         System.out.println("\tPreLoadingProcessor "+getAID().getLocalName()+" is born.");
 
-        this.register("PostBakingProcessor", "JADE-bakery");
+        this.register("PreLoadingProcessor", this.bakeryGuid+"-PreLoadingProcessor");
 
         this.cooledProductsList = new ArrayList<CooledProduct> ();
         this.availableProductList = new ArrayList<Product> ();

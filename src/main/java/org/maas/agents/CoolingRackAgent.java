@@ -18,6 +18,7 @@ public class CoolingRackAgent extends BaseAgent{
     private List<ProcessedProduct> processedProductList;
     private int cooledProductConvesationNumber = 0;
     private String bakeryGuid = "bakery-001";
+    private boolean verbose = false;
     
     protected void setup() {
         super.setup();
@@ -28,10 +29,10 @@ public class CoolingRackAgent extends BaseAgent{
             this.bakeryGuid = (String) args[0];
         }
         
-        this.packagingAgent = new AID(this.bakeryGuid + "-dummy-packaging", AID.ISLOCALNAME);
+        this.packagingAgent = new AID(this.bakeryGuid + "-dummy-proofer", AID.ISLOCALNAME);
         AID postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
        
-        this.register("cooling-rack-agent", "JADE-bakery");
+        this.register("cooling-rack-agent", this.bakeryGuid+"-CoolingRackAgent");
         this.processedProductList = new ArrayList<ProcessedProduct> ();
 
         addBehaviour(new ProcessedProductsServer(postBakingProcessor));
@@ -59,10 +60,10 @@ public class CoolingRackAgent extends BaseAgent{
         for (ProcessedProduct processedProduct : processedProductList) {
             if (processedProduct.getRemainingTimeDuration() < 0){
                 processedProduct.setRemainingTimeDuration(processedProduct.getCoolingDuration());
-                System.out.println("\tStarted cooling " + processedProduct.getQuantity() + " " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                this.print("\tStarted cooling " + processedProduct.getQuantity() + " " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
             }
             if (processedProduct.getRemainingTimeDuration() == 0){
-                System.out.println("\tCooled " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                this.print("\tCooled " + processedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 temp.add(processedProduct);
             }
             processedProduct.setRemainingTimeDuration(processedProduct.getRemainingTimeDuration() - 1);
@@ -91,6 +92,11 @@ public class CoolingRackAgent extends BaseAgent{
         loadingBayMessage.setContent(messageContent);
         baseAgent.sendMessage(loadingBayMessage);
     }
+    private void print(String str){
+        if (this.verbose){
+            System.out.println(str);
+        }
+    }
 
     /*
      * Server to receive processedProduct from the previous agent in baking stage
@@ -107,10 +113,10 @@ public class CoolingRackAgent extends BaseAgent{
                     MessageTemplate.MatchSender(this.sender));
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
-                System.out.println(String.format("\tcooling-rack::Received message from post-baking-processor %s", 
+                print(String.format("\tcooling-rack::Received message from post-baking-processor %s", 
                         msg.getSender().getName()));
                 String messageContent = msg.getContent();
-                System.out.println(String.format("\tmessage:: %s", messageContent));
+                print(String.format("\tmessage:: %s", messageContent));
                 TypeReference<?> type = new TypeReference<ArrayList<ProcessedProduct>>(){};
                 ArrayList<ProcessedProduct> receivedProcessedProducts = JsonConverter.getInstance(messageContent, type);
                 processedProductList.addAll(receivedProcessedProducts);

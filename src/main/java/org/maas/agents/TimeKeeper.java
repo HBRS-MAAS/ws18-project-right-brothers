@@ -27,7 +27,7 @@ import jade.domain.JADEAgentManagement.JADEManagementOntology;
 import jade.domain.JADEAgentManagement.ShutdownPlatform;
 import jade.domain.FIPANames;
 
-import org.maas.Objects.Meta;
+import org.maas.objects.Meta;
 import org.maas.utils.Time;
 import org.maas.utils.JsonConverter;
 
@@ -68,7 +68,7 @@ public class TimeKeeper extends Agent{
             endTime = new Time(endTimeString);
         } else {
             scenarioDirectory = "small";
-            endTime = new Time(0,12,0);
+            endTime = new Time(1,12,0);
         }
         this.readSingleTimeStepFromMeta(scenarioDirectory);
 
