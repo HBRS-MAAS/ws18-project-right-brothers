@@ -20,7 +20,7 @@ public class Start {
     private static boolean visualizationStage = false;
     private static boolean noAgentStarting = true;
 
-    private static String endTime = "000.03.00";
+    private static String endTime = "001.03.00";
     private static String scenarioDirectory = "small";
 
     public static void main(String[] args) {
@@ -63,12 +63,12 @@ public class Start {
         if(bakingStage) {
 			Initializer init = new BakingStageInitializer();
             sb.append(init.initialize(scenarioDirectory));
-            endTime = "000.06.00";
+            endTime = "001.09.00";
         }
         if(packagingStage) {
             Initializer init = new PackagingStageInitializer();
             sb.append(init.initialize(scenarioDirectory));
-            endTime = "000.20.00";
+            endTime = "001.20.00";
         }
         if(deliveryStage) {
 

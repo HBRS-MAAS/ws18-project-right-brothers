@@ -3,6 +3,8 @@ package org.right_brothers.agents;
 import java.util.*;
 // import java.util.stream.Collectors;
 import java.io.IOException;
+import java.io.File;
+import java.util.Scanner;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -32,30 +34,31 @@ import org.maas.utils.Time;
 public class OvenManager extends BaseAgent {
     private AID postBakingProcessor;
     private List<Product> availableProductList;
-    private String bakeryGuid;
+    private String bakeryGuid = "bakery-001";
     private List<Tray> trayList;
     private List<UnbakedProduct> unbakedProductList;
     private int bakedProductConversationNumber = 0;
+    private boolean verbose = false;
 
     protected void setup() {
         super.setup();
         System.out.println("\tOven-manager "+getAID().getLocalName()+" is born.");
 
+        String scenarioDirectory = "small";
         Object[] args = getArguments();
         if (args != null && args.length > 0) {
             this.bakeryGuid = (String) args[0];
-        } else {
-            this.bakeryGuid = "bakery-001";
+            scenarioDirectory = (String) args [1];
         }
         postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
-        AID proofer = new AID(this.bakeryGuid + "-dummy", AID.ISLOCALNAME);
+        AID proofer = new AID(this.bakeryGuid + "-dummy-proofer", AID.ISLOCALNAME);
 
-        this.register("Oven-manager-agent", "JADE-bakery");
+        this.register("Oven-manager-agent", this.bakeryGuid+"-OverManager");
 
         this.unbakedProductList = new ArrayList<UnbakedProduct> ();
         this.availableProductList = new ArrayList<Product> ();
 
-        this.getAllInformation();
+        this.getAllInformation(scenarioDirectory);
 
         this.addBehaviour(new UnbakedProductsServer(proofer));
     }
@@ -64,9 +67,11 @@ public class OvenManager extends BaseAgent {
         this.deRegister();
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
-    private void getAllInformation(){
+
+    private void getAllInformation(String scenarioDirectory){
+        String filePath = "/config/" + scenarioDirectory + "/bakeries.json";
 		InputParser<Vector<Bakery>> parser2 = new InputParser<>
-			("/config/sample/bakeries.json", new TypeReference<Vector<Bakery>>(){});
+			(filePath, new TypeReference<Vector<Bakery>>(){});
 		List<Bakery> bakeries = parser2.parse();
         List<Oven> ovens = new ArrayList<Oven> ();
         for (Bakery b : bakeries) {
@@ -76,7 +81,7 @@ public class OvenManager extends BaseAgent {
                 break;
             }
         }
-        System.out.println("Number of oven " + ovens.size());
+        this.print("Number of oven " + ovens.size());
         this.trayList = new ArrayList<Tray> (ovens.size() * 4);
         for (Oven o : ovens) {
             for (int i = 0; i < 4; i++) {
@@ -84,7 +89,7 @@ public class OvenManager extends BaseAgent {
                 this.trayList.add(t);
             }
         }
-        System.out.println("Number of trayList " + this.trayList.size());
+        this.print("Number of trayList " + this.trayList.size());
     }
 
     /*
@@ -111,7 +116,7 @@ public class OvenManager extends BaseAgent {
             if (unbakedProduct.isScheduled())
                 continue;
             if (unbakedProduct.getRemainingTimeDuration() == 0){
-                System.out.println("\tBaked " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                this.print("\tBaked " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 BakedProductMessage bakedProductMessage = new BakedProductMessage();
                 bakedProductMessage.setGuid(unbakedProduct.getGuid());
                 bakedProductMessage.setQuantity(unbakedProduct.getQuantity());
@@ -144,7 +149,7 @@ public class OvenManager extends BaseAgent {
                     temp.add(unbakedProduct);
                     unbakedProduct.setScheduled(null);
                     unbakedProduct.setRemainingTimeDuration(unbakedProduct.getBakingDuration());
-                    System.out.println("\tStarted Baking " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
+                    this.print("\tStarted Baking " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
                 }
                 else {
                     tray.setNextTimeStepTemp();
@@ -164,7 +169,7 @@ public class OvenManager extends BaseAgent {
                 break;
             tray.setUsedFor(unbakedProduct);
             unbakedProduct.setScheduled(tray);
-            System.out.println("\tScheduled " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
+            this.print("\tScheduled " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
         }
     }
     private Tray getFreeTray(){
@@ -174,6 +179,11 @@ public class OvenManager extends BaseAgent {
             }
         }
         return null;
+    }
+    private void print(String str){
+        if (this.verbose){
+            System.out.println(str);
+        }
     }
 
     /*
@@ -189,11 +199,11 @@ public class OvenManager extends BaseAgent {
         public void action() {
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
-            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("order_guid"));
+            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("unbakedProduct"));
             ACLMessage msg = myAgent.receive(mt2);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                System.out.println("\tReceived Unbaked product " + messageContent);
+                print("\tReceived Unbaked product " + messageContent);
                 TypeReference<?> type = new TypeReference<UnbakedProductMessage>(){};
                 UnbakedProductMessage unbakedProductMessage = JsonConverter.getInstance(messageContent, type);
                 /*

@@ -45,7 +45,7 @@ public class ProductBoxerAgent extends BaseAgent {
 	protected void setup() {
         super.setup();
         System.out.println("\tProduct-Boxer-Agent "+getAID().getLocalName()+" is born.");
-        this.register("Product-Boxer-agent", "JADE-bakery");
+        this.register("Product-Boxer-agent", this.bakeryGuid+"-ProductBoxerAgent");
         this.getAllInformation();
         this.setupPackagingKnowledgeBase();
         this.addBehaviour(new OrderReceiver(orderProcessor));

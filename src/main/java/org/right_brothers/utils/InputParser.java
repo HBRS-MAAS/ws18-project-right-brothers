@@ -17,7 +17,6 @@ public class InputParser<T> {
     public T parse() {
         InputStream inputStream = this.getClass().getResourceAsStream(filePath);
         String file = this.getClass().getResource(filePath).getPath();
-        System.out.println(file);
         if ( inputStream != null ) {
             ObjectMapper mapper = new ObjectMapper();
             try {
