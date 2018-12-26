@@ -5,10 +5,8 @@ import java.util.*;
 import java.io.IOException;
 import java.io.File;
 import java.util.Scanner;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.domain.DFService;
@@ -16,14 +14,11 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-// import jade.lang.acl.UnreadableException;
 
 import org.maas.agents.BaseAgent;
 import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Date;
 import org.maas.utils.JsonConverter;
-import org.right_brothers.data.messages.UnbakedProductMessage;
 import org.right_brothers.data.models.Client;
 
 import java.util.*;
@@ -33,7 +28,6 @@ import java.util.*;
 public class DummyOrderProcessor extends BaseAgent {
 
     private List<AID> agentList;
-    private int counter = 0;
     private String bakeryGuid = "bakery-001";
     private List<Order> orderList;
 

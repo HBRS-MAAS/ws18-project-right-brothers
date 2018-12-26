@@ -2,11 +2,9 @@ package org.right_brothers.agents;
 
 import java.util.*;
 import java.io.IOException;
-// import java.util.stream.Collectors;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 
-import jade.core.Agent;
+// import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
@@ -17,7 +15,6 @@ import org.maas.agents.BaseAgent;
 import org.right_brothers.data.models.Order;
 import org.maas.utils.JsonConverter;
 import org.right_brothers.data.messages.UnbakedProductMessage;
-import org.right_brothers.data.models.Client;
 
 import java.util.*;
 
@@ -26,7 +23,6 @@ import java.util.*;
 public class DummyProofer extends BaseAgent {
 
     private AID ovenManager;
-    private int counter = 0;
     private String bakeryGuid = "bakery-001";
     private List<Order> orderList;
 
@@ -37,7 +33,6 @@ public class DummyProofer extends BaseAgent {
         orderList = new Vector<Order>();
 
         Object[] args = getArguments();
-        String scenarioDirectory;
         if (args != null && args.length > 0) {
             bakeryGuid = (String) args[0];
         }
