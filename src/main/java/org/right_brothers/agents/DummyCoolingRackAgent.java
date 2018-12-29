@@ -37,7 +37,7 @@ public class DummyCoolingRackAgent extends BaseAgent {
             bakeryGuid = (String) args[0];
         }
         /*Registered as order aggregator because loading bay uses yellow pages*/
-        this.register(this.bakeryGuid + "-order-aggregator", "JADE-bakery");
+        this.register("order-aggregator", this.bakeryGuid + "-order-aggregator");
         this.preLoadingProcessor = new AID(bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
         AID orderProcessor = new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
         AID loadingbay = new AID(bakeryGuid + "-loader-agent", AID.ISLOCALNAME);
