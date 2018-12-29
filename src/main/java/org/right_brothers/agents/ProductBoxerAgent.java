@@ -30,9 +30,9 @@ import jade.lang.acl.MessageTemplate;
 @SuppressWarnings("serial")
 
 public class ProductBoxerAgent extends BaseAgent {
-	private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
-	private AID postBakingProcessor = new AID("preLoadingProcessor", AID.ISLOCALNAME);
-    private AID loadingBayAgent = new AID("loader-agent", AID.ISLOCALNAME);
+	private AID orderProcessor;
+	private AID preLoadingProcessor;
+    private AID loadingBayAgent;
     private Hashtable<String,Integer> productPackingLookup;
     private static List<Product> availableProductList;
     private String bakeryGuid = "bakery-001";
@@ -45,11 +45,20 @@ public class ProductBoxerAgent extends BaseAgent {
 	protected void setup() {
         super.setup();
         System.out.println("\tProduct-Boxer-Agent "+getAID().getLocalName()+" is born.");
+        Object[] args = getArguments();
+        String scenarioDirectory = "small";
+        if (args != null && args.length > 0) {
+            this.bakeryGuid = (String) args[0];
+            scenarioDirectory = (String) args [1];
+        }
+        orderProcessor =  new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
+        preLoadingProcessor = new AID(bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
+        loadingBayAgent = new AID(bakeryGuid + "-loader-agent", AID.ISLOCALNAME);
         this.register("Product-Boxer-agent", this.bakeryGuid+"-ProductBoxerAgent");
-        this.getAllInformation();
+        this.getAllInformation(scenarioDirectory);
         this.setupPackagingKnowledgeBase();
         this.addBehaviour(new OrderReceiver(orderProcessor));
-        this.addBehaviour(new CompletedProductReceiver(postBakingProcessor));
+        this.addBehaviour(new CompletedProductReceiver(preLoadingProcessor));
     }
 
     protected void takeDown() {
@@ -70,9 +79,9 @@ public class ProductBoxerAgent extends BaseAgent {
     /**
      * Get information about the products the bakery makes.
      **/
-    private void getAllInformation() {
+    private void getAllInformation(String scenarioDirectory) {
         InputParser<Vector<Bakery>> parser = new InputParser<>
-            ("/config/sample/bakeries.json", new TypeReference<Vector<Bakery>>(){});
+            ("/config/"+scenarioDirectory+"/bakeries.json", new TypeReference<Vector<Bakery>>(){});
         List<Bakery> bakeries = parser.parse();
         for (Bakery b : bakeries) {
             if (b.getGuid().equalsIgnoreCase(this.bakeryGuid)){
@@ -130,7 +139,7 @@ public class ProductBoxerAgent extends BaseAgent {
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);
-                System.out.println("\tReceived Order with guid: " + o.getGuid());
+                System.out.println("\tProduct-Boxer-Agent received Order with guid: " + o.getGuid());
                 OrderItem newOrder = new OrderItem(o, false);
                 orderList.add(newOrder);
                 // New order received so re-prioritize the order list
@@ -173,8 +182,8 @@ public class ProductBoxerAgent extends BaseAgent {
     private class CompletedProductReceiver extends CyclicBehaviour {
         private AID sender;
 
-        public CompletedProductReceiver(AID postBakingProcessor){
-            this.sender = postBakingProcessor;
+        public CompletedProductReceiver(AID preLoadingProcessor){
+            this.sender = preLoadingProcessor;
         }
         public void action() {
             if (!baseAgent.getAllowAction()) {
@@ -223,7 +232,7 @@ public class ProductBoxerAgent extends BaseAgent {
     private void displayInventory(String when, boolean verbose) {
         if (verbose) {
             if (orderList.size() > 0) {
-                System.out.println("\n_____________________________Inventory Check ("+when+")__________________________");
+                System.out.println("\n_____________________________"+((ProductBoxerAgent) baseAgent).bakeryGuid+" Inventory Check ("+when+")__________________________");
                 displayOrderStatus();
                 System.out.println("__________________________________Inventory Check Complete_____________________________\n");
             } else {

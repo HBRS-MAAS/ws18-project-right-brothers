@@ -28,9 +28,9 @@ import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class PreLoadingProcessor extends BaseAgent {
-    private AID coolingRackAgent = new AID("dummy", AID.ISLOCALNAME);
-    private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
-    private AID packagingAgent = new AID("packaging-agent", AID.ISLOCALNAME);
+    private AID coolingRackAgent;
+    private AID orderProcessor;
+    private AID packagingAgent;
     private List<Product> availableProductList;
     private String bakeryGuid = "bakery-001";
     private List<CooledProduct> cooledProductsList;
@@ -39,7 +39,15 @@ public class PreLoadingProcessor extends BaseAgent {
     protected void setup() {
         super.setup();
         System.out.println("\tPreLoadingProcessor "+getAID().getLocalName()+" is born.");
-
+        Object[] args = getArguments();
+        String scenarioDirectory = "small";
+        if (args != null && args.length > 0) {
+            this.bakeryGuid = (String) args[0];
+            scenarioDirectory = (String) args [1];
+        }
+        coolingRackAgent = new AID(this.bakeryGuid + "-dummy-cooling-racks", AID.ISLOCALNAME);
+        orderProcessor = new AID(this.bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
+        packagingAgent = new AID(this.bakeryGuid + "-packaging-agent", AID.ISLOCALNAME);
         this.register("PreLoadingProcessor", this.bakeryGuid+"-PreLoadingProcessor");
 
         this.cooledProductsList = new ArrayList<CooledProduct> ();
@@ -48,7 +56,7 @@ public class PreLoadingProcessor extends BaseAgent {
         // TODO: get bakery guid as argument
         //         Object[] args = getArguments();
 
-        this.getAllInformation();
+        this.getAllInformation(scenarioDirectory);
 
         this.addBehaviour(new CooledProductsServer(coolingRackAgent));
     }
@@ -57,9 +65,9 @@ public class PreLoadingProcessor extends BaseAgent {
         this.deRegister();
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
-    private void getAllInformation(){
+    private void getAllInformation(String scenarioDirectory){
 		InputParser<Vector<Bakery>> parser2 = new InputParser<>
-			("/config/sample/bakeries.json", new TypeReference<Vector<Bakery>>(){});
+			("/config/"+scenarioDirectory+"/bakeries.json", new TypeReference<Vector<Bakery>>(){});
 		List<Bakery> bakeries = parser2.parse();
         for (Bakery b : bakeries) {
             if (b.getGuid().equalsIgnoreCase(this.bakeryGuid)){
@@ -88,10 +96,10 @@ public class PreLoadingProcessor extends BaseAgent {
         for (CooledProduct cooledProduct : cooledProductsList) {
             if (cooledProduct.getRemainingTimeDuration() < 0){
                 cooledProduct.setRemainingTimeDuration(cooledProduct.getIntermediateSteps().get(0).getDuration());
-                System.out.println("\tStarted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                // System.out.println("\tStarted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
             }
             if (cooledProduct.getRemainingTimeDuration() == 0){
-                System.out.println("\tFinished " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                // System.out.println("\tFinished " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 cooledProduct.finishedStep();
                 cooledProduct.setRemainingTimeDuration(-1);
                 if (cooledProduct.getIntermediateSteps().size() == 0) {
@@ -130,11 +138,11 @@ public class PreLoadingProcessor extends BaseAgent {
             baseAgent.finished();
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
-            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("order_guid"));
+            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("cooled-product"));
             ACLMessage msg = myAgent.receive(mt2);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                System.out.println("\tReceived cooled product " + messageContent);
+                // System.out.println("\tPreLoadingProcessor received cooled product " + messageContent);
                 TypeReference<?> type = new TypeReference<ProductMessage>(){};
                 ProductMessage productMessage = JsonConverter.getInstance(messageContent, type);
                 Set<String> keys = productMessage.getProducts().keySet();
