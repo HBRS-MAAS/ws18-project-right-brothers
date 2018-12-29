@@ -7,10 +7,10 @@ before_script:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
 os: linux
-<<<<<<< HEAD
 script: 
     - ./gradlew run
     - ./gradlew run --args="-baking"
 #    - ./gradlew run --args="-packaging"
     - ./gradlew run --args="-orderProcessing"
     - ./gradlew run --args="-customer"
+
