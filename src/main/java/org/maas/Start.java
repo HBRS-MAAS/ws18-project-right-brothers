@@ -63,7 +63,7 @@ public class Start {
         if(bakingStage) {
 			Initializer init = new BakingStageInitializer();
             sb.append(init.initialize(scenarioDirectory));
-            endTime = "001.09.00";
+            endTime = "002.00.00";
         }
         if(packagingStage) {
             Initializer init = new PackagingStageInitializer();
