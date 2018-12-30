@@ -3,26 +3,29 @@ package org.right_brothers.data.models;
 import java.util.Hashtable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Order implements java.io.Serializable {
-    private String customerId;
+    private String customer_id;
     private String guid;
-    private Date deliveryDate;
-    private Date orderDate;
+    private Date delivery_date;
+    private Date order_date;
     private Hashtable<String,Integer> products;
 
     public Order() {
-        this.deliveryDate = new Date();
+        this.delivery_date = new Date();
+        this.order_date = new Date();
         this.setProducts(new Hashtable<>());
     }
 
     public String getCustomerId() {
-        return customerId;
+        return customer_id;
     }
 
+	@JsonProperty("customer_id")
     public void setCustomerId(String customerId) {
-        this.customerId = customerId;
+        this.customer_id = customerId;
     }
 
     public String getGuid() {
@@ -34,11 +37,12 @@ public class Order implements java.io.Serializable {
     }
 
     public Date getDeliveryDate() {
-        return deliveryDate;
+        return delivery_date;
     }
 
-    public void setDeliveryDate(Date deliveryDate) {
-        this.deliveryDate = deliveryDate;
+	@JsonProperty("delivery_date")
+    public void setDeliveryDate(Date delivery_date) {
+        this.delivery_date = delivery_date;
     }
 
     public Hashtable<String,Integer> getProducts() {
@@ -49,11 +53,12 @@ public class Order implements java.io.Serializable {
         this.products = products;
     }
 
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
+	@JsonProperty("order_date")
+    public void setOrderDate(Date order_date) {
+        this.order_date = order_date;
     }
 
     public Date getOrderDate() {
-        return orderDate;
+        return order_date;
     }
 }

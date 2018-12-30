@@ -18,42 +18,39 @@ import jade.lang.acl.MessageTemplate;
 import org.maas.agents.BaseAgent;
 import org.right_brothers.bakery_objects.CooledProduct;
 import org.right_brothers.utils.InputParser; 
-import org.right_brothers.data.models.Order;
 import org.right_brothers.data.models.Product;
 import org.right_brothers.data.models.Bakery;
 import org.right_brothers.data.models.Step;
 import org.right_brothers.data.messages.ProductMessage;
 import org.right_brothers.data.messages.CompletedProductMessage;
 import org.maas.utils.JsonConverter;
+import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class PreLoadingProcessor extends BaseAgent {
     private AID coolingRackAgent = new AID("dummy", AID.ISLOCALNAME);
     private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
     private AID packagingAgent = new AID("packaging-agent", AID.ISLOCALNAME);
-    private List<Product> availableProducts;
+    private List<Product> availableProductList;
     private String bakeryGuid = "bakery-001";
     private List<CooledProduct> cooledProductsList;
-    private List<Order> orders;
+    private int processedProductConversationNumber = 0;
 
     protected void setup() {
         super.setup();
-        System.out.println("\tPostBakingProcessor "+getAID().getLocalName()+" is born.");
+        System.out.println("\tPreLoadingProcessor "+getAID().getLocalName()+" is born.");
 
-        this.register("PostBakingProcessor", "JADE-bakery");
+        this.register("PreLoadingProcessor", this.bakeryGuid+"-PreLoadingProcessor");
 
-        this.orders = new ArrayList();
         this.cooledProductsList = new ArrayList<CooledProduct> ();
-        this.availableProducts = new ArrayList<Product> ();
+        this.availableProductList = new ArrayList<Product> ();
 
         // TODO: get bakery guid as argument
         //         Object[] args = getArguments();
 
         this.getAllInformation();
 
-        this.addBehaviour(new OrderServer(orderProcessor));
         this.addBehaviour(new CooledProductsServer(coolingRackAgent));
-        this.addBehaviour(new Process());
     }
 
     protected void takeDown() {
@@ -66,70 +63,59 @@ public class PreLoadingProcessor extends BaseAgent {
 		List<Bakery> bakeries = parser2.parse();
         for (Bakery b : bakeries) {
             if (b.getGuid().equalsIgnoreCase(this.bakeryGuid)){
-                this.availableProducts = b.getProducts();
+                this.availableProductList = b.getProducts();
                 break;
             }
         }
     }
 
-    private class Process extends CyclicBehaviour{
-        public void action(){
-            if (!baseAgent.getAllowAction()) {
-                return;
-            }
-            if (baseAgent.getCurrentHour() <= 12){
-                ArrayList<CompletedProductMessage> message = this.processProducts();
-                if (message.size() > 0) {
-                    this.sendCompletedProducts(message);
-                }
-            }
-            if (baseAgent.getCurrentHour() == 12) {
-                this.haltProcessing();
-            }
-            baseAgent.finished();
-        }
-        private void haltProcessing(){
-            for (CooledProduct cooledProduct : cooledProductsList) {
-                if (cooledProduct.getRemainingTimeDuration() >= 0){
-                    int alreadyProcessed = baseAgent.getCurrentHour() - cooledProduct.getRemainingTimeDuration();
-                    int oldDuration = cooledProduct.getIntermediateSteps().get(0).getDuration();
-                    cooledProduct.getIntermediateSteps().get(0).setDuration(oldDuration - alreadyProcessed);
-                    cooledProduct.setRemainingTimeDuration(-1);
-                    System.out.println("\tHalted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
-                }
+    /*
+     * Processing products after cooling
+     */
+    @Override
+    protected void stepAction(){
+        if (baseAgent.getCurrentTime().lessThan(new Time(baseAgent.getCurrentDay(), 12, 0))){
+            ArrayList<CompletedProductMessage> message = this.processProducts();
+            if (message.size() > 0) {
+                this.sendCompletedProducts(message);
             }
         }
-        private ArrayList<CompletedProductMessage> processProducts (){
-            ArrayList<CooledProduct> temp = new ArrayList<CooledProduct> ();
-            ArrayList<CompletedProductMessage> message = new ArrayList<CompletedProductMessage> ();
-            for (CooledProduct cooledProduct : cooledProductsList) {
-                if (cooledProduct.getRemainingTimeDuration() < 0){
-                    cooledProduct.setRemainingTimeDuration(baseAgent.getCurrentHour());
-                    System.out.println("\tStarted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
-                }
-                if (baseAgent.getCurrentHour() >= cooledProduct.getRemainingTimeDuration() + cooledProduct.getIntermediateSteps().get(0).getDuration() + 1){
-                    System.out.println("\tFinished " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
-                    cooledProduct.finishedStep();
-                    cooledProduct.setRemainingTimeDuration(-1);
-                    if (cooledProduct.getIntermediateSteps().size() == 0) {
-                        message.add(cooledProduct.getCompletedProductMessage());
-                        temp.add(cooledProduct);
-                    }
-                }
-            }
-            for (CooledProduct cooledProduct : temp)
-                cooledProductsList.remove(cooledProduct);
-            return message;
-        }
-        private void sendCompletedProducts(ArrayList<CompletedProductMessage> message){
-            String messageContent = JsonConverter.getJsonString(message);
-            ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
-            loadingBayMessage.addReceiver(packagingAgent);
-            loadingBayMessage.setConversationId("baked-products-152");
-            loadingBayMessage.setContent(messageContent);
-            baseAgent.sendMessage(loadingBayMessage);
-        }
+        baseAgent.finished();
     }
+    private ArrayList<CompletedProductMessage> processProducts (){
+        ArrayList<CooledProduct> temp = new ArrayList<CooledProduct> ();
+        ArrayList<CompletedProductMessage> message = new ArrayList<CompletedProductMessage> ();
+        for (CooledProduct cooledProduct : cooledProductsList) {
+            if (cooledProduct.getRemainingTimeDuration() < 0){
+                cooledProduct.setRemainingTimeDuration(cooledProduct.getIntermediateSteps().get(0).getDuration());
+                System.out.println("\tStarted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+            }
+            if (cooledProduct.getRemainingTimeDuration() == 0){
+                System.out.println("\tFinished " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                cooledProduct.finishedStep();
+                cooledProduct.setRemainingTimeDuration(-1);
+                if (cooledProduct.getIntermediateSteps().size() == 0) {
+                    message.add(cooledProduct.getCompletedProductMessage());
+                    temp.add(cooledProduct);
+                    continue;
+                }
+            }
+            cooledProduct.setRemainingTimeDuration(cooledProduct.getRemainingTimeDuration() - 1);
+        }
+        for (CooledProduct cooledProduct : temp)
+            cooledProductsList.remove(cooledProduct);
+        return message;
+    }
+    private void sendCompletedProducts(ArrayList<CompletedProductMessage> message){
+        String messageContent = JsonConverter.getJsonString(message);
+        ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
+        loadingBayMessage.addReceiver(packagingAgent);
+        processedProductConversationNumber ++;
+        loadingBayMessage.setConversationId("baked-products-" + Integer.toString(processedProductConversationNumber));
+        loadingBayMessage.setContent(messageContent);
+        baseAgent.sendMessage(loadingBayMessage);
+    }
+
     /*
      * Server for the order guid for the dough preparation stage agent's(proofer) message
      * */
@@ -149,27 +135,18 @@ public class PreLoadingProcessor extends BaseAgent {
             if (msg != null) {
                 String messageContent = msg.getContent();
                 System.out.println("\tReceived cooled product " + messageContent);
-                ProductMessage pm = this.parseProductMessage(messageContent);
-                Set<String> keys = pm.getProducts().keySet();
+                TypeReference<?> type = new TypeReference<ProductMessage>(){};
+                ProductMessage productMessage = JsonConverter.getInstance(messageContent, type);
+                Set<String> keys = productMessage.getProducts().keySet();
                 for(String productName: keys){
                     CooledProduct cooledProduct = this.getCooledProductFromProductName(productName);
-                    cooledProduct.setQuantity(pm.getProducts().get(productName));
+                    cooledProduct.setQuantity(productMessage.getProducts().get(productName));
                     cooledProductsList.add(cooledProduct);
                 }
             }
             else {
                 block();
             }
-        }
-        private ProductMessage parseProductMessage(String orderString){
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                ProductMessage data = mapper.readValue(orderString, ProductMessage.class);
-                return data;
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
-            return null;
         }
         private CooledProduct getCooledProductFromProductName(String productName){
             CooledProduct up = new CooledProduct();
@@ -191,7 +168,7 @@ public class PreLoadingProcessor extends BaseAgent {
             return up;
         }
         private Product getProductWithSameGuid(String productName){
-            for (Product p : availableProducts) {
+            for (Product p : availableProductList) {
                 if (p.getGuid().equals(productName)){
                     return p;
                 }
@@ -199,42 +176,6 @@ public class PreLoadingProcessor extends BaseAgent {
             System.out.println("Product with name " + productName + " is not offered by " + bakeryGuid);
             // TODO: make codacy approved Error
             // throw new Error("Product with name " + productName + " is not offered by " + bakeryGuid);
-            return null;
-        }
-    }
-    /*
-     * Server for the order from order processing agent's message
-     * */
-    private class OrderServer extends CyclicBehaviour {
-        private MessageTemplate mt;
-        private AID sender;
-
-        public OrderServer(AID orderProcessor){
-            this.sender = orderProcessor;
-        }
-        public void action() {
-            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-                    MessageTemplate.MatchSender(sender));
-            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("order"));
-            ACLMessage msg = myAgent.receive(mt2);
-            if (msg != null) {
-                String order = msg.getContent();
-                Order o = this.parseOrder(order);
-                System.out.println("\tReceived Order with guid: " + o.getGuid());
-                orders.add(o);
-            }
-            else {
-                block();
-            }
-        }
-        private Order parseOrder(String orderString){
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                Order data = mapper.readValue(orderString, Order.class);
-                return data;
-            } catch(IOException e) {
-                e.printStackTrace();
-            }
             return null;
         }
     }

@@ -68,7 +68,7 @@ public class TimeKeeper extends Agent{
             endTime = new Time(endTimeString);
         } else {
             scenarioDirectory = "small";
-            endTime = new Time(0,12,0);
+            endTime = new Time(1,12,0);
         }
         this.readSingleTimeStepFromMeta(scenarioDirectory);
 
@@ -105,7 +105,7 @@ public class TimeKeeper extends Agent{
 	private List<DFAgentDescription> getAllAgents(){
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
-        sd.setName("JADE-bakery");
+//         sd.setName("JADE-bakery");
 		template.addServices(sd);
 		try {
 			DFAgentDescription[] result = DFService.search(this, template);
