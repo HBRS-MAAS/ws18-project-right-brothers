@@ -1,17 +1,13 @@
 package org.right_brothers.agents;
 
 import java.util.*;
-// import java.util.stream.Collectors;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-// import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.domain.FIPAAgentManagement.*;
-// import jade.domain.FIPAException;
-// import jade.domain.DFService;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -34,34 +30,25 @@ public class PreLoadingProcessor extends BaseAgent {
     private String bakeryGuid = "bakery-001";
     private List<CooledProduct> cooledProductsList;
     private int processedProductConversationNumber = 0;
+    private boolean verbose = false;
 
     protected void setup() {
         super.setup();
         System.out.println("\tPreLoadingProcessor "+getAID().getLocalName()+" is born.");
+
         Object[] args = getArguments();
         String scenarioDirectory = "small";
-        String whichTest = "single-stage";
         if (args != null && args.length > 0) {
             this.bakeryGuid = (String) args[0];
-            scenarioDirectory = (String) args [1];
-            whichTest = (String) args [2];
+            scenarioDirectory = (String) args[1];
         }
-        if ("single-stage".equals(whichTest)) {
-            System.out.println("\t\t Packaging Single Stage Testing");
-            coolingRackAgent = new AID(this.bakeryGuid + "-dummy-cooling-racks", AID.ISLOCALNAME);
-        } else {
-            /*Normal operation use actual cooling racks agent*/
-            coolingRackAgent = new AID(this.bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
-        }
-        // AID orderProcessor = new AID(this.bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
+        coolingRackAgent = new AID(this.bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
         packagingAgent = new AID(this.bakeryGuid + "-packaging-agent", AID.ISLOCALNAME);
+
         this.register("PreLoadingProcessor", this.bakeryGuid+"-PreLoadingProcessor");
 
         this.cooledProductsList = new ArrayList<CooledProduct> ();
         this.availableProductList = new ArrayList<Product> ();
-
-        // TODO: get bakery guid as argument
-        //         Object[] args = getArguments();
 
         this.getAllInformation(scenarioDirectory);
 
@@ -103,10 +90,10 @@ public class PreLoadingProcessor extends BaseAgent {
         for (CooledProduct cooledProduct : cooledProductsList) {
             if (cooledProduct.getRemainingTimeDuration() < 0){
                 cooledProduct.setRemainingTimeDuration(cooledProduct.getIntermediateSteps().get(0).getDuration());
-                // System.out.println("\tStarted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                print("\tStarted " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
             }
             if (cooledProduct.getRemainingTimeDuration() == 0){
-                // System.out.println("\tFinished " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                print("\tFinished " + cooledProduct.getIntermediateSteps().get(0).getAction() + " " + cooledProduct.getQuantity() + " " + cooledProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 cooledProduct.finishedStep();
                 cooledProduct.setRemainingTimeDuration(-1);
                 if (cooledProduct.getIntermediateSteps().size() == 0) {
@@ -130,6 +117,11 @@ public class PreLoadingProcessor extends BaseAgent {
         loadingBayMessage.setContent(messageContent);
         baseAgent.sendMessage(loadingBayMessage);
     }
+    private void print(String str){
+        if (this.verbose){
+            System.out.println(str);
+        }
+    }
 
     /*
      * Server for the order guid for the dough preparation stage agent's(proofer) message
@@ -145,11 +137,10 @@ public class PreLoadingProcessor extends BaseAgent {
             baseAgent.finished();
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
-            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("cooled-product"));
-            ACLMessage msg = myAgent.receive(mt2);
+            ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                // System.out.println("\tPreLoadingProcessor received cooled product " + messageContent);
+                print("\tPreLoadingProcessor received cooled product " + messageContent);
                 TypeReference<?> type = new TypeReference<ProductMessage>(){};
                 ProductMessage productMessage = JsonConverter.getInstance(messageContent, type);
                 Set<String> keys = productMessage.getProducts().keySet();

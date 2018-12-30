@@ -35,41 +35,15 @@ public class DummyCoolingRackAgent extends BaseAgent {
         if (args != null && args.length > 0) {
             bakeryGuid = (String) args[0];
         }
-        /*Registered as order aggregator because loading bay uses yellow pages*/
-        this.register("order-aggregator", this.bakeryGuid + "-order-aggregator");
+        this.register("cooling-rack-agent", this.bakeryGuid+"-CoolingRackAgent");
         this.preLoadingProcessor = new AID(bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
         AID orderProcessor = new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
-        AID loadingbay = new AID(bakeryGuid + "-loader-agent", AID.ISLOCALNAME);
 
-        this.addBehaviour(new InformServer(loadingbay));
         this.addBehaviour(new OrderServer(orderProcessor));
     }
 
     protected void takeDown() {
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
-    }
-
-    private class InformServer extends CyclicBehaviour {
-        private MessageTemplate mt;
-        private AID sender;
-
-        public InformServer (AID orderProcessor){
-            this.sender = orderProcessor;
-        }
-        public void action() {
-            baseAgent.finished();
-            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-                    MessageTemplate.MatchSender(sender));
-            ACLMessage msg = myAgent.receive(mt);
-            if (msg != null) {
-                String messageContent = msg.getContent();
-                System.out.println(String.format("\tOrder-aggregator received msg: %s at %s from %s", 
-                            messageContent, baseAgent.getCurrentTime(), msg.getSender().getLocalName()));
-            }
-            else {
-                block();
-            }
-        }
     }
 
     private class InformSender extends OneShotBehaviour {
@@ -109,7 +83,7 @@ public class DummyCoolingRackAgent extends BaseAgent {
         ProductMessage cooledProducts = new ProductMessage();
         Hashtable<String, Integer> products = order.getProducts();
         cooledProducts.setProducts(products);
-        System.out.println("\tCooling-Racks sending products for " + order.getGuid());
+        // System.out.println("\tCooling-Racks sending products for " + order.getGuid());
         return cooledProducts;
     }
 
@@ -131,7 +105,7 @@ public class DummyCoolingRackAgent extends BaseAgent {
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);
-                System.out.println("\tCooling-Racks received Order with guid: " + o.getGuid());
+                // System.out.println("\tCooling-Racks received Order with guid: " + o.getGuid());
                 orderList.add(o);
             }
             else {

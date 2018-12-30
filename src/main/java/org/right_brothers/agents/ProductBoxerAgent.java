@@ -90,6 +90,14 @@ public class ProductBoxerAgent extends BaseAgent {
     }
 
     /**
+     * Print information depending on verbose
+     **/
+    private void print(String str){
+        if (this.verbose){
+            System.out.println(str);
+        }
+    }
+    /**
      * Prioritizes the order list according to the delivery times
      **/
     private void prioritizeOrderList(boolean verbose) {
@@ -137,7 +145,7 @@ public class ProductBoxerAgent extends BaseAgent {
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);
-                System.out.println("\tProduct-Boxer-Agent received Order with guid: " + o.getGuid());
+                print("\tProduct-Boxer-Agent received Order with guid: " + o.getGuid());
                 OrderItem newOrder = new OrderItem(o, false);
                 orderList.add(newOrder);
                 // New order received so re-prioritize the order list
@@ -197,7 +205,7 @@ public class ProductBoxerAgent extends BaseAgent {
                 		new TypeReference<List<CompletedProductMessage>>() {});
                 
                 for(CompletedProductMessage messageItem: completedProductList) {
-                	System.out.println(String.format("\t"+getAID().getLocalName()+" :Received completed product: %s, quantity: %S",
+                	print(String.format("\t"+getAID().getLocalName()+" :Received completed product: %s, quantity: %S",
                 			messageItem.getGuid(), messageItem.getQuantity()));
                 	
                 	String productName = messageItem.getGuid();
@@ -274,7 +282,7 @@ public class ProductBoxerAgent extends BaseAgent {
             this.sendPackedProducts(loadingBayMessage, verbose);
         }
         if (zeroCounter == products.size()) {
-            System.out.println("Complete "+orderList.get(0).getOrder().getGuid()+" has been passed to the next stage");
+            print("Complete "+orderList.get(0).getOrder().getGuid()+" has been passed to the next stage");
             orderList.remove(0);
             if (orderList.size() > 0) {
                 checkProductOrderReadyHardPriority();
@@ -335,7 +343,7 @@ public class ProductBoxerAgent extends BaseAgent {
                 this.sendPackedProducts(loadingBayMessage, verbose);
             }
             if (zeroCounter == products.size()) {
-                System.out.println("Order "+orderList.get(i).getOrder().getGuid()+" Complete");
+                print("Order "+orderList.get(i).getOrder().getGuid()+" Complete");
                 orderList.get(i).setIsOrderComplete(true);
             }
         }
@@ -343,7 +351,7 @@ public class ProductBoxerAgent extends BaseAgent {
         int l = 0;
         while(l < orderList.size()) {
             if (orderList.get(l).getIsOrderComplete()) {
-                System.out.println("Complete "+orderList.get(l).getOrder().getGuid()+" has been passed to the next stage");
+                print("Complete "+orderList.get(l).getOrder().getGuid()+" has been passed to the next stage");
                 orderList.remove(l);
                 // Reset counter if an order is removed from list
                 l = 0;

@@ -30,27 +30,15 @@ public class DummyProofer extends BaseAgent {
         super.setup();
         System.out.println("\tHello! Dummy-proofer "+getAID().getName()+" is ready.");
         orderList = new Vector<Order>();
-        String whichTest = "single-stage";
 
         Object[] args = getArguments();
         if (args != null && args.length > 0) {
             bakeryGuid = (String) args[0];
-            whichTest = (String) args[1];
         }
         this.ovenManager = new AID(bakeryGuid + "-ovenManager", AID.ISLOCALNAME);
-        AID coolingRackAgent = new AID(bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
         AID orderProcessor = new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
 
-        if ("single-stage".equals(whichTest)) {
-            /*Cooling racks sends final message to dummy proofer to complete the testing loop*/
-            this.register("Baking-tester", "JADE-bakery");
-            this.addBehaviour(new InformServer(coolingRackAgent));
-        } else {
-            /*Loading bay sends final message to dummy proofer to complete the testing loop*/
-            this.register("order-aggregator", this.bakeryGuid + "-order-aggregator");
-            AID loadingbay = new AID(bakeryGuid + "-loader-agent", AID.ISLOCALNAME);
-            this.addBehaviour(new InformServer(loadingbay));
-        }
+        this.register("proofer", this.bakeryGuid + "-proofer");
         this.addBehaviour(new OrderServer(orderProcessor));
     }
 
@@ -58,28 +46,6 @@ public class DummyProofer extends BaseAgent {
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
 
-    private class InformServer extends CyclicBehaviour {
-        private MessageTemplate mt;
-        private AID sender;
-
-        public InformServer (AID orderProcessor){
-            this.sender = orderProcessor;
-        }
-        public void action() {
-            baseAgent.finished();
-            this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-                    MessageTemplate.MatchSender(sender));
-            ACLMessage msg = myAgent.receive(mt);
-            if (msg != null) {
-                String messageContent = msg.getContent();
-                System.out.println(String.format("\tFinal received msg: %s at %s from %s", 
-                            messageContent, baseAgent.getCurrentTime(), msg.getSender().getLocalName()));
-            }
-            else {
-                block();
-            }
-        }
-    }
 
     private class InformSender extends OneShotBehaviour {
         private MessageTemplate mt;
@@ -167,7 +133,7 @@ public class DummyProofer extends BaseAgent {
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);
-                System.out.println("\tDummy Proofer Received Order with guid: " + o.getGuid());
+                // System.out.println("\tDummy Proofer Received Order with guid: " + o.getGuid());
                 orderList.add(o);
             }
             else {

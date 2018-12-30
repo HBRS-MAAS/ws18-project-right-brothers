@@ -19,14 +19,15 @@ public class BakingAndPackagingStageInitializer extends Initializer {
         agents.add(bakeryNames.get(0) + "-dummy-order-processor:org.right_brothers.agents.DummyOrderProcessor(" + bakeryNames.get(0) + ", " + scenarioDirectory + ")");
         for (String bakeryName : bakeryNames) {
         	// agents.add(bakeryName + "-dummy:org.right_brothers.agents.BakingStageTester(" + bakeryName + ")");
-            agents.add(bakeryName + "-dummy-proofer:org.right_brothers.agents.DummyProofer(" + bakeryName + ", two-stage)");
+            agents.add(bakeryName + "-dummy-proofer:org.right_brothers.agents.DummyProofer(" + bakeryName + ")");
             agents.add(bakeryName + "-ovenManager:org.right_brothers.agents.OvenManager(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-postBakingProcessor:org.right_brothers.agents.PostBakingProcessor(" + bakeryName + ")");
-            agents.add(bakeryName + "-cooling-rack:org.maas.agents.CoolingRackAgent(" + bakeryName + ", normal-operation)");
+            agents.add(bakeryName + "-cooling-rack:org.maas.agents.CoolingRackAgent(" + bakeryName + ")");
 
-            agents.add(bakeryName + "-preLoadingProcessor:org.right_brothers.agents.PreLoadingProcessor(" + bakeryName + ", " + scenarioDirectory + ", two-stage)");
+            agents.add(bakeryName + "-preLoadingProcessor:org.right_brothers.agents.PreLoadingProcessor(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-packaging-agent:org.right_brothers.agents.ProductBoxerAgent(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-loader-agent:org.maas.agents.LoadingBayAgent(" + bakeryName + ")");
+            agents.add(bakeryName + "-order-aggregator:org.right_brothers.agents.DummyReceiverAgent(" + bakeryName + ", order-aggregator, loader-agent)");
         }
 
         String agentInitString = String.join(";", agents);

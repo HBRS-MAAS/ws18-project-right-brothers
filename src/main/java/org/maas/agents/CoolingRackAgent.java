@@ -16,10 +16,9 @@ import org.maas.utils.Time;
 public class CoolingRackAgent extends BaseAgent{
     private AID packagingAgent;
     private List<ProcessedProduct> processedProductList;
-    private int cooledProductConvesationNumber = 0;
+    private int cooledProductConversationNumber = 0;
     private String bakeryGuid = "bakery-001";
     private boolean verbose = false;
-    private String whichTest = "single-stage";
     
     protected void setup() {
         super.setup();
@@ -28,14 +27,9 @@ public class CoolingRackAgent extends BaseAgent{
         Object[] args = getArguments();
         if (args != null && args.length > 0) {
             this.bakeryGuid = (String) args[0];
-            this.whichTest = (String) args[1];
         }
-        if (this.whichTest.equals("single-stage")) {
-            this.packagingAgent = new AID(this.bakeryGuid + "-dummy-proofer", AID.ISLOCALNAME);
-        } else {
-            /* Normal operation so use the actual packaging Agent */
-            this.packagingAgent = new AID(this.bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
-        }
+
+        this.packagingAgent = new AID(this.bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
         AID postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
        
         this.register("cooling-rack-agent", this.bakeryGuid+"-CoolingRackAgent");
@@ -91,13 +85,12 @@ public class CoolingRackAgent extends BaseAgent{
         ProductMessage p = new ProductMessage();
         p.setProducts(outMsg);
         String messageContent = JsonConverter.getJsonString(p);
-        ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
-        loadingBayMessage.addReceiver(packagingAgent);
-        /* For now we comment the conversationNumber, decide consistent way of setting conversation id */
-        // cooledProductConvesationNumber ++;
-        loadingBayMessage.setConversationId("cooled-product");
-        loadingBayMessage.setContent(messageContent);
-        baseAgent.sendMessage(loadingBayMessage);
+        ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+        message.addReceiver(this.packagingAgent);
+        cooledProductConversationNumber ++;
+        message.setConversationId(this.bakeryGuid + "-cooled-product-" + Integer.toString(this.cooledProductConversationNumber));
+        message.setContent(messageContent);
+        baseAgent.sendMessage(message);
     }
     private void print(String str){
         if (this.verbose){

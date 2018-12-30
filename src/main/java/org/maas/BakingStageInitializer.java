@@ -18,11 +18,11 @@ public class BakingStageInitializer extends Initializer {
 
         agents.add(bakeryNames.get(0) + "-dummy-order-processor:org.right_brothers.agents.DummyOrderProcessor(" + bakeryNames.get(0) + ", " + scenarioDirectory + ")");
         for (String bakeryName : bakeryNames) {
-        	// agents.add(bakeryName + "-dummy:org.right_brothers.agents.BakingStageTester(" + bakeryName + ")");
-            agents.add(bakeryName + "-dummy-proofer:org.right_brothers.agents.DummyProofer(" + bakeryName + ", single-stage)");
+            agents.add(bakeryName + "-dummy-proofer:org.right_brothers.agents.DummyProofer(" + bakeryName + ")");
             agents.add(bakeryName + "-ovenManager:org.right_brothers.agents.OvenManager(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-postBakingProcessor:org.right_brothers.agents.PostBakingProcessor(" + bakeryName + ")");
-            agents.add(bakeryName + "-cooling-rack:org.maas.agents.CoolingRackAgent(" + bakeryName + ", single-stage)");
+            agents.add(bakeryName + "-cooling-rack:org.maas.agents.CoolingRackAgent(" + bakeryName + ")");
+            agents.add(bakeryName + "-preLoadingProcessor:org.right_brothers.agents.DummyReceiverAgent(" + bakeryName + ", PreLoadingProcessor, cooling-rack)");
         }
 
         String agentInitString = String.join(";", agents);
