@@ -24,7 +24,6 @@ import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class PreLoadingProcessor extends BaseAgent {
-    private AID coolingRackAgent;
     private AID packagingAgent;
     private List<Product> availableProductList;
     private String bakeryGuid = "bakery-001";
@@ -42,7 +41,7 @@ public class PreLoadingProcessor extends BaseAgent {
             this.bakeryGuid = (String) args[0];
             scenarioDirectory = (String) args[1];
         }
-        coolingRackAgent = new AID(this.bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
+        AID coolingRackAgent = new AID(this.bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
         packagingAgent = new AID(this.bakeryGuid + "-packaging-agent", AID.ISLOCALNAME);
 
         this.register("PreLoadingProcessor", this.bakeryGuid+"-PreLoadingProcessor");

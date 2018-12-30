@@ -1,8 +1,6 @@
 package org.right_brothers.agents;
 
 import java.util.*;
-import java.io.IOException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 // import jade.core.Agent;
 import jade.core.AID;
@@ -12,27 +10,18 @@ import jade.lang.acl.MessageTemplate;
 // import jade.lang.acl.UnreadableException;
 
 import org.maas.agents.BaseAgent;
-import org.right_brothers.data.models.Order;
-import org.maas.utils.JsonConverter;
-import org.right_brothers.data.messages.UnbakedProductMessage;
-
-import java.util.*;
-
 
 @SuppressWarnings("serial")
 public class DummyReceiverAgent extends BaseAgent {
 
-    private AID ovenManager;
     private String bakeryGuid = "bakery-001";
-    private List<Order> orderList;
 
     protected void setup() {
         super.setup();
         System.out.println("\tHello! Dummy-proofer "+getAID().getName()+" is ready.");
-        orderList = new Vector<Order>();
 
         Object[] args = getArguments();
-        String name = "preLoadingbay";
+        String name = "preLoadingProcessor";
         String senderName = "cooling-rack";
         if (args != null && args.length > 0) {
             this.bakeryGuid = (String) args[0];
