@@ -30,8 +30,6 @@ import jade.lang.acl.MessageTemplate;
 @SuppressWarnings("serial")
 
 public class ProductBoxerAgent extends BaseAgent {
-	private AID orderProcessor;
-	private AID preLoadingProcessor;
     private AID loadingBayAgent;
     private Hashtable<String,Integer> productPackingLookup;
     private static List<Product> availableProductList;
@@ -51,8 +49,8 @@ public class ProductBoxerAgent extends BaseAgent {
             this.bakeryGuid = (String) args[0];
             scenarioDirectory = (String) args [1];
         }
-        orderProcessor =  new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
-        preLoadingProcessor = new AID(bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
+        AID orderProcessor =  new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
+        AID preLoadingProcessor = new AID(bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
         loadingBayAgent = new AID(bakeryGuid + "-loader-agent", AID.ISLOCALNAME);
         this.register("Product-Boxer-agent", this.bakeryGuid+"-ProductBoxerAgent");
         this.getAllInformation(scenarioDirectory);

@@ -25,7 +25,6 @@ public class DummyProofer extends BaseAgent {
     private AID ovenManager;
     private String bakeryGuid = "bakery-001";
     private List<Order> orderList;
-    private String whichTest = "singe-stage";
 
     protected void setup() {
         super.setup();
@@ -42,7 +41,7 @@ public class DummyProofer extends BaseAgent {
         AID coolingRackAgent = new AID(bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
         AID orderProcessor = new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
 
-        if (whichTest.equals("single-stage")) {
+        if ("single-stage".equals(whichTest)) {
             /*Cooling racks sends final message to dummy proofer to complete the testing loop*/
             this.register("Baking-tester", "JADE-bakery");
             this.addBehaviour(new InformServer(coolingRackAgent));
@@ -168,7 +167,7 @@ public class DummyProofer extends BaseAgent {
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);
-                System.out.println("\t Dummy Proofer Received Order with guid: " + o.getGuid());
+                System.out.println("\tDummy Proofer Received Order with guid: " + o.getGuid());
                 orderList.add(o);
             }
             else {

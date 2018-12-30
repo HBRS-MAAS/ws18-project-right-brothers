@@ -29,7 +29,6 @@ import org.maas.utils.Time;
 @SuppressWarnings("serial")
 public class PreLoadingProcessor extends BaseAgent {
     private AID coolingRackAgent;
-    private AID orderProcessor;
     private AID packagingAgent;
     private List<Product> availableProductList;
     private String bakeryGuid = "bakery-001";
@@ -54,7 +53,7 @@ public class PreLoadingProcessor extends BaseAgent {
             /*Normal operation use actual cooling racks agent*/
             coolingRackAgent = new AID(this.bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
         }
-        orderProcessor = new AID(this.bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
+        AID orderProcessor = new AID(this.bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
         packagingAgent = new AID(this.bakeryGuid + "-packaging-agent", AID.ISLOCALNAME);
         this.register("PreLoadingProcessor", this.bakeryGuid+"-PreLoadingProcessor");
 
