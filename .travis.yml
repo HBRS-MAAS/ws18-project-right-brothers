@@ -10,7 +10,8 @@ os: linux
 script: 
     - ./gradlew run
     - ./gradlew run --args="-baking"
-#    - ./gradlew run --args="-packaging"
+    - ./gradlew run --args="-packaging"
+    - ./gradlew run --args="-baking -packaging"
     - ./gradlew run --args="-orderProcessing"
     - ./gradlew run --args="-customer"
 
