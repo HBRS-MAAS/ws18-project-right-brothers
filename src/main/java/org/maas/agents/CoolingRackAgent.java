@@ -16,7 +16,7 @@ import org.maas.utils.Time;
 public class CoolingRackAgent extends BaseAgent{
     private AID packagingAgent;
     private List<ProcessedProduct> processedProductList;
-    private int cooledProductConvesationNumber = 0;
+    private int cooledProductConversationNumber = 0;
     private String bakeryGuid = "bakery-001";
     private boolean verbose = false;
     
@@ -28,8 +28,8 @@ public class CoolingRackAgent extends BaseAgent{
         if (args != null && args.length > 0) {
             this.bakeryGuid = (String) args[0];
         }
-        
-        this.packagingAgent = new AID(this.bakeryGuid + "-dummy-proofer", AID.ISLOCALNAME);
+
+        this.packagingAgent = new AID(this.bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
         AID postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
        
         this.register("cooling-rack-agent", this.bakeryGuid+"-CoolingRackAgent");
@@ -85,12 +85,12 @@ public class CoolingRackAgent extends BaseAgent{
         ProductMessage p = new ProductMessage();
         p.setProducts(outMsg);
         String messageContent = JsonConverter.getJsonString(p);
-        ACLMessage loadingBayMessage = new ACLMessage(ACLMessage.INFORM);
-        loadingBayMessage.addReceiver(packagingAgent);
-        cooledProductConvesationNumber ++;
-        loadingBayMessage.setConversationId("cooled-product-" + Integer.toString(cooledProductConvesationNumber));
-        loadingBayMessage.setContent(messageContent);
-        baseAgent.sendMessage(loadingBayMessage);
+        ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+        message.addReceiver(this.packagingAgent);
+        cooledProductConversationNumber ++;
+        message.setConversationId(this.bakeryGuid + "-cooled-product-" + Integer.toString(this.cooledProductConversationNumber));
+        message.setContent(messageContent);
+        baseAgent.sendMessage(message);
     }
     private void print(String str){
         if (this.verbose){

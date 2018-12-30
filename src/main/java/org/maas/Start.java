@@ -60,15 +60,22 @@ public class Start {
         if(doughPrepStage) {
 
         }
-        if(bakingStage) {
-			Initializer init = new BakingStageInitializer();
+        if(bakingStage && packagingStage) {
+            Initializer init = new BakingAndPackagingStageInitializer();
             sb.append(init.initialize(scenarioDirectory));
-            endTime = "001.09.00";
-        }
-        if(packagingStage) {
-            Initializer init = new PackagingStageInitializer();
-            sb.append(init.initialize(scenarioDirectory));
-            endTime = "001.20.00";
+            endTime = "002.12.00";
+
+        } else {
+            if(bakingStage) {
+    			Initializer init = new BakingStageInitializer();
+                sb.append(init.initialize(scenarioDirectory));
+                endTime = "001.12.00";
+            }
+            if(packagingStage) {
+                Initializer init = new PackagingStageInitializer();
+                sb.append(init.initialize(scenarioDirectory));
+                endTime = "002.01.00";
+            }
         }
         if(deliveryStage) {
 

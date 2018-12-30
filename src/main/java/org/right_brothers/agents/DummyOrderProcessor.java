@@ -34,7 +34,6 @@ public class DummyOrderProcessor extends BaseAgent {
     protected void setup() {
         super.setup();
         System.out.println("\tHello! Dummy-orderProcessor "+getAID().getName()+" is ready.");
-        this.register("OrderProcessor", "JADE-bakery");
 
         Object[] args = getArguments();
         String scenarioDirectory = "small";
@@ -42,6 +41,7 @@ public class DummyOrderProcessor extends BaseAgent {
             bakeryGuid = (String) args[0];
             scenarioDirectory = (String) args[1];
         }
+        this.register(bakeryGuid +"-OrderProcessor", "JADE-bakery");
 
         this.orderList = this.readOrdersFromJsonFile(scenarioDirectory);
         System.out.println("Total orders: " + this.orderList.size());
