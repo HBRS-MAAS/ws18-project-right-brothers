@@ -20,7 +20,7 @@ public class PackagingStageInitializer extends Initializer {
 
         for (String bakeryName : bakeryNames) {
             // agents.add(bakeryName + "-dummy:org.right_brothers.agents.PackagingStageTester");
-            agents.add(bakeryName + "-preLoadingProcessor:org.right_brothers.agents.PreLoadingProcessor(" + bakeryName + ", " + scenarioDirectory + ")");
+            agents.add(bakeryName + "-preLoadingProcessor:org.right_brothers.agents.PreLoadingProcessor(" + bakeryName + ", " + scenarioDirectory + ", single-stage)");
             agents.add(bakeryName + "-packaging-agent:org.right_brothers.agents.ProductBoxerAgent(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-loader-agent:org.maas.agents.LoadingBayAgent(" + bakeryName + ")");
             // agents.add(bakeryName + "-order-aggregator:org.right_brothers.agents.OrderAggregatorAgent(" + bakeryName + ")");

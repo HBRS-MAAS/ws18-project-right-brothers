@@ -281,7 +281,7 @@ public class LoadingBayAgent extends BaseAgent {
 
 				// This assumes a JSON object is sent by the preceding agent
 				String boxesMessageContent = msg.getContent();
-				System.out.println(boxesMessageContent);
+				// System.out.println(boxesMessageContent);
 				JSONObject JSONData = new JSONObject(boxesMessageContent);
 				String orderIDKey = "OrderID";
 				String orderID = JSONData.getString(orderIDKey);

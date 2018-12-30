@@ -25,22 +25,33 @@ public class DummyProofer extends BaseAgent {
     private AID ovenManager;
     private String bakeryGuid = "bakery-001";
     private List<Order> orderList;
+    private String whichTest = "singe-stage";
 
     protected void setup() {
         super.setup();
         System.out.println("\tHello! Dummy-proofer "+getAID().getName()+" is ready.");
-        this.register("Baking-tester", "JADE-bakery");
         orderList = new Vector<Order>();
+        String whichTest = "single-stage";
 
         Object[] args = getArguments();
         if (args != null && args.length > 0) {
             bakeryGuid = (String) args[0];
+            whichTest = (String) args[1];
         }
         this.ovenManager = new AID(bakeryGuid + "-ovenManager", AID.ISLOCALNAME);
         AID coolingRackAgent = new AID(bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
         AID orderProcessor = new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
 
-        this.addBehaviour(new InformServer(coolingRackAgent));
+        if (whichTest.equals("single-stage")) {
+            /*Cooling racks sends final message to dummy proofer to complete the testing loop*/
+            this.register("Baking-tester", "JADE-bakery");
+            this.addBehaviour(new InformServer(coolingRackAgent));
+        } else {
+            /*Loading bay sends final message to dummy proofer to complete the testing loop*/
+            this.register("order-aggregator", this.bakeryGuid + "-order-aggregator");
+            AID loadingbay = new AID(bakeryGuid + "-loader-agent", AID.ISLOCALNAME);
+            this.addBehaviour(new InformServer(loadingbay));
+        }
         this.addBehaviour(new OrderServer(orderProcessor));
     }
 
@@ -62,7 +73,7 @@ public class DummyProofer extends BaseAgent {
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                System.out.println(String.format("\tReceived msg: %s at %s from %s", 
+                System.out.println(String.format("\tFinal received msg: %s at %s from %s", 
                             messageContent, baseAgent.getCurrentTime(), msg.getSender().getLocalName()));
             }
             else {
@@ -157,7 +168,7 @@ public class DummyProofer extends BaseAgent {
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);
-                // System.out.println("\tReceived Order with guid: " + o.getGuid());
+                System.out.println("\t Dummy Proofer Received Order with guid: " + o.getGuid());
                 orderList.add(o);
             }
             else {
