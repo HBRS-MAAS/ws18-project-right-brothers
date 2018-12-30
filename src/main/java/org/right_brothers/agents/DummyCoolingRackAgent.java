@@ -25,7 +25,6 @@ public class DummyCoolingRackAgent extends BaseAgent {
     private AID preLoadingProcessor;
     private String bakeryGuid = "bakery-001";
     private List<Order> orderList;
-    private int cooledProductConvesationNumber = 0;
 
     protected void setup() {
         super.setup();
@@ -99,7 +98,6 @@ public class DummyCoolingRackAgent extends BaseAgent {
             for (Order order : orderList) {
                 ProductMessage cooledProducts = this.convertOrdersToCooledProducts(order);
                 String messageContent = JsonConverter.getJsonString(cooledProducts);
-                cooledProductConvesationNumber ++;
                 this.addBehaviour(new InformSender(messageContent, this.preLoadingProcessor, "cooled-product"));
             }
             this.orderList.clear();

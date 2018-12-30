@@ -30,7 +30,6 @@ public class DummyOrderProcessor extends BaseAgent {
     private List<AID> agentList;
     private String bakeryGuid = "bakery-001";
     private List<Order> orderList;
-    private int cooledProductConvesationNumber = 0;
 
     protected void setup() {
         super.setup();

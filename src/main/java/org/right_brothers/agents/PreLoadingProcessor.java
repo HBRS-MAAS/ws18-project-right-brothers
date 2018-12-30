@@ -46,14 +46,14 @@ public class PreLoadingProcessor extends BaseAgent {
             scenarioDirectory = (String) args [1];
             whichTest = (String) args [2];
         }
-        if (whichTest.equals("single-stage")) {
+        if ("single-stage".equals(whichTest)) {
             System.out.println("\t\t Packaging Single Stage Testing");
             coolingRackAgent = new AID(this.bakeryGuid + "-dummy-cooling-racks", AID.ISLOCALNAME);
         } else {
             /*Normal operation use actual cooling racks agent*/
             coolingRackAgent = new AID(this.bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
         }
-        AID orderProcessor = new AID(this.bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
+        // AID orderProcessor = new AID(this.bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
         packagingAgent = new AID(this.bakeryGuid + "-packaging-agent", AID.ISLOCALNAME);
         this.register("PreLoadingProcessor", this.bakeryGuid+"-PreLoadingProcessor");
 
