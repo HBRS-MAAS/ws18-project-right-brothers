@@ -2,6 +2,7 @@ package org.right_brothers.visualizer.ui;
 	
 import java.util.concurrent.CountDownLatch;
 
+import org.maas.agents.BaseAgent;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -10,8 +11,10 @@ import javafx.scene.Scene;
 
 
 public class Visualizer extends Application {
-	private static final CountDownLatch countDownLatch = new CountDownLatch(1);
+	private static CountDownLatch countDownLatch = new CountDownLatch(1);
 	public static Visualizer currentInstance = null;
+	
+	private static BaseAgent agent;
 	
 	private LayoutController layoutController;
 	
@@ -30,8 +33,10 @@ public class Visualizer extends Application {
         return currentInstance;
     }
 	
-	public static void run(String[] args) {
-		launch(args);
+	public static void run(BaseAgent agent) {
+		Visualizer.agent = agent;
+		
+		launch();
 	}
 	
 	@Override
@@ -57,7 +62,10 @@ public class Visualizer extends Application {
 	
 	@Override
 	public void stop() {
-		System.out.println("Closing application");
+		countDownLatch = new CountDownLatch(1);
+		currentInstance = null;
+		
+		agent.finished();
 	}
 	
 	public void updateBoard(String messageType, String message) {
