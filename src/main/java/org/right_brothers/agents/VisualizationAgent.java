@@ -33,9 +33,7 @@ public class VisualizationAgent extends Agent {
         public void action() {
             ACLMessage msg = myAgent.receive();
             if (msg != null) {
-                String msgString =  msg.getContent();
-                System.out.println("### \tMessage inside VisualizationAgent " + msgString);
-                guiWindow.updateBoard(msg.getConversationId().toLowerCase(), msgString);
+                guiWindow.updateBoard(msg.getConversationId().toLowerCase(), msg.getContent());
             }
             else {
                 block();
