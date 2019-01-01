@@ -17,6 +17,7 @@ import jade.lang.acl.MessageTemplate;
 public class LoadingBayAgent extends BaseAgent {
 	private JSONArray orderDetailsArray = new JSONArray();
 	private String readyOrderID = null;
+	private String bakeryGuid = "bakery-001";
 
 	private HashMap<String, HashMap<String, Integer>> productDatabase = new HashMap<>();
 	private HashMap<String, JSONArray> boxDatabase = new HashMap<>();
@@ -24,8 +25,12 @@ public class LoadingBayAgent extends BaseAgent {
 	protected void setup() {
 		super.setup();
 		System.out.println("Hello! LoadingBay-agent " + getAID().getName() + " is ready.");
+		Object[] args = getArguments();
+        if (args != null && args.length > 0) {
+            bakeryGuid = (String) args[0];
+        }
 
-		register("loading-bay", "loading-bay");
+		register(bakeryGuid + "-loading-bay", bakeryGuid + "-loading-bay");
 
 		addBehaviour(new OrderDetailsReceiver());
 		addBehaviour(new ProductDetailsReceiver());
@@ -179,7 +184,9 @@ public class LoadingBayAgent extends BaseAgent {
 		protected void findReceiver() {
 			DFAgentDescription template = new DFAgentDescription();
 			ServiceDescription sd = new ServiceDescription();
+			// System.out.println("\t\t"+((LoadingBayAgent) baseAgent).bakeryGuid+"-order-aggregator");
 			sd.setType("order-aggregator");
+			sd.setName(bakeryGuid+"-order-aggregator");
 			template.addServices(sd);
 			try {
 				DFAgentDescription[] result = DFService.search(myAgent, template);
@@ -222,7 +229,7 @@ public class LoadingBayAgent extends BaseAgent {
 		protected void findOrderProcessor() {
 			DFAgentDescription template = new DFAgentDescription();
 			ServiceDescription sd = new ServiceDescription();
-			orderProcessorServiceType = "OrderProcessing";
+			orderProcessorServiceType = ((LoadingBayAgent) baseAgent).bakeryGuid+"-OrderProcessor";
 
 			sd.setType(orderProcessorServiceType);
 			template.addServices(sd);
@@ -274,6 +281,7 @@ public class LoadingBayAgent extends BaseAgent {
 
 				// This assumes a JSON object is sent by the preceding agent
 				String boxesMessageContent = msg.getContent();
+				// System.out.println(boxesMessageContent);
 				JSONObject JSONData = new JSONObject(boxesMessageContent);
 				String orderIDKey = "OrderID";
 				String orderID = JSONData.getString(orderIDKey);
@@ -282,6 +290,7 @@ public class LoadingBayAgent extends BaseAgent {
 				updateProductDatabase(boxesMessageContent);
 
 				if (orderProductsReady(orderID)) {
+					System.out.println(orderID+"is ready");
 					((LoadingBayAgent) baseAgent).readyOrderID = orderID;
 					addBehaviour(new PackagingPhaseMessageSender());
 				}

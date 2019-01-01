@@ -14,38 +14,37 @@ import jade.lang.acl.MessageTemplate;
 import org.maas.agents.BaseAgent;
 import org.right_brothers.data.models.Order;
 import org.maas.utils.JsonConverter;
-import org.right_brothers.data.messages.UnbakedProductMessage;
+import org.maas.data.messages.ProductMessage;
 
 import java.util.*;
 
 
 @SuppressWarnings("serial")
-public class DummyProofer extends BaseAgent {
+public class DummyCoolingRackAgent extends BaseAgent {
 
-    private AID ovenManager;
+    private AID preLoadingProcessor;
     private String bakeryGuid = "bakery-001";
     private List<Order> orderList;
 
     protected void setup() {
         super.setup();
-        System.out.println("\tHello! Dummy-proofer "+getAID().getName()+" is ready.");
+        System.out.println("\tHello! Cooling-Racks "+getAID().getName()+" is ready.");
         orderList = new Vector<Order>();
 
         Object[] args = getArguments();
         if (args != null && args.length > 0) {
             bakeryGuid = (String) args[0];
         }
-        this.ovenManager = new AID(bakeryGuid + "-ovenManager", AID.ISLOCALNAME);
+        this.register("cooling-rack-agent", this.bakeryGuid+"-CoolingRackAgent");
+        this.preLoadingProcessor = new AID(bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
         AID orderProcessor = new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
 
-        this.register("proofer", this.bakeryGuid + "-proofer");
         this.addBehaviour(new OrderServer(orderProcessor));
     }
 
     protected void takeDown() {
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
-
 
     private class InformSender extends OneShotBehaviour {
         private MessageTemplate mt;
@@ -70,49 +69,22 @@ public class DummyProofer extends BaseAgent {
     @Override
     public void stepAction(){
         if (this.orderList.size() > 0){
-            List<UnbakedProductMessage> unbakedProducts = this.convertOrdersToUnbakedProducts(this.orderList);
-            this.orderList.clear();
-            for (UnbakedProductMessage unbakedProduct : unbakedProducts) {
-                String messageContent = JsonConverter.getJsonString(unbakedProduct);
-                this.addBehaviour(new InformSender(messageContent, this.ovenManager, "unbakedProduct"));
+            for (Order order : orderList) {
+                ProductMessage cooledProducts = this.convertOrdersToCooledProducts(order);
+                String messageContent = JsonConverter.getJsonString(cooledProducts);
+                this.addBehaviour(new InformSender(messageContent, this.preLoadingProcessor, "cooled-product"));
             }
+            this.orderList.clear();
         }
         baseAgent.finished();
     }
 
-    private List<UnbakedProductMessage> convertOrdersToUnbakedProducts(List<Order> orderList){
-        Vector<UnbakedProductMessage> unbakedProducts = new Vector<UnbakedProductMessage> ();
-        for (Order order : orderList) {
-            Hashtable<String, Integer> products = order.getProducts();
-            Set<String> keys = products.keySet();
-            for(String key: keys){
-                boolean added = false;
-                for (UnbakedProductMessage upm : unbakedProducts) {
-                    if (upm.getProductType().equals(key)){
-                        this.appendGuidAndQuantity(upm, order.getGuid(), products.get(key));
-                        added = true;
-                        break;
-                    }
-                }
-                if (added){
-                    continue;
-                }
-                UnbakedProductMessage upm = new UnbakedProductMessage();
-                upm.setProductType(key);
-                this.appendGuidAndQuantity(upm, order.getGuid(), products.get(key));
-                unbakedProducts.add(upm);
-            }
-        }
-        return unbakedProducts;
-    }
-
-    private void appendGuidAndQuantity(UnbakedProductMessage upm, String guid, int quantity){
-        Vector<String> guids = upm.getGuids();
-        guids.add(guid);
-        upm.setGuids(guids);
-        Vector<Integer> productQuantities = upm.getProductQuantities();
-        productQuantities.add(quantity);
-        upm.setProductQuantities(productQuantities);
+    private ProductMessage convertOrdersToCooledProducts(Order order){
+        ProductMessage cooledProducts = new ProductMessage();
+        Hashtable<String, Integer> products = order.getProducts();
+        cooledProducts.setProducts(products);
+        // System.out.println("\tCooling-Racks sending products for " + order.getGuid());
+        return cooledProducts;
     }
 
     /*
@@ -133,7 +105,7 @@ public class DummyProofer extends BaseAgent {
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);
-                // System.out.println("\tDummy Proofer Received Order with guid: " + o.getGuid());
+                // System.out.println("\tCooling-Racks received Order with guid: " + o.getGuid());
                 orderList.add(o);
             }
             else {
