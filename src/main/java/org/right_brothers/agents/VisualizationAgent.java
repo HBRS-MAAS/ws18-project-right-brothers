@@ -10,13 +10,11 @@ import jade.lang.acl.ACLMessage;
 public class VisualizationAgent extends Agent {
 
     private Visualizer guiWindow;
-    public int counter;
 
 	protected void setup() {
 	// Printout a welcome message
 		System.out.println("Hello! Visualization-agent "+getAID().getName()+" is ready.");
 
-        this.counter = 0;
         // launch the gui window in another thread
         new Thread() {
             @Override
@@ -37,8 +35,7 @@ public class VisualizationAgent extends Agent {
             if (msg != null) {
                 String msgString =  msg.getContent();
                 System.out.println("### \tMessage inside VisualizationAgent " + msgString);
-                counter ++;
-                guiWindow.updateBoard("", Integer.toString(counter));
+                guiWindow.updateBoard(msg.getConversationId().toLowerCase(), msgString);
             }
             else {
                 block();
