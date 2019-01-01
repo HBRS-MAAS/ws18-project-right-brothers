@@ -1,72 +1,37 @@
 package org.right_brothers.agents;
 
-import java.util.ArrayList;
-
-import org.maas.agents.BaseAgent;
-import org.maas.agents.TimeKeeper;
-import org.maas.objects.ProcessedProduct;
-import org.maas.utils.Time;
 import org.right_brothers.visualizer.ui.Visualizer;
 import jade.core.Agent;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 
 
 @SuppressWarnings("serial")
-public class VisualizationAgent extends BaseAgent {
-	private String scenarioDirectory;
-	private Time endTime;
-	
+public class VisualizationAgent extends Agent {
+
     private Visualizer guiWindow;
 
 	protected void setup() {
-		super.setup();
-		
-		Object[] args = getArguments();
-        if (args != null && args.length > 0) {
-            scenarioDirectory = (String) args[0];
-            String endTimeString = (String) args[1];
-            endTime = new Time(endTimeString);
-        } else {
-            scenarioDirectory = "small";
-            endTime = new Time(1,12,0);
-        }
-        
-		// Printout a welcome message
+	// Printout a welcome message
 		System.out.println("Hello! Visualization-agent "+getAID().getName()+" is ready.");
-		
-		this.register("board-visualisation", "board-visualisation-agent");
 
         // launch the gui window in another thread
-        Thread thread = new Thread() {
+        new Thread() {
             @Override
             public void run() {
                 Visualizer.run(new String[] {});
             }
-        };
-    	thread.start();
-        
-    	guiWindow = Visualizer.waitForInstance();
+        }.start();
+        guiWindow = Visualizer.waitForInstance();
 		addBehaviour(new MessageServer());
 	}
-	
-    @Override
-    protected void stepAction(){
-        if (baseAgent.getCurrentTime().lessThan(this.endTime)) {
-        	baseAgent.finished();
-        }
-    }
-    
 	protected void takeDown() {
-		this.deRegister();
 		System.out.println(getAID().getLocalName() + ": Terminating.");
 	}
 
     private class MessageServer extends CyclicBehaviour {
         public void action() {
-        	MessageTemplate mt = MessageTemplate.not(MessageTemplate.MatchPerformative(TimeKeeper.BROADCAST_TIMESTEP_PERFORMATIVE));
-            ACLMessage msg = myAgent.receive(mt);
+            ACLMessage msg = myAgent.receive();
             if (msg != null) {
                 guiWindow.updateBoard(msg.getConversationId().toLowerCase(), msg.getContent());
             }
