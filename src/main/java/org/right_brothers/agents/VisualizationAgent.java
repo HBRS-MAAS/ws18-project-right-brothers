@@ -42,7 +42,7 @@ public class VisualizationAgent extends BaseAgent {
         Thread thread = new Thread() {
             @Override
             public void run() {
-                Visualizer.run(new String[] {});
+                Visualizer.run(baseAgent);
             }
         };
     	thread.start();
@@ -53,8 +53,8 @@ public class VisualizationAgent extends BaseAgent {
 	
     @Override
     protected void stepAction(){
-        if (baseAgent.getCurrentTime().lessThan(this.endTime)) {
-        	baseAgent.finished();
+        if (baseAgent.getCurrentTime().lessThan(this.endTime) || Visualizer.currentInstance == null) {
+        	finished();
         }
     }
     
