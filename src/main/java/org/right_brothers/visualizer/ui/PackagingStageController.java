@@ -20,11 +20,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 public class PackagingStageController implements Initializable, StageController {
 	@FXML
 	private VBox container;
+	
+	@FXML
+	private Label cardCount;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -42,6 +46,12 @@ public class PackagingStageController implements Initializable, StageController 
 			ProductMessage productMessage = JsonConverter.getInstance(message, new TypeReference<ProductMessage>() {});
 			addCard(bakeryId, productMessage);
 		}
+		
+		Platform.runLater(
+				  () -> {
+					  cardCount.setText(Integer.toString(container.getChildren().size()));
+				  }
+				);
 	}
 	
 	private void addCard(String bakeryId, ProductMessage message) {

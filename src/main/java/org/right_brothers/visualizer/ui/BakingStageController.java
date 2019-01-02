@@ -16,11 +16,15 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 public class BakingStageController implements Initializable, StageController {
 	@FXML
 	private VBox container;
+	
+	@FXML
+	private Label cardCount;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -37,6 +41,13 @@ public class BakingStageController implements Initializable, StageController {
 		} else if(messageType.matches("^[\\w\\-]+\\-cooled\\-product\\-\\d+$")) {		
 			// TODO - Remove corresponding card from baking stage
 		}
+		
+		Platform.runLater(
+				  () -> {
+					  cardCount.setText(Integer.toString(container.getChildren().size()));
+				  }
+				);
+		
 	}
 	
 	private void addCard(UnbakedProductMessage message) {
