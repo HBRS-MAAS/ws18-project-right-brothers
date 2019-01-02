@@ -24,28 +24,18 @@ public class BakingStageController implements Initializable, StageController {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-//		try {
-//			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/BakingCard.fxml"));
-//			Parent bakingCard = fxmlLoader.load();
-//			container.getChildren().add(bakingCard);
-//			
-//			BakingCardController controller =  fxmlLoader.getController();
-//			controller.setText("Berliner", "order-001(10), order-002(20)");
-//		} catch(IOException e) {
-//			e.printStackTrace();
-//		}
+		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void updateStage(String messageType, String message) {
-		// TODO - Use Regex instead of starts with for cooling rack message
-		if(messageType.equalsIgnoreCase("baking-request") || messageType.startsWith("cooled-product-")) {
+		if(messageType.matches("^baking-request$")) {
 			UnbakedProductMessage unbakedProductMessage = JsonConverter
 					.getInstance(message, new TypeReference<UnbakedProductMessage>() {});
 			
-			if(messageType.equalsIgnoreCase("baking-request")) {
-				addCard(unbakedProductMessage);
-			}
+			addCard(unbakedProductMessage);
+		} else if(messageType.matches("^[\\w\\-]+\\-cooled\\-product\\-\\d+$")) {		
+			// TODO - Remove corresponding card from baking stage
 		}
 	}
 	
@@ -72,8 +62,6 @@ public class BakingStageController implements Initializable, StageController {
 						}
 				  }
 				);
-		
-		
 	}
 
 }
