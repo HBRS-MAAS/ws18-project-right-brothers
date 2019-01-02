@@ -31,7 +31,7 @@
                   <StackPane styleClass="stage-message-count">
                      <children>
                         <Circle fill="#bfbfbf" radius="12.0" stroke="#00000067" strokeType="INSIDE" />
-                        <Label text="0">
+                        <Label fx:id="cardCount" text="0">
                            <font>
                               <Font name="System Bold" size="8.0" />
                            </font>
