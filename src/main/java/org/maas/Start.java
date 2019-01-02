@@ -81,7 +81,7 @@ public class Start {
 
         }
         if(visualizationStage) {
-            Initializer init = new VisualisationInitializer();
+            Initializer init = new VisualisationInitializer(endTime);
             sb.append(init.initialize(scenarioDirectory));
         }
         if(isHost) {
