@@ -5,9 +5,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.maas.data.messages.ProductMessage;
 import org.maas.utils.JsonConverter;
+import org.right_brothers.bakery_objects.CooledProduct;
 import org.right_brothers.data.messages.UnbakedProductMessage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -30,13 +33,18 @@ public class PackagingStageController implements Initializable, StageController 
 
 	@Override
 	public void updateStage(String messageType, String message) {
-		if(messageType.matches("^[\\w\\-]+\\-cooled\\-product\\-\\d+$")) {		
+		Matcher cooledProductConversationMatcher = Pattern.compile("^([\\w\\-]+)\\-cooled\\-product\\-(\\d+)$")
+				.matcher(messageType);
+		
+		if(cooledProductConversationMatcher.matches()) {
+			String bakeryId = cooledProductConversationMatcher.group(1);
+			
 			ProductMessage productMessage = JsonConverter.getInstance(message, new TypeReference<ProductMessage>() {});
-			addCard(productMessage);
+			addCard(bakeryId, productMessage);
 		}
 	}
 	
-	private void addCard(ProductMessage message) {
+	private void addCard(String bakeryId, ProductMessage message) {
 		List<String> products = new ArrayList<String>();
 		
 		for(String key: message.getProducts().keySet()) {
@@ -51,7 +59,7 @@ public class PackagingStageController implements Initializable, StageController 
 							container.getChildren().add(packagingCard);
 							
 							PackagingCardController controller =  fxmlLoader.getController();
-							controller.setText("bakery-001", String.join(" ", products));
+							controller.setText(bakeryId, String.join(" ", products));
 						} catch(IOException e) {
 							e.printStackTrace();
 						}
