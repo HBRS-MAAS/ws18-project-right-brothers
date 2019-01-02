@@ -15,7 +15,7 @@ public class VisualisationInitializer extends Initializer {
         Vector<String> agents = new Vector<>();
 
         agents
-        .add("board-visualisation:org.right_brothers.agents.VisualizationAgent(" + scenarioDirectory + ", " + endTime + ")");
+        .add("visualisation:org.right_brothers.agents.VisualizationAgent(" + scenarioDirectory + ", " + endTime + ")");
 
         String agentInitString = String.join(";", agents);
         agentInitString += ";";
