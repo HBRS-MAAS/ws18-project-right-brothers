@@ -1,13 +1,9 @@
 package org.right_brothers.agents;
 
-import java.util.ArrayList;
-
 import org.maas.agents.BaseAgent;
 import org.maas.agents.TimeKeeper;
-import org.maas.objects.ProcessedProduct;
 import org.maas.utils.Time;
 import org.right_brothers.visualizer.ui.Visualizer;
-import jade.core.Agent;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -34,7 +30,7 @@ public class VisualizationAgent extends BaseAgent {
         }
         
 		// Printout a welcome message
-		System.out.println("Hello! Visualization-agent "+getAID().getName()+" is ready.");
+		System.out.println("Hello! Visualization-agent "+getAID().getName()+" is ready for " + scenarioDirectory + " scenario");
 		
 		this.register("board-visualisation", "board-visualisation-agent");
 

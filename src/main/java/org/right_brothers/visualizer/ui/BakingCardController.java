@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 
 public class BakingCardController implements Initializable, StageController {
 	@FXML
@@ -29,6 +30,9 @@ public class BakingCardController implements Initializable, StageController {
 	public void setText(String title, String description) {
 		this.title.setText(title);
 		this.description.setText(description);
+		
+		Tooltip toolTip = new Tooltip(description);
+		this.description.setTooltip(toolTip);
 	}
 
 }

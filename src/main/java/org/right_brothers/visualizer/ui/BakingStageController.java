@@ -65,6 +65,7 @@ public class BakingStageController implements Initializable, StageController {
 							container.getChildren().add(0, bakingCard);
 							
 							BakingCardController controller =  fxmlLoader.getController();
+
 							controller.setText(message.getProductType(), String.join(" ", orders));
 						} catch(IOException e) {
 							e.printStackTrace();
