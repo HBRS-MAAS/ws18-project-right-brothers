@@ -197,7 +197,7 @@ public class OvenManager extends BaseAgent {
         public void action() {
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
-            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("unbakedProduct"));
+            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("baking-Request"));
             ACLMessage msg = myAgent.receive(mt2);
             if (msg != null) {
                 String messageContent = msg.getContent();
