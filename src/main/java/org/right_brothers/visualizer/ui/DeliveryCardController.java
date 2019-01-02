@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 
 public class DeliveryCardController implements Initializable, StageController {
 	@FXML
@@ -33,6 +34,9 @@ public class DeliveryCardController implements Initializable, StageController {
 		this.title.setText(title);
 		this.subTitle.setText(subTitle);
 		this.description.setText(description);
+		
+		Tooltip toolTip = new Tooltip(description);
+		this.description.setTooltip(toolTip);
 	}
 
 }
