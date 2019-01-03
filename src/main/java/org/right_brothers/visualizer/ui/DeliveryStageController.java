@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.maas.data.messages.ProductMessage;
 import org.maas.utils.JsonConverter;
@@ -36,7 +38,9 @@ public class DeliveryStageController implements Initializable, StageController {
 
 	@Override
 	public void updateStage(String messageType, String message) {
-		if(messageType.matches("^packaged-orders$")) {
+		Matcher packagedOrderMatcher = Pattern.compile("^[\\w\\-]+\\-packaged-orders$")
+				.matcher(messageType);
+		if(packagedOrderMatcher.matches()) {
 			LoadingBayMessage loadingBayMessage = JsonConverter.getInstance(message, new TypeReference<LoadingBayMessage>() {});
 			addCard(loadingBayMessage);
 		}
