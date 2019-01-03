@@ -67,6 +67,35 @@ public class PackagingStageController implements Initializable, ScenarioAware, S
 				  }
 				);
 	}
+
+	private void addCard(String bakeryId, ProductMessage message) {
+		List<CardItem> cardItems = new ArrayList<>();
+		
+		for(String key: message.getProducts().keySet()) {
+			cardItems.add(new CardItem(key, message.getProducts().get(key)));
+		}
+		
+		Platform.runLater(
+				  () -> {
+					  try {
+							FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/PackagingCard.fxml"));
+							Parent packagingCardParent = fxmlLoader.load();
+							
+							PackagingCardController controller =  fxmlLoader.getController();
+							
+							packagingCardParent.setUserData(controller);
+							container.getChildren().add(0, packagingCardParent);
+							
+							PackagingStageCard packagingStageCard = new PackagingStageCard(bakeryId, cardItems);
+							cards.add(0, packagingStageCard);
+							controller.setText(packagingStageCard);
+							
+						} catch(IOException e) {
+							e.printStackTrace();
+						}
+				  }
+				);
+	}
 	
 	private void removeCards(String bakeryId, LoadingBayMessage loadingBayMessage) {
 		// Find the packaging cards that should be updated based on delivery message
@@ -103,35 +132,6 @@ public class PackagingStageController implements Initializable, ScenarioAware, S
 				}
 			}
 		}
-	}
-
-	private void addCard(String bakeryId, ProductMessage message) {
-		List<String> products = new ArrayList<String>();
-		List<CardItem> cardItems = new ArrayList<>();
-		
-		for(String key: message.getProducts().keySet()) {
-			products.add(String.format("%s(%s)", key, message.getProducts().get(key)));
-			cardItems.add(new CardItem(key, message.getProducts().get(key)));
-		}
-		
-		Platform.runLater(
-				  () -> {
-					  try {
-							FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/PackagingCard.fxml"));
-							Parent packagingCard = fxmlLoader.load();
-							
-							PackagingCardController controller =  fxmlLoader.getController();
-							controller.setText(bakeryId, String.join(" ", products));
-							
-							packagingCard.setUserData(controller);
-							container.getChildren().add(0, packagingCard);
-														
-							cards.add(0, new PackagingStageCard(bakeryId, cardItems));
-						} catch(IOException e) {
-							e.printStackTrace();
-						}
-				  }
-				);
 	}
 
 	@Override
