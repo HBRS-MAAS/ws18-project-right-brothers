@@ -23,7 +23,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-public class PackagingStageController implements Initializable, StageController {
+public class PackagingStageController implements Initializable, ScenarioAware, StageController {
 	@FXML
 	private VBox container;
 	
@@ -75,5 +75,11 @@ public class PackagingStageController implements Initializable, StageController 
 						}
 				  }
 				);
+	}
+
+	@Override
+	public void setScenario(String scenarioDirectory) {
+		// TODO Auto-generated method stub
+		
 	}
 }

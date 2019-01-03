@@ -15,6 +15,7 @@ public class Visualizer extends Application {
 	public static Visualizer currentInstance = null;
 	
 	private static BaseAgent agent;
+	private static String scenarioDirectory;
 	
 	private LayoutController layoutController;
 	
@@ -33,8 +34,9 @@ public class Visualizer extends Application {
         return currentInstance;
     }
 	
-	public static void run(BaseAgent agent) {
+	public static void run(BaseAgent agent, String scenarioDirectory) {
 		Visualizer.agent = agent;
+		Visualizer.scenarioDirectory = scenarioDirectory;
 		
 		launch();
 	}
@@ -45,6 +47,7 @@ public class Visualizer extends Application {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/Layout.fxml"));
 			Parent root = fxmlLoader.load();
 			layoutController = fxmlLoader.getController();
+			layoutController.setScenario(scenarioDirectory);
 			
 			
 			Scene scene = new Scene(root);

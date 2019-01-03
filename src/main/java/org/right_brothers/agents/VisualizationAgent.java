@@ -38,7 +38,7 @@ public class VisualizationAgent extends BaseAgent {
         Thread thread = new Thread() {
             @Override
             public void run() {
-                Visualizer.run(baseAgent);
+                Visualizer.run(baseAgent, scenarioDirectory);
             }
         };
     	thread.start();
