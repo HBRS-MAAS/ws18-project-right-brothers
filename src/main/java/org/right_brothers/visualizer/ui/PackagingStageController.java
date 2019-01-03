@@ -19,6 +19,7 @@ import org.right_brothers.visualizer.model.PackagingStageCard;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,8 +28,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
-public class PackagingStageController implements Initializable, ScenarioAware, StageController {
+public class PackagingStageController extends StageController implements Initializable {
 	@FXML
 	private VBox container;
 	
@@ -80,17 +82,18 @@ public class PackagingStageController implements Initializable, ScenarioAware, S
 				  () -> {
 					  try {
 							FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/PackagingCard.fxml"));
-							Parent packagingCardParent = fxmlLoader.load();
+							Parent packagingCardNode = fxmlLoader.load();
 							
 							PackagingCardController controller =  fxmlLoader.getController();
 							
-							packagingCardParent.setUserData(controller);
-							container.getChildren().add(0, packagingCardParent);
+							packagingCardNode.setUserData(controller);
+							container.getChildren().add(0, packagingCardNode);
 							
 							PackagingStageCard packagingStageCard = new PackagingStageCard(bakeryId, cardItems);
 							cards.add(0, packagingStageCard);
 							controller.setText(packagingStageCard);
 							
+							highlightCard(packagingCardNode);
 						} catch(IOException e) {
 							e.printStackTrace();
 						}
