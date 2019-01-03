@@ -12,6 +12,8 @@ import org.maas.data.messages.ProductMessage;
 import org.maas.utils.JsonConverter;
 import org.right_brothers.bakery_objects.CooledProduct;
 import org.right_brothers.data.messages.UnbakedProductMessage;
+import org.right_brothers.visualizer.model.CardItem;
+import org.right_brothers.visualizer.model.PackagingStageCard;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -29,10 +31,12 @@ public class PackagingStageController implements Initializable, ScenarioAware, S
 	
 	@FXML
 	private Label cardCount;
+	
+	private List<PackagingStageCard> cards;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		// TODO Auto-generated method stub
+		cards = new ArrayList<PackagingStageCard>();
 	}
 
 	@Override
@@ -56,9 +60,11 @@ public class PackagingStageController implements Initializable, ScenarioAware, S
 	
 	private void addCard(String bakeryId, ProductMessage message) {
 		List<String> products = new ArrayList<String>();
+		List<CardItem> cardItems = new ArrayList<>();
 		
 		for(String key: message.getProducts().keySet()) {
 			products.add(String.format("%s(%s)", key, message.getProducts().get(key)));
+			cardItems.add(new CardItem(key, message.getProducts().get(key)));
 		}
 		
 		Platform.runLater(
@@ -70,6 +76,8 @@ public class PackagingStageController implements Initializable, ScenarioAware, S
 							
 							PackagingCardController controller =  fxmlLoader.getController();
 							controller.setText(bakeryId, String.join(" ", products));
+							
+							cards.add(0, new PackagingStageCard(bakeryId, cardItems));
 						} catch(IOException e) {
 							e.printStackTrace();
 						}
