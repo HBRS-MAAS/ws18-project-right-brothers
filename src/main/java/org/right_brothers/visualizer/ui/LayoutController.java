@@ -12,7 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.layout.AnchorPane;
 
-public class LayoutController implements Initializable {
+public class LayoutController implements Initializable, ScenarioAware {
 	@FXML
 	private AnchorPane backingStageContainer;
 	
@@ -50,6 +50,13 @@ public class LayoutController implements Initializable {
 	public void updateBoard(String messageType, String message) {
 		for(StageController controller: controllers) {
 			controller.updateStage(messageType, message);
+		}
+	}
+
+	@Override
+	public void setScenario(String scenarioDirectory) {
+		for(StageController controller: controllers) {
+			controller.setScenario(scenarioDirectory);
 		}
 	}
 }

@@ -8,18 +8,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 
-public class PackagingCardController implements Initializable, StageController {
+public class PackagingCardController implements Initializable {
 	@FXML
 	private Label title;
 	
 	@FXML
 	private Label description;
-
-	@Override
-	public void updateStage(String messageType, String message) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -34,5 +28,4 @@ public class PackagingCardController implements Initializable, StageController {
 		Tooltip toolTip = new Tooltip(description);
 		this.description.setTooltip(toolTip);
 	}
-
 }
