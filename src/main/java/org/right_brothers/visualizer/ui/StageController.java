@@ -1,5 +1,19 @@
 package org.right_brothers.visualizer.ui;
 
-public interface StageController extends ScenarioAware{
-	public void updateStage(String messageType, String message);
+import javafx.animation.FadeTransition;
+import javafx.scene.Node;
+import javafx.util.Duration;
+
+public abstract class StageController implements ScenarioAware{
+	public abstract void updateStage(String messageType, String message);
+	
+	protected void highlightCard(Node node) {
+		FadeTransition ft = new FadeTransition(Duration.millis(200), node);
+		ft.setFromValue(1.0);
+		ft.setToValue(0.5);
+		ft.setCycleCount(2);
+		ft.setAutoReverse(true);
+ 
+		ft.play();
+	}
 }

@@ -24,7 +24,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-public class DeliveryStageController implements Initializable, ScenarioAware, StageController {
+public class DeliveryStageController extends StageController implements Initializable {
 	@FXML
 	private VBox container;
 	
@@ -68,6 +68,8 @@ public class DeliveryStageController implements Initializable, ScenarioAware, St
 							
 							DeliveryCardController controller =  fxmlLoader.getController();
 							controller.setText(message.getOrderId(), String.join(" ", boxes));
+							
+							highlightCard(deliveryCard);
 						} catch(IOException e) {
 							e.printStackTrace();
 						}

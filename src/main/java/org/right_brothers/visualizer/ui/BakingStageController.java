@@ -21,7 +21,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-public class BakingStageController implements Initializable, ScenarioAware, StageController {
+public class BakingStageController extends StageController implements Initializable {
 	@FXML
 	private VBox container;
 	
@@ -73,6 +73,8 @@ public class BakingStageController implements Initializable, ScenarioAware, Stag
 							BakingCardController controller =  fxmlLoader.getController();
 
 							controller.setText(message.getProductType(), String.join(" ", orders));
+							
+							highlightCard(bakingCard);
 						} catch(IOException e) {
 							e.printStackTrace();
 						}
