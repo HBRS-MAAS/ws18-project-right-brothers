@@ -4,6 +4,11 @@ public class CardItem {
 	private String itemText;
 	private int quantity;
 	
+	public CardItem(String itemText, int quantity) {
+		this.itemText = itemText;
+		this.quantity = quantity;
+	}
+	
 	public int getQuantity() {
 		return quantity;
 	}

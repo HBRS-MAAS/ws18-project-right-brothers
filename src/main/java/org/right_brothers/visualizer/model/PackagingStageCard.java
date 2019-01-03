@@ -7,8 +7,13 @@ public class PackagingStageCard extends StageCard {
 	private List<CardItem> products;
 	
 	public PackagingStageCard() {
-		bakeryId = "";
+		super("");
 		products  = new ArrayList<>();
+	}
+	
+	public PackagingStageCard(String bakeryId, List<CardItem> products) {
+		super(bakeryId);
+		products  = products != null? products: new ArrayList<>();
 	}
 
 	public List<CardItem> getProducts() {
