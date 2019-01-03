@@ -67,7 +67,7 @@ public class DeliveryStageController implements Initializable, ScenarioAware, St
 							container.getChildren().add(deliveryCard);
 							
 							DeliveryCardController controller =  fxmlLoader.getController();
-							controller.setText(message.getOrderId(), "customer-001", String.join(" ", boxes));
+							controller.setText(message.getOrderId(), String.join(" ", boxes));
 						} catch(IOException e) {
 							e.printStackTrace();
 						}

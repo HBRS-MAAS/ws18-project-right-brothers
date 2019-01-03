@@ -13,9 +13,6 @@ public class DeliveryCardController implements Initializable {
 	private Label title;
 	
 	@FXML
-	private Label subTitle;
-	
-	@FXML
 	private Label description;
 
 	@Override
@@ -24,9 +21,8 @@ public class DeliveryCardController implements Initializable {
 		
 	}
 	
-	public void setText(String title, String subTitle, String description) {
+	public void setText(String title, String description) {
 		this.title.setText(title);
-		this.subTitle.setText(subTitle);
 		this.description.setText(description);
 		
 		Tooltip toolTip = new Tooltip(description);
