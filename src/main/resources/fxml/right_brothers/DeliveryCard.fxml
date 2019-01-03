@@ -17,7 +17,7 @@
 <?import javafx.scene.text.Font?>
 
 <VBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" 
-	maxHeight="80.0" minHeight="80.0" prefHeight="80.0" spacing="2.0" styleClass="card"
+	maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="5.0" styleClass="card"
 	fx:controller="org.right_brothers.visualizer.ui.DeliveryCardController">
    <children>
       <AnchorPane>
@@ -25,15 +25,6 @@
             <Label fx:id="title" text="" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                <font>
                   <Font name="System Bold" size="13.0" />
-               </font>
-            </Label>
-         </children>
-      </AnchorPane>
-      <AnchorPane>
-         <children>
-            <Label fx:id="subTitle" text="" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-               <font>
-                  <Font name="System Bold" size="11.0" />
                </font>
             </Label>
          </children>
