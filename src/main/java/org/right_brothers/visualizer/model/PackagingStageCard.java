@@ -23,4 +23,13 @@ public class PackagingStageCard extends StageCard {
 	public void setProducts(List<CardItem> products) {
 		this.products = products;
 	}
+	
+	public boolean isComplete() {
+		for(CardItem item: products) {
+			if(item.getQuantity() > 0) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
