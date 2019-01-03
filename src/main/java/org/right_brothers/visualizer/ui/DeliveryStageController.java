@@ -64,7 +64,7 @@ public class DeliveryStageController implements Initializable, ScenarioAware, St
 					  try {
 							FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/DeliveryCard.fxml"));
 							Parent deliveryCard = fxmlLoader.load();
-							container.getChildren().add(deliveryCard);
+							container.getChildren().add(0, deliveryCard);
 							
 							DeliveryCardController controller =  fxmlLoader.getController();
 							controller.setText(message.getOrderId(), String.join(" ", boxes));

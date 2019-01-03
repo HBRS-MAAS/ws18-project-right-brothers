@@ -66,7 +66,7 @@ public class PackagingStageController implements Initializable, ScenarioAware, S
 					  try {
 							FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/PackagingCard.fxml"));
 							Parent packagingCard = fxmlLoader.load();
-							container.getChildren().add(packagingCard);
+							container.getChildren().add(0, packagingCard);
 							
 							PackagingCardController controller =  fxmlLoader.getController();
 							controller.setText(bakeryId, String.join(" ", products));
