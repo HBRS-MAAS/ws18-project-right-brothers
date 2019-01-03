@@ -24,14 +24,6 @@ public class PackagingCardController implements Initializable {
 		
 	}
 	
-	public void setText(String title, String description) {
-		this.title.setText(title);
-		this.description.setText(description);
-		
-		Tooltip toolTip = new Tooltip(description);
-		this.description.setTooltip(toolTip);
-	}
-	
 	public void setText(PackagingStageCard card) {
 		String title = card.getBakeryId();
 		String description = card.getProducts()
