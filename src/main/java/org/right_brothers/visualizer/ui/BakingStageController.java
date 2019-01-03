@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.maas.utils.JsonConverter;
 import org.right_brothers.data.messages.UnbakedProductMessage;
@@ -33,7 +35,10 @@ public class BakingStageController implements Initializable, StageController {
 
 	@Override
 	public void updateStage(String messageType, String message) {
-		if(messageType.matches("^baking-request$")) {
+		Matcher bakingRequestMatcher = Pattern.compile("^[\\w\\-]+\\-baking-request$")
+				.matcher(messageType);
+		
+		if(bakingRequestMatcher.matches()) {
 			UnbakedProductMessage unbakedProductMessage = JsonConverter
 					.getInstance(message, new TypeReference<UnbakedProductMessage>() {});
 			
