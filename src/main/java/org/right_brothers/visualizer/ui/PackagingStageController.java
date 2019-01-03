@@ -23,6 +23,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -131,6 +132,30 @@ public class PackagingStageController implements Initializable, ScenarioAware, S
 							);
 				}
 			}
+		}
+		cleanUp();
+	}
+
+	private void cleanUp() {
+		List<PackagingStageCard> cardsToRemove = new ArrayList<>();
+		List<Node> nodesToRemove = new ArrayList<>();
+		
+		for(int index = cards.size() -1; index >=0; index--) {
+			if(cards.get(index).isComplete()) {
+				cardsToRemove.add(cards.get(index));
+				nodesToRemove.add(container.getChildren().get(index));
+			}
+		}
+		
+		for(int index = cardsToRemove.size()-1; index>=0; index--) {
+			cards.remove(cardsToRemove.get(index));
+			
+			Node node = nodesToRemove.get(index);
+			Platform.runLater(
+					  () -> {
+						  container.getChildren().remove(node);
+					  }
+					);
 		}
 	}
 
