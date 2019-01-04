@@ -143,30 +143,7 @@ public class BakingStageController extends StageController implements Initializa
 						);
 			}
 		}
-		cleanUp();
-	}
-
-	private void cleanUp() {
-		List<BakingStageCard> cardsToRemove = new ArrayList<>();
-		List<Node> nodesToRemove = new ArrayList<>();
-		
-		for(int index = cardDataList.size() -1; index >=0; index--) {
-			if(cardDataList.get(index).isComplete()) {
-				cardsToRemove.add(cardDataList.get(index));
-				nodesToRemove.add(container.getChildren().get(index));
-			}
-		}
-		
-		for(int index = cardsToRemove.size()-1; index>=0; index--) {
-			cardDataList.remove(cardsToRemove.get(index));
-			
-			Node node = nodesToRemove.get(index);
-			Platform.runLater(
-					  () -> {
-						  container.getChildren().remove(node);
-					  }
-					);
-		}
+		cleanUp(cardDataList, container);
 	}
 
 	@Override
