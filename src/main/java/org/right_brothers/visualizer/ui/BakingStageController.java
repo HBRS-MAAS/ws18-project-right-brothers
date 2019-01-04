@@ -1,5 +1,6 @@
 package org.right_brothers.visualizer.ui;
 
+import java.awt.image.PackedColorModel;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -106,7 +107,40 @@ public class BakingStageController extends StageController implements Initializa
 	}
 	
 	private void removeCard(String bakeryId, ProductMessage productMessage) {
-		// TODO Auto-generated method stub
+		for(int index=cardDataList.size()-1; index>=0; index--) {
+			boolean altered = false;
+			if(cardDataList.get(index).getBakeryId().equalsIgnoreCase(bakeryId)) {
+				for(String bakedProductName: productMessage.getProducts().keySet()) {
+					if(bakedProductName.equalsIgnoreCase(cardDataList.get(index).getProductId())) {
+						int bakedProductQuantity = productMessage.getProducts().get(bakedProductName);
+						
+						for(CardItem item: cardDataList.get(index).getOrders()) {
+							if(bakedProductQuantity > 0 && item.getQuantity() > 0) {
+								if(bakedProductQuantity >= item.getQuantity()) {
+									bakedProductQuantity = bakedProductQuantity - item.getQuantity();
+									item.setQuantity(0);
+								} else {
+									item.setQuantity(item.getQuantity() - bakedProductQuantity);
+									bakedProductQuantity = 0;
+								}
+								altered = true;
+							}
+						}
+						
+					}
+				}
+			}
+			
+			if(altered) {
+				BakingStageCard bakingStageCard = cardDataList.get(index);
+				BakingCardController controller = (BakingCardController)container.getChildren().get(index).getUserData();
+				Platform.runLater(
+						  () -> {
+							  controller.setText(bakingStageCard);
+						  }
+						);
+			}
+		}
 	}
 
 	@Override
