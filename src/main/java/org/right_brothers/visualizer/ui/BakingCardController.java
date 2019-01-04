@@ -2,6 +2,9 @@ package org.right_brothers.visualizer.ui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
+import org.right_brothers.visualizer.model.BakingStageCard;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,7 +25,13 @@ public class BakingCardController implements Initializable {
 		
 	}
 	
-	public void setText(String title, String description) {
+	public void setText(BakingStageCard card) {
+		String title = card.getProductId();
+		String description = card.getOrders()
+				.stream()
+				.map(item -> String.format("%s(%s)", item.getItemText(), item.getQuantity()))
+				.collect( Collectors.joining(" "));
+		
 		this.title.setText(title);
 		this.description.setText(description);
 		
