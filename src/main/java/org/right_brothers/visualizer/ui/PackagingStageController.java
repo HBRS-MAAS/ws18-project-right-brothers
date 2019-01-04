@@ -114,12 +114,11 @@ public class PackagingStageController extends StageController implements Initial
 							if(quantityInBox >= item.getQuantity()) {
 								quantityInBox = quantityInBox - item.getQuantity();
 								item.setQuantity(0);
-								altered = true;
 							} else {
 								item.setQuantity(item.getQuantity() - quantityInBox);
-								quantityInBox = 0;
-								altered = true;
+								quantityInBox = 0;								
 							}
+							altered = true;
 						}
 					}
 				}
