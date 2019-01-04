@@ -14,4 +14,6 @@ public abstract class StageCard {
 	public void setBakeryId(String bakeryId) {
 		this.bakeryId = bakeryId;
 	}
+	
+	public abstract boolean isComplete();
 }
