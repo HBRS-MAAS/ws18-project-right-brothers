@@ -110,7 +110,8 @@ public class PackagingStageController extends StageController implements Initial
 					int quantityInBox = box.getQuantity();
 					
 					for(CardItem item:cardDataList.get(index).getProducts()) {
-						if(quantityInBox >0 && item.getItemText().equalsIgnoreCase(box.getProductType())) {
+						if(quantityInBox >0 && item.getQuantity() > 0  && 
+								item.getItemText().equalsIgnoreCase(box.getProductType())) {
 							if(quantityInBox >= item.getQuantity()) {
 								quantityInBox = quantityInBox - item.getQuantity();
 								item.setQuantity(0);
