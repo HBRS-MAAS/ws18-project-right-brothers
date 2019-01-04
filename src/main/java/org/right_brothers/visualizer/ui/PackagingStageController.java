@@ -37,11 +37,11 @@ public class PackagingStageController extends StageController implements Initial
 	@FXML
 	private Label cardCount;
 	
-	private List<PackagingStageCard> cards;
+	private List<PackagingStageCard> cardDataList;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		cards = new ArrayList<PackagingStageCard>();
+		cardDataList = new ArrayList<PackagingStageCard>();
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class PackagingStageController extends StageController implements Initial
 							container.getChildren().add(0, packagingCardNode);
 							
 							PackagingStageCard packagingStageCard = new PackagingStageCard(bakeryId, cardItems);
-							cards.add(0, packagingStageCard);
+							cardDataList.add(0, packagingStageCard);
 							controller.setText(packagingStageCard);
 							
 							highlightCard(packagingCardNode);
@@ -103,13 +103,13 @@ public class PackagingStageController extends StageController implements Initial
 	
 	private void removeCards(String bakeryId, LoadingBayMessage loadingBayMessage) {
 		// Find the packaging cards that should be updated based on delivery message
-		for(int index = cards.size() -1; index >=0; index--) { 
-			if(cards.get(index).getBakeryId().equalsIgnoreCase(bakeryId)) {
+		for(int index = cardDataList.size() -1; index >=0; index--) { 
+			if(cardDataList.get(index).getBakeryId().equalsIgnoreCase(bakeryId)) {
 				boolean altered = false;
 				for(LoadingBayBox box:loadingBayMessage.getBoxes()) {
 					int quantityInBox = box.getQuantity();
 					
-					for(CardItem item:cards.get(index).getProducts()) {
+					for(CardItem item:cardDataList.get(index).getProducts()) {
 						if(quantityInBox >0 && item.getItemText().equalsIgnoreCase(box.getProductType())) {
 							if(quantityInBox >= item.getQuantity()) {
 								quantityInBox = quantityInBox - item.getQuantity();
@@ -125,7 +125,7 @@ public class PackagingStageController extends StageController implements Initial
 				}
 				// Re render the card if altered
 				if(altered) {
-					PackagingStageCard alteredCard = cards.get(index);
+					PackagingStageCard alteredCard = cardDataList.get(index);
 					PackagingCardController controller = (PackagingCardController) container.getChildren().get(index).getUserData();
 					
 					Platform.runLater(
@@ -143,15 +143,15 @@ public class PackagingStageController extends StageController implements Initial
 		List<PackagingStageCard> cardsToRemove = new ArrayList<>();
 		List<Node> nodesToRemove = new ArrayList<>();
 		
-		for(int index = cards.size() -1; index >=0; index--) {
-			if(cards.get(index).isComplete()) {
-				cardsToRemove.add(cards.get(index));
+		for(int index = cardDataList.size() -1; index >=0; index--) {
+			if(cardDataList.get(index).isComplete()) {
+				cardsToRemove.add(cardDataList.get(index));
 				nodesToRemove.add(container.getChildren().get(index));
 			}
 		}
 		
 		for(int index = cardsToRemove.size()-1; index>=0; index--) {
-			cards.remove(cardsToRemove.get(index));
+			cardDataList.remove(cardsToRemove.get(index));
 			
 			Node node = nodesToRemove.get(index);
 			Platform.runLater(
