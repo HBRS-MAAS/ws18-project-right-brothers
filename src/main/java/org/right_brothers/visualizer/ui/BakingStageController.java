@@ -14,6 +14,7 @@ import org.maas.utils.JsonConverter;
 import org.right_brothers.data.messages.UnbakedProductMessage;
 import org.right_brothers.visualizer.model.BakingStageCard;
 import org.right_brothers.visualizer.model.CardItem;
+import org.right_brothers.visualizer.model.PackagingStageCard;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -21,6 +22,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -140,6 +142,30 @@ public class BakingStageController extends StageController implements Initializa
 						  }
 						);
 			}
+		}
+		cleanUp();
+	}
+
+	private void cleanUp() {
+		List<BakingStageCard> cardsToRemove = new ArrayList<>();
+		List<Node> nodesToRemove = new ArrayList<>();
+		
+		for(int index = cardDataList.size() -1; index >=0; index--) {
+			if(cardDataList.get(index).isComplete()) {
+				cardsToRemove.add(cardDataList.get(index));
+				nodesToRemove.add(container.getChildren().get(index));
+			}
+		}
+		
+		for(int index = cardsToRemove.size()-1; index>=0; index--) {
+			cardDataList.remove(cardsToRemove.get(index));
+			
+			Node node = nodesToRemove.get(index);
+			Platform.runLater(
+					  () -> {
+						  container.getChildren().remove(node);
+					  }
+					);
 		}
 	}
 
