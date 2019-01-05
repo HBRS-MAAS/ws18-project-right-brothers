@@ -47,7 +47,11 @@
    <bottom>
       <AnchorPane prefHeight="40.0" style="-fx-background-color: #cccccc;" BorderPane.alignment="CENTER">
          <children>
-            <HBox />
+            <Label text="000.00.00" textAlignment="JUSTIFY" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
          </children></AnchorPane>
    </bottom>
    <center>
@@ -216,7 +220,7 @@
                                        <content>
                                           <VBox spacing="10.0" style="-fx-background-color: #e6e6e6;">
                                              <children>
-                                                <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #ffffff; -fx-border-radius: 5; -fx-background-radius: 5; -fx-background-insets: 5; -fx-effect: dropshadow(three-pass-box,  #585858, 5, 0, 0, 0); -fx-padding: 10;">
+                                                <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #e6e6e6; -fx-border-radius: 5; -fx-background-radius: 5; -fx-background-insets: 5; -fx-effect: dropshadow(three-pass-box,  #585858, 5, 0, 0, 0); -fx-padding: 10;">
                                                    <children>
                                                       <AnchorPane>
                                                          <children>
@@ -284,7 +288,7 @@
                                        <content>
                                           <VBox spacing="10.0" style="-fx-background-color: #e6e6e6;">
                                              <children>
-                                                <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
+                                                <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #f2f2f2; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
                                                    <children>
                                                       <AnchorPane>
                                                          <children>
