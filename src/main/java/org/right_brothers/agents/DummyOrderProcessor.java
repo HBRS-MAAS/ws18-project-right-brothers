@@ -73,7 +73,7 @@ public class DummyOrderProcessor extends BaseAgent {
         // for (Client client : clientList) {
         //     orderList.addAll(client.getOrders());
         // }
-        orderList.addAll(clientList.get(0).getOrders().subList(0, 2));
+        orderList.addAll(clientList.get(0).getOrders().subList(0, 3));
         return orderList;
     }
 
