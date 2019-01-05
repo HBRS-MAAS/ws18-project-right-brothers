@@ -27,10 +27,13 @@ public class BakingCardController implements Initializable {
 	
 	public void setText(BakingStageCard card) {
 		String title = card.getProductId();
-		String description = card.getOrders()
-				.stream()
-				.map(item -> String.format("%s(%s)", item.getItemText(), item.getQuantity()))
-				.collect( Collectors.joining(" "));
+		String description = Integer.toString(
+					card.getOrders()
+					.stream()
+					.mapToInt(item -> item.getQuantity())
+					.sum()
+				);
+				
 		
 		this.title.setText(title);
 		this.description.setText(description);
