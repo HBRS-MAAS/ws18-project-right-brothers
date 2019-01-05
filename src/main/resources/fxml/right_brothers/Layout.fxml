@@ -56,7 +56,7 @@
 							</ImageView> 
 							</graphic>
                            <items>
-                              <MenuItem mnemonicParsing="false" text="Replay">
+                              <MenuItem mnemonicParsing="false" text="Replay" onAction="#handleReplayAction">
 								<graphic> 
 									<ImageView fitHeight="35.0" fitWidth="35.0"> 
 										<Image url="@replay.png" /> 

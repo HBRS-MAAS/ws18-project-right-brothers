@@ -2,11 +2,13 @@ package org.right_brothers.visualizer.ui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
 import org.maas.utils.Time;
+import org.right_brothers.visualizer.model.TimelineItem;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -20,6 +22,11 @@ import javafx.stage.Stage;
 
 public class LayoutController implements Initializable, ScenarioAware {
 	private Stage container;
+	private Time currentTime;
+	
+	private boolean isReplaying = false;
+	
+	private List<TimelineItem> timelineItems;
 	
 	@FXML
 	private AnchorPane backingStageContainer;
@@ -33,10 +40,12 @@ public class LayoutController implements Initializable, ScenarioAware {
 	@FXML
 	private Label timeDisplay;
 	
-	private List<StageController> controllers = new Vector<>();
+	private List<StageController> controllers = new ArrayList<>();
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		timelineItems = new ArrayList<>();
+		
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/BakingStage.fxml"));
 			Parent bakingStage = fxmlLoader.load();
@@ -59,8 +68,12 @@ public class LayoutController implements Initializable, ScenarioAware {
 	}
 
 	public void updateBoard(String messageType, String message) {
-		for(StageController controller: controllers) {
-			controller.updateStage(messageType, message);
+		timelineItems.add(new TimelineItem(currentTime, messageType, message));
+		
+		if(!isReplaying) {
+			for(StageController controller: controllers) {
+				controller.updateStage(messageType, message);
+			}
 		}
 	}
 
@@ -72,6 +85,8 @@ public class LayoutController implements Initializable, ScenarioAware {
 	}
 
 	public void setTime(Time currentTime) {
+		this.currentTime = currentTime;
+		
 		Platform.runLater(
 				  () -> {
 					  timeDisplay.setText(currentTime.toString());
@@ -83,6 +98,11 @@ public class LayoutController implements Initializable, ScenarioAware {
     private void handleExitAction(ActionEvent event) {
         System.out.println("exiting");
         container.close();
+    }
+	
+	@FXML
+    private void handleReplayAction(ActionEvent event) {
+        isReplaying = true;
     }
 
 	public void setStage(Stage primaryStage) {
