@@ -87,11 +87,13 @@ public class LayoutController implements Initializable, ScenarioAware {
 	public void setTime(Time currentTime) {
 		this.currentTime = currentTime;
 		
-		Platform.runLater(
-				  () -> {
-					  timeDisplay.setText(currentTime.toString());
-				  }
-				);
+		if(!isReplaying) {
+			Platform.runLater(
+					  () -> {
+						  timeDisplay.setText(currentTime.toString());
+					  }
+					);
+		}
 	}
 	
 	@FXML
