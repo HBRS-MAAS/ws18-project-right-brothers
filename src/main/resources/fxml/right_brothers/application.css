@@ -49,3 +49,10 @@
 	-fx-background-insets: 5;
 	-fx-padding: 10;
 }
+
+.menu {
+	-fx-background-color: #cccccc;
+	-fx-border-radius: 5;
+	-fx-background-radius: 5;
+	-fx-border-color: black;
+}
