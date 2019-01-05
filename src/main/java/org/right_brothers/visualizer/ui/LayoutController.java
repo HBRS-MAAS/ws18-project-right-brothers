@@ -9,14 +9,18 @@ import java.util.Vector;
 import org.maas.utils.Time;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
 public class LayoutController implements Initializable, ScenarioAware {
+	private Stage container;
+	
 	@FXML
 	private AnchorPane backingStageContainer;
 	
@@ -73,5 +77,15 @@ public class LayoutController implements Initializable, ScenarioAware {
 					  timeDisplay.setText(currentTime.toString());
 				  }
 				);
+	}
+	
+	@FXML
+    private void handleExitAction(ActionEvent event) {
+        System.out.println("exiting");
+        container.close();
+    }
+
+	public void setStage(Stage primaryStage) {
+		container = primaryStage;
 	}
 }

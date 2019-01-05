@@ -50,6 +50,7 @@ public class Visualizer extends Application {
 			Parent root = fxmlLoader.load();
 			layoutController = fxmlLoader.getController();
 			layoutController.setScenario(scenarioDirectory);
+			layoutController.setStage(primaryStage);
 			
 			
 			Scene scene = new Scene(root);
