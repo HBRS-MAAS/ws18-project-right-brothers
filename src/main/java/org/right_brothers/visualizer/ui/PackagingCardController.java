@@ -25,16 +25,12 @@ public class PackagingCardController implements Initializable {
 	}
 	
 	public void setText(PackagingStageCard card) {
-		String title = card.getBakeryId();
-		String description = card.getProducts()
-				.stream()
-				.map(item -> String.format("%s(%s)", item.getItemText(), item.getQuantity()))
-				.collect( Collectors.joining(" "));
-		
-		this.title.setText(title);
-		this.description.setText(description);
-		
-		Tooltip toolTip = new Tooltip(description);
-		this.description.setTooltip(toolTip);
+		if (card != null && card.getProduct() != null) {
+			String title = card.getProduct().getItemText();
+			String description = Integer.toString(card.getProduct().getQuantity());
+			
+			this.title.setText(title);
+			this.description.setText(description);
+		}
 	}
 }

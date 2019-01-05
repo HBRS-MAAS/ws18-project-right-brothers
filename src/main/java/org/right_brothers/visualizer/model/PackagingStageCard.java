@@ -1,32 +1,28 @@
 package org.right_brothers.visualizer.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PackagingStageCard extends StageCard {
-	private List<CardItem> products;
+	private CardItem product;
 	
 	public PackagingStageCard() {
 		super("");
-		products  = new ArrayList<>();
 	}
 	
-	public PackagingStageCard(String bakeryId, List<CardItem> products) {
+	public PackagingStageCard(String bakeryId, CardItem product) {
 		super(bakeryId);
-		this.products  = products != null? products: new ArrayList<>();
+		this.product  = product;
 	}
 
-	public List<CardItem> getProducts() {
-		return products;
+	public CardItem getProduct() {
+		return product;
 	}
 
-	public void setProducts(List<CardItem> products) {
-		this.products = products;
+	public void setProduct(CardItem product) {
+		this.product = product;
 	}
 	
 	public boolean isComplete() {
-		for(CardItem item: products) {
-			if(item.getQuantity() > 0) {
+		if(product != null) {
+			if(product.getQuantity() > 0) {
 				return false;
 			}
 		}

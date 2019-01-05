@@ -80,23 +80,26 @@ public class PackagingStageController extends StageController implements Initial
 		
 		Platform.runLater(
 				  () -> {
-					  try {
-							FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/PackagingCard.fxml"));
-							Parent packagingCardNode = fxmlLoader.load();
-							
-							PackagingCardController controller =  fxmlLoader.getController();
-							
-							packagingCardNode.setUserData(controller);
-							container.getChildren().add(0, packagingCardNode);
-							
-							PackagingStageCard packagingStageCard = new PackagingStageCard(bakeryId, cardItems);
-							cardDataList.add(0, packagingStageCard);
-							controller.setText(packagingStageCard);
-							
-							highlightCard(packagingCardNode);
-						} catch(IOException e) {
-							e.printStackTrace();
+					  for(CardItem item: cardItems) {
+						  try {
+							  	
+								FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/PackagingCard.fxml"));
+								Parent packagingCardNode = fxmlLoader.load();
+								
+								PackagingCardController controller =  fxmlLoader.getController();
+								
+								packagingCardNode.setUserData(controller);
+								container.getChildren().add(0, packagingCardNode);
+								
+								PackagingStageCard packagingStageCard = new PackagingStageCard(bakeryId, item);
+								cardDataList.add(0, packagingStageCard);
+								controller.setText(packagingStageCard);
+								
+								highlightCard(packagingCardNode);
+							} catch(IOException e) {
+								e.printStackTrace();
 						}
+					  }
 				  }
 				);
 	}
@@ -109,18 +112,17 @@ public class PackagingStageController extends StageController implements Initial
 				for(LoadingBayBox box:loadingBayMessage.getBoxes()) {
 					int quantityInBox = box.getQuantity();
 					
-					for(CardItem item:cardDataList.get(index).getProducts()) {
-						if(quantityInBox >0 && item.getQuantity() > 0  && 
-								item.getItemText().equalsIgnoreCase(box.getProductType())) {
-							if(quantityInBox >= item.getQuantity()) {
-								quantityInBox = quantityInBox - item.getQuantity();
-								item.setQuantity(0);
-							} else {
-								item.setQuantity(item.getQuantity() - quantityInBox);
-								quantityInBox = 0;								
-							}
-							altered = true;
+					CardItem item = cardDataList.get(index).getProduct();
+					if(quantityInBox >0 && item.getQuantity() > 0  && 
+							item.getItemText().equalsIgnoreCase(box.getProductType())) {
+						if(quantityInBox >= item.getQuantity()) {
+							quantityInBox = quantityInBox - item.getQuantity();
+							item.setQuantity(0);
+						} else {
+							item.setQuantity(item.getQuantity() - quantityInBox);
+							quantityInBox = 0;								
 						}
+						altered = true;
 					}
 				}
 				// Re render the card if altered
