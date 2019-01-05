@@ -49,6 +49,8 @@ public class VisualizationAgent extends BaseAgent {
 	
     @Override
     protected void stepAction(){
+    	guiWindow.setTime(baseAgent.getCurrentTime());
+    	
         if (baseAgent.getCurrentTime().lessThan(this.endTime) || Visualizer.currentInstance == null) {
         	finished();
         }

@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
+import org.maas.utils.Time;
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
 public class LayoutController implements Initializable, ScenarioAware {
@@ -21,6 +25,9 @@ public class LayoutController implements Initializable, ScenarioAware {
 	
 	@FXML
 	private AnchorPane deliveryStageContainer;
+	
+	@FXML
+	private Label timeDisplay;
 	
 	private List<StageController> controllers = new Vector<>();
 
@@ -58,5 +65,13 @@ public class LayoutController implements Initializable, ScenarioAware {
 		for(StageController controller: controllers) {
 			controller.setScenario(scenarioDirectory);
 		}
+	}
+
+	public void setTime(Time currentTime) {
+		Platform.runLater(
+				  () -> {
+					  timeDisplay.setText(currentTime.toString());
+				  }
+				);
 	}
 }

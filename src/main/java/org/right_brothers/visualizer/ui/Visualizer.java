@@ -3,6 +3,8 @@ package org.right_brothers.visualizer.ui;
 import java.util.concurrent.CountDownLatch;
 
 import org.maas.agents.BaseAgent;
+import org.maas.utils.Time;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -73,5 +75,9 @@ public class Visualizer extends Application {
 	
 	public void updateBoard(String messageType, String message) {
 		layoutController.updateBoard(messageType, message);
+	}
+
+	public void setTime(Time currentTime) {
+		layoutController.setTime(currentTime);
 	}
 }
