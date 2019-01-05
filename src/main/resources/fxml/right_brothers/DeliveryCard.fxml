@@ -17,7 +17,7 @@
 <?import javafx.scene.text.Font?>
 
 <VBox xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" 
-	maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="5.0" styleClass="card"
+	maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="5.0" styleClass="delivery-card"
 	fx:controller="org.right_brothers.visualizer.ui.DeliveryCardController">
    <children>
       <AnchorPane>
