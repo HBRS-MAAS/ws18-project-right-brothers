@@ -233,7 +233,16 @@
                                                       </AnchorPane>
                                                       <AnchorPane prefWidth="200.0">
                                                          <children>
-                                                            <Label text="order-001(10), order-002(20)" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                                                            <HBox prefHeight="100.0" prefWidth="200.0" spacing="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                               <children>
+                                                                  <Label text="Quantity:">
+                                                                     <font>
+                                                                        <Font name="System Bold" size="13.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label text="10" />
+                                                               </children>
+                                                            </HBox>
                                                          </children>
                                                       </AnchorPane>
                                                    </children>
