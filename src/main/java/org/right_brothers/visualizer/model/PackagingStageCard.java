@@ -21,9 +21,6 @@ public class PackagingStageCard extends StageCard {
 	}
 	
 	public boolean isComplete() {
-		if(product != null && product.getQuantity() > 0) {
-			return false;
-		}
-		return true;
+		return !(product != null && product.getQuantity() > 0);
 	}
 }
