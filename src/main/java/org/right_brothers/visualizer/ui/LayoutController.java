@@ -103,8 +103,24 @@ public class LayoutController implements Initializable, ScenarioAware {
     }
 	
 	@FXML
-    private void handleReplayAction(ActionEvent event) {
+    private void handleReplayAction(ActionEvent event) throws InterruptedException {
         isReplaying = true;
+        
+//    	for(StageController controller: controllers) {
+//			controller.clear();
+//		}
+//        
+//        for(TimelineItem item: timelineItems) {
+//        	for(StageController controller: controllers) {
+//				controller.updateStage(item.getMessageType(), item.getMessage());
+//			}
+//
+//        	Platform.runLater(
+//					  () -> {
+//						  timeDisplay.setText(item.getTime().toString());
+//					  }
+//					);
+//        }
     }
 
 	public void setStage(Stage primaryStage) {

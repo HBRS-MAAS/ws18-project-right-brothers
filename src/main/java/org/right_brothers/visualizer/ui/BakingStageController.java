@@ -152,4 +152,13 @@ public class BakingStageController extends StageController implements Initializa
 		
 	}
 
+	@Override
+	public void clear() {
+		Platform.runLater(
+				  () -> {
+					  container.getChildren().clear();
+				  }
+				);
+	}
+
 }

@@ -82,4 +82,13 @@ public class DeliveryStageController extends StageController implements Initiali
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void clear() {
+		Platform.runLater(
+				  () -> {
+					  container.getChildren().clear();
+				  }
+				);
+	}
 }

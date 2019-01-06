@@ -46,4 +46,6 @@ public abstract class StageController implements ScenarioAware{
 					);
 		}
 	}
+	
+	public abstract void clear();
 }

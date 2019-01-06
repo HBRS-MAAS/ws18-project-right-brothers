@@ -146,4 +146,13 @@ public class PackagingStageController extends StageController implements Initial
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void clear() {
+		Platform.runLater(
+				  () -> {
+					  container.getChildren().clear();
+				  }
+				);
+	}
 }
