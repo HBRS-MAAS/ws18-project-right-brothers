@@ -52,7 +52,20 @@ public class BakingStageController extends StageController implements Initializa
 			String bakeryId = cooledProductConversationMatcher.group(1);
 			
 			ProductMessage productMessage = JsonConverter.getInstance(message, new TypeReference<ProductMessage>() {});
-			removeCard(bakeryId, productMessage);
+			
+			Thread thread = new Thread(){
+			    public void run(){
+			    	try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+			    	
+			    	removeCard(bakeryId, productMessage);
+			    }
+			  };
+
+			thread.start();
 		}
 		
 		Platform.runLater(

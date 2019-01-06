@@ -53,7 +53,21 @@ public class PackagingStageController extends StageController implements Initial
 			String bakeryId = packagedOrderMatcher.group(1);
 			
 			LoadingBayMessage loadingBayMessage = JsonConverter.getInstance(message, new TypeReference<LoadingBayMessage>() {});
-			removeCards(bakeryId, loadingBayMessage);
+			
+			Thread thread = new Thread(){
+			    public void run(){
+			    	try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+			    	
+			    	removeCards(bakeryId, loadingBayMessage);
+			    }
+			  };
+
+			thread.start();
+			
 		}
 		
 		Platform.runLater(
