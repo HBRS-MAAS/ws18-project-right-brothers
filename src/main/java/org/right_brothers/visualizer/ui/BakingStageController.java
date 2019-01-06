@@ -13,8 +13,6 @@ import org.right_brothers.data.messages.UnbakedProductMessage;
 import org.right_brothers.visualizer.model.BakingStageCard;
 import org.right_brothers.visualizer.model.CardItem;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.deser.std.DateDeserializers.CalendarDeserializer;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
