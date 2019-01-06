@@ -11,6 +11,7 @@ import org.maas.utils.Time;
 import org.right_brothers.visualizer.model.TimelineItem;
 
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -104,26 +105,60 @@ public class LayoutController implements Initializable, ScenarioAware {
 	
 	@FXML
     private void handleReplayAction(ActionEvent event) throws InterruptedException {
-        isReplaying = true;
-        
-//    	for(StageController controller: controllers) {
-//			controller.clear();
-//		}
-//        
-//        for(TimelineItem item: timelineItems) {
-//        	for(StageController controller: controllers) {
-//				controller.updateStage(item.getMessageType(), item.getMessage());
-//			}
-//
-//        	Platform.runLater(
-//					  () -> {
-//						  timeDisplay.setText(item.getTime().toString());
-//					  }
-//					);
-//        }
+		if(!isReplaying) {
+	        isReplaying = true;
+	        System.out.println(timelineItems.size());
+	        
+	    	for(StageController controller: controllers) {
+				controller.clear();
+			}
+	    	       
+	    	long delayInSeconds=0;
+	        for(TimelineItem item: timelineItems) {
+	    		delayInSeconds+=1;
+	        	
+	    		SimulationTask task = new SimulationTask(delayInSeconds * 1000, item);
+	    		Thread thread = new Thread(task);
+	    		thread.start();
+	        }
+		}
     }
 
 	public void setStage(Stage primaryStage) {
 		container = primaryStage;
+	}
+	
+	private class SimulationTask extends Task<Void> {
+	    private final long delayInMilliSeconds;
+	    private final TimelineItem item;
+
+	    public SimulationTask(long delayInMilliSeconds, TimelineItem item) {
+	        this.delayInMilliSeconds = delayInMilliSeconds;
+	        this.item = item;
+	    }
+
+	    @Override
+	    protected Void call() throws Exception {
+	    	try {
+  		      Thread.sleep(delayInMilliSeconds);
+  		    } catch (Exception e) {
+  		    }
+  		    
+          	Platform.runLater(
+  					  () -> {
+  		                	for(StageController controller: controllers) {
+  		        				controller.updateStage(item.getMessageType(), item.getMessage());
+  		        			}
+  		                	
+  		                	timeDisplay.setText(item.getTime().toString());
+  		                	
+  		                	if(timelineItems.indexOf(item) == timelineItems.size()-1) {
+  		                		isReplaying = false;
+  		                	}
+  					  }
+  					);
+
+	        return null;
+	    }
 	}
 }
