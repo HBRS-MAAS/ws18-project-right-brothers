@@ -163,6 +163,7 @@ public class BakingStageController extends StageController implements Initializa
 	public void clear() {
 		Platform.runLater(
 				  () -> {
+					  cardDataList.clear();
 					  container.getChildren().clear();
 				  }
 				);

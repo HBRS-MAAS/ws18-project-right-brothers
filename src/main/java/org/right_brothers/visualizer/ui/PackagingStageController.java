@@ -157,6 +157,7 @@ public class PackagingStageController extends StageController implements Initial
 	public void clear() {
 		Platform.runLater(
 				  () -> {
+					  cardDataList.clear();
 					  container.getChildren().clear();
 				  }
 				);
