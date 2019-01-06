@@ -103,19 +103,29 @@ public class LayoutController implements Initializable, ScenarioAware {
     public void handleReplayAction(ActionEvent event) throws InterruptedException {
 		if(!isReplaying) {
 	        isReplaying = true;
-	        
-	    	for(StageController controller: controllers) {
-				controller.clear();
-			}
-	    	       
-	    	long delayInSeconds=0;
-	        for(TimelineItem item: timelineItems) {
-	    		delayInSeconds+=1;
-	        	
-	    		SimulationTask task = new SimulationTask(delayInSeconds * 1000, item);
-	    		Thread thread = new Thread(task);
-	    		thread.start();
-	        }
+	    	
+	    	Thread thread = new Thread(){
+	    	    public void run(){
+	    	    	for(StageController controller: controllers) {
+	    				controller.clear();
+	    			}
+	    	    	
+	    	    	long delayInSeconds=0;
+	    	        for(int index=0; index<timelineItems.size(); index++) {
+	    	        	TimelineItem item = timelineItems.get(index);
+	    	        	
+	    	        	if(index == 0 || item.getTime().greaterThan(timelineItems.get(index-1).getTime())) {
+	    	        		delayInSeconds+=1;
+	    	        	}
+	    	        	
+	    	    		SimulationTask task = new SimulationTask(delayInSeconds * 1000, item);
+	    	    		Thread taskThread = new Thread(task);
+	    	    		taskThread.start();
+	    	        }
+	    	    }
+	    	  };
+
+	    	thread.start();
 		}
     }
 
