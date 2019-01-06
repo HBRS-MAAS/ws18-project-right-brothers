@@ -7,28 +7,20 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.maas.data.messages.ProductMessage;
 import org.maas.utils.JsonConverter;
-import org.right_brothers.bakery_objects.CooledProduct;
 import org.right_brothers.data.messages.LoadingBayBox;
 import org.right_brothers.data.messages.LoadingBayMessage;
-import org.right_brothers.data.messages.UnbakedProductMessage;
 import org.right_brothers.visualizer.model.CardItem;
 import org.right_brothers.visualizer.model.PackagingStageCard;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
-import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.util.Duration;
 
 public class PackagingStageController extends StageController implements Initializable {
 	@FXML

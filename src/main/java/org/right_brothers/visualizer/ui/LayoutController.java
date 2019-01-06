@@ -5,11 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Vector;
-
 import org.maas.utils.Time;
 import org.right_brothers.visualizer.model.TimelineItem;
-
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -98,16 +95,14 @@ public class LayoutController implements Initializable, ScenarioAware {
 	}
 	
 	@FXML
-    private void handleExitAction(ActionEvent event) {
-        System.out.println("exiting");
+    public void handleExitAction(ActionEvent event) {
         container.close();
     }
 	
 	@FXML
-    private void handleReplayAction(ActionEvent event) throws InterruptedException {
+    public void handleReplayAction(ActionEvent event) throws InterruptedException {
 		if(!isReplaying) {
 	        isReplaying = true;
-	        System.out.println(timelineItems.size());
 	        
 	    	for(StageController controller: controllers) {
 				controller.clear();

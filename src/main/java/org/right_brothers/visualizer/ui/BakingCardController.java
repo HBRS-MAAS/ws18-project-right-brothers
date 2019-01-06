@@ -2,10 +2,7 @@ package org.right_brothers.visualizer.ui;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
-
 import org.right_brothers.visualizer.model.BakingStageCard;
-
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;

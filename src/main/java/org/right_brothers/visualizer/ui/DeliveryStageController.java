@@ -7,15 +7,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.maas.data.messages.ProductMessage;
 import org.maas.utils.JsonConverter;
 import org.right_brothers.data.messages.LoadingBayBox;
 import org.right_brothers.data.messages.LoadingBayMessage;
-import org.right_brothers.data.messages.UnbakedProductMessage;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
