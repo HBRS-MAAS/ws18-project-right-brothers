@@ -156,6 +156,9 @@ public class LoadingBayAgent extends BaseAgent {
 
 		for (String productName : productsObject.keySet()) {
 			int orderQuantity = productsObject.getInt(productName);
+            if (orderQuantity == 0) {
+                continue;
+            }
 
 			try {
 				productQuantity = orderProductDetails.get(productName);

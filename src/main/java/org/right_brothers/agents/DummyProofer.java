@@ -74,7 +74,7 @@ public class DummyProofer extends BaseAgent {
             this.orderList.clear();
             for (UnbakedProductMessage unbakedProduct : unbakedProducts) {
                 String messageContent = JsonConverter.getJsonString(unbakedProduct);
-                this.addBehaviour(new InformSender(messageContent, this.ovenManager, "unbakedProduct"));
+                this.addBehaviour(new InformSender(messageContent, this.ovenManager, "baking-Request"));
             }
         }
         baseAgent.finished();

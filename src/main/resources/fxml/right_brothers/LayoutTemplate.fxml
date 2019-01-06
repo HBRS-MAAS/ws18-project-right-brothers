@@ -2,7 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -41,13 +45,32 @@
                      </children>
                   </AnchorPane>
                </children></HBox>
+            <AnchorPane AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="15.0">
+               <children>
+                  <MenuBar>
+                     <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                           <items>
+                              <MenuItem mnemonicParsing="false" text="New" />
+                              <SeparatorMenuItem mnemonicParsing="false" />
+                              <MenuItem mnemonicParsing="false" text="Quit" />
+                           </items>
+                        </Menu>
+                     </menus>
+                  </MenuBar>
+               </children>
+            </AnchorPane>
          </children>
       </AnchorPane>
    </top>
    <bottom>
       <AnchorPane prefHeight="40.0" style="-fx-background-color: #cccccc;" BorderPane.alignment="CENTER">
          <children>
-            <HBox />
+            <Label text="000.00.00" textAlignment="JUSTIFY" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
          </children></AnchorPane>
    </bottom>
    <center>
@@ -212,11 +235,11 @@
                               </AnchorPane>
                               <AnchorPane>
                                  <children>
-                                    <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" style="-fx-padding: 10 10; -fx-background-color: transperent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" style="-fx-padding: 10 0; -fx-background-color: transperent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <content>
                                           <VBox spacing="10.0" style="-fx-background-color: #e6e6e6;">
                                              <children>
-                                                <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
+                                                <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #e6e6e6; -fx-border-radius: 5; -fx-background-radius: 5; -fx-background-insets: 5; -fx-effect: dropshadow(three-pass-box,  #585858, 5, 0, 0, 0); -fx-padding: 10;">
                                                    <children>
                                                       <AnchorPane>
                                                          <children>
@@ -229,7 +252,16 @@
                                                       </AnchorPane>
                                                       <AnchorPane prefWidth="200.0">
                                                          <children>
-                                                            <Label text="order-001(10), order-002(20)" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                                                            <HBox prefHeight="100.0" prefWidth="200.0" spacing="4.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                               <children>
+                                                                  <Label text="Quantity:">
+                                                                     <font>
+                                                                        <Font name="System Bold" size="13.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label text="10" />
+                                                               </children>
+                                                            </HBox>
                                                          </children>
                                                       </AnchorPane>
                                                    </children>
@@ -284,7 +316,7 @@
                                        <content>
                                           <VBox spacing="10.0" style="-fx-background-color: #e6e6e6;">
                                              <children>
-                                                <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #ffffff; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
+                                                <VBox maxHeight="60.0" minHeight="60.0" prefHeight="60.0" spacing="8.0" style="-fx-background-color: #f2f2f2; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 5 5;">
                                                    <children>
                                                       <AnchorPane>
                                                          <children>
