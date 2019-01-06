@@ -36,11 +36,11 @@ public abstract class StageController implements ScenarioAware{
 		}
 		
 		for(int index = cardsToRemove.size()-1; index>=0; index--) {
-			cardDataList.remove(cardsToRemove.get(index));
-			
+			StageCard card = cardsToRemove.get(index);
 			Node node = nodesToRemove.get(index);
 			Platform.runLater(
 					  () -> {
+						  cardDataList.remove(card);
 						  container.getChildren().remove(node);
 					  }
 					);
