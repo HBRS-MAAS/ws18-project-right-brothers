@@ -69,12 +69,6 @@ public class PackagingStageController extends StageController implements Initial
 			thread.start();
 			
 		}
-		
-		Platform.runLater(
-				  () -> {
-					  cardCount.setText(Integer.toString(container.getChildren().size()));
-				  }
-				);
 	}
 
 	private void addCard(String bakeryId, ProductMessage message) {
@@ -102,6 +96,9 @@ public class PackagingStageController extends StageController implements Initial
 								controller.setText(packagingStageCard);
 								
 								highlightCard(packagingCardNode);
+								
+								
+								cardCount.setText(Integer.toString(container.getChildren().size()));
 							} catch(IOException e) {
 								e.printStackTrace();
 						}
@@ -144,7 +141,7 @@ public class PackagingStageController extends StageController implements Initial
 				}
 			}
 		}
-		cleanUp(cardDataList, container);
+		cleanUp(cardDataList, container, cardCount);
 	}
 
 	@Override
@@ -159,6 +156,7 @@ public class PackagingStageController extends StageController implements Initial
 				  () -> {
 					  cardDataList.clear();
 					  container.getChildren().clear();
+					  cardCount.setText("0");
 				  }
 				);
 	}
