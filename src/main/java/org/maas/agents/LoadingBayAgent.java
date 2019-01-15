@@ -256,6 +256,7 @@ public class LoadingBayAgent extends BaseAgent {
 			ACLMessage msg = myAgent.receive(mt);
 
 			if (msg != null) {
+                System.out.println(msg.getContent());
 				// If a single order is provided, in a message:
 				((LoadingBayAgent) baseAgent).orderDetailsArray.put(new JSONObject(msg.getContent()));
 

@@ -12,6 +12,7 @@ import jade.core.behaviours.*;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
@@ -27,7 +28,6 @@ import java.util.*;
 @SuppressWarnings("serial")
 public class DummyOrderProcessor extends BaseAgent {
 
-    private List<AID> agentList;
     private String bakeryGuid = "bakery-001";
     private List<Order> orderList;
 
@@ -45,8 +45,8 @@ public class DummyOrderProcessor extends BaseAgent {
 
         this.orderList = this.readOrdersFromJsonFile(scenarioDirectory);
         System.out.println("Total orders: " + this.orderList.size());
-        this.agentList = this.getAgentsOfMyBakery();
-        System.out.println("Agents in my bakery: " + this.agentList.size());
+        List<AID> agentList = this.getAgentsOfMyBakery();
+        System.out.println("Agents in my bakery: " + agentList.size());
 
     }
 
@@ -84,9 +84,11 @@ public class DummyOrderProcessor extends BaseAgent {
         // get all alive agents
         DFAgentDescription template = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
+		SearchConstraints getAll = new SearchConstraints();
+		getAll.setMaxResults(new Long(-1));
         template.addServices(sd);
         try {
-            DFAgentDescription[] result = DFService.search(this, template);
+            DFAgentDescription[] result = DFService.search(this, template, getAll);
             agents = Arrays.asList(result);
         }
         catch (FIPAException fe) {
@@ -111,8 +113,12 @@ public class DummyOrderProcessor extends BaseAgent {
             this.order = order;
         }
 		public void action() {
-            String messageContent = JsonConverter.getJsonString(this.order);
+            String messageContentIncorrect = JsonConverter.getJsonString(this.order);
+            // System.out.println("#########" + messageContentIncorrect);
+            String messageContent =  messageContentIncorrect.replaceAll("customer_id", "customerId");
+            // System.out.println(messageContent);
             ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
+            List<AID> agentList = getAgentsOfMyBakery();
             for (AID agent : agentList) {
                 inform.addReceiver(agent);
             }

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Order implements java.io.Serializable {
-    private String customer_id;
+    private String customerId;
     private String guid;
     private Date delivery_date;
     private Date order_date;
@@ -20,12 +20,12 @@ public class Order implements java.io.Serializable {
     }
 
     public String getCustomerId() {
-        return customer_id;
+        return customerId;
     }
 
 	@JsonProperty("customer_id")
     public void setCustomerId(String customerId) {
-        this.customer_id = customerId;
+        this.customerId = customerId;
     }
 
     public String getGuid() {
