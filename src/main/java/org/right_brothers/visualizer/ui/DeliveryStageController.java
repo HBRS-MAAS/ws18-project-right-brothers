@@ -39,12 +39,6 @@ public class DeliveryStageController extends StageController implements Initiali
 			LoadingBayMessage loadingBayMessage = JsonConverter.getInstance(message, new TypeReference<LoadingBayMessage>() {});
 			addCard(loadingBayMessage);
 		}
-		
-		Platform.runLater(
-				  () -> {
-					  cardCount.setText(Integer.toString(container.getChildren().size()));
-				  }
-				);
 	}
 	
 	private void addCard(LoadingBayMessage message) {
@@ -65,6 +59,8 @@ public class DeliveryStageController extends StageController implements Initiali
 							controller.setText(message.getOrderId(), String.join(" ", boxes));
 							
 							highlightCard(deliveryCard);
+							
+							cardCount.setText(Integer.toString(container.getChildren().size()));
 						} catch(IOException e) {
 							e.printStackTrace();
 						}
@@ -83,6 +79,7 @@ public class DeliveryStageController extends StageController implements Initiali
 		Platform.runLater(
 				  () -> {
 					  container.getChildren().clear();
+					  cardCount.setText("0");
 				  }
 				);
 	}

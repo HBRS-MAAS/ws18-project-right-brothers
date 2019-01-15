@@ -8,6 +8,7 @@ import org.right_brothers.visualizer.model.StageCard;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
@@ -24,7 +25,7 @@ public abstract class StageController implements ScenarioAware{
 		ft.play();
 	}
 	
-	protected void cleanUp(List<? extends StageCard> cardDataList, VBox container) {
+	protected void cleanUp(List<? extends StageCard> cardDataList, VBox container, Label cardCount) {
 		List<StageCard> cardsToRemove = new ArrayList<>();
 		List<Node> nodesToRemove = new ArrayList<>();
 		
@@ -36,12 +37,13 @@ public abstract class StageController implements ScenarioAware{
 		}
 		
 		for(int index = cardsToRemove.size()-1; index>=0; index--) {
-			cardDataList.remove(cardsToRemove.get(index));
-			
+			StageCard card = cardsToRemove.get(index);
 			Node node = nodesToRemove.get(index);
 			Platform.runLater(
 					  () -> {
+						  cardDataList.remove(card);
 						  container.getChildren().remove(node);
+						  cardCount.setText(Integer.toString(container.getChildren().size()));
 					  }
 					);
 		}
