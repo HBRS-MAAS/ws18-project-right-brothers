@@ -41,6 +41,8 @@ public class Start {
         cmd.add("10000");
 
         if(isHost) {
+            cmd.add("-host");
+            cmd.add(host);
             cmd.add("-local-port");
             cmd.add(localPort);
         }
@@ -103,9 +105,11 @@ public class Start {
         for (int i = 0; i < args.length; ++i) {
             if (args[i].equals("-isHost")) {
                 isHost = true;
-                continue;
+                host = args[i+1];
+                ++i;
             }
             if (args[i].equals("-host")) {
+                isHost = false;
                 host = args[i+1];
                 ++i;
             }
