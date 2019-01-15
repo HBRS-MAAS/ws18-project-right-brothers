@@ -29,7 +29,7 @@ public class DummyReceiverAgent extends BaseAgent {
             senderName = (String) args[2];
         }
 
-        this.register(name, this.bakeryGuid + "-" + name);
+        this.register(this.bakeryGuid + "-" + name, this.bakeryGuid + "-" + name);
         AID sender = new AID(bakeryGuid + "-" + senderName, AID.ISLOCALNAME);
         this.addBehaviour(new InformServer(sender));
     }
