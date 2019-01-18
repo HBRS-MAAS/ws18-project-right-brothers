@@ -27,7 +27,7 @@ public class BakingAndPackagingStageInitializer extends Initializer {
             agents.add(bakeryName + "-preLoadingProcessor:org.right_brothers.agents.PreLoadingProcessor(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-packaging-agent:org.right_brothers.agents.ProductBoxerAgent(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-loader-agent:org.maas.agents.LoadingBayAgent(" + bakeryName + ")");
-            agents.add(bakeryName + "-order-aggregator:org.right_brothers.agents.DummyReceiverAgent(" + bakeryName + ", order-aggregator, loader-agent)");
+            // agents.add(bakeryName + "-order-aggregator:org.right_brothers.agents.DummyReceiverAgent(" + bakeryName + ", order-aggregator, loader-agent)");
         }
 
         String agentInitString = String.join(";", agents);

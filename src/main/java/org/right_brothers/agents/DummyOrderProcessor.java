@@ -113,10 +113,10 @@ public class DummyOrderProcessor extends BaseAgent {
             this.order = order;
         }
 		public void action() {
-            String messageContentIncorrect = JsonConverter.getJsonString(this.order);
-            // System.out.println("#########" + messageContentIncorrect);
-            String messageContent =  messageContentIncorrect.replaceAll("customer_id", "customerId");
-            // System.out.println(messageContent);
+            String messageContent = JsonConverter.getJsonString(this.order);
+            messageContent =  messageContent.replaceAll("customer_id", "customerId");
+            messageContent =  messageContent.replaceAll("order_date", "orderDate");
+            messageContent =  messageContent.replaceAll("delivery_date", "deliveryDate");
             ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
             List<AID> agentList = getAgentsOfMyBakery();
             for (AID agent : agentList) {

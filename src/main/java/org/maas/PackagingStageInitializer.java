@@ -16,10 +16,10 @@ public class PackagingStageInitializer extends Initializer {
         Vector<String> bakeryNames = this.getBakeryNames(scenarioDirectory);
         Vector<String> agents = new Vector<>();
 
-        agents.add(bakeryNames.get(0) + "-dummy-order-processor:org.right_brothers.agents.DummyOrderProcessor(" + bakeryNames.get(0) + ", " + scenarioDirectory + ")");
+        // agents.add(bakeryNames.get(0) + "-dummy-order-processor:org.right_brothers.agents.DummyOrderProcessor(" + bakeryNames.get(0) + ", " + scenarioDirectory + ")");
 
         for (String bakeryName : bakeryNames) {
-            agents.add(bakeryName + "-cooling-rack:org.right_brothers.agents.DummyCoolingRackAgent(" + bakeryName + ")");
+            // agents.add(bakeryName + "-cooling-rack:org.right_brothers.agents.DummyCoolingRackAgent(" + bakeryName + ")");
             agents.add(bakeryName + "-preLoadingProcessor:org.right_brothers.agents.PreLoadingProcessor(" + bakeryName + ", " + scenarioDirectory + ", single-stage)");
             agents.add(bakeryName + "-packaging-agent:org.right_brothers.agents.ProductBoxerAgent(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-loader-agent:org.maas.agents.LoadingBayAgent(" + bakeryName + ")");

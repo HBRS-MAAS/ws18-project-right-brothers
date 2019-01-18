@@ -30,6 +30,7 @@ public class CoolingRackAgent extends BaseAgent{
         }
 
         this.packagingAgent = new AID(this.bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
+        // this.packagingAgent = new AID(this.bakeryGuid + "_ItemsProcessor", AID.ISLOCALNAME);
         AID postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
        
         this.register("cooling-rack-agent", this.bakeryGuid+"-CoolingRackAgent");
@@ -91,6 +92,7 @@ public class CoolingRackAgent extends BaseAgent{
         message.setConversationId(this.bakeryGuid + "-cooled-product-" + Integer.toString(this.cooledProductConversationNumber));
         message.setContent(messageContent);
         baseAgent.sendMessage(message);
+        System.out.println(messageContent);
     }
     private void print(String str){
         if (this.verbose){

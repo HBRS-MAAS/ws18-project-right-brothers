@@ -67,6 +67,7 @@ public class Start {
         if(doughPrepStage) {
             Initializer init = new DoughPrepStageInitializer();
             sb.append(init.initialize(scenarioDirectory));
+            endTime = "002.06.00";
         }
         if(bakingStage && packagingStage) {
             Initializer init = new BakingAndPackagingStageInitializer();
@@ -91,6 +92,9 @@ public class Start {
         if(visualizationStage) {
             Initializer init = new VisualisationInitializer(endTime);
             sb.append(init.initialize(scenarioDirectory));
+            
+            Initializer boardInit = new BoardVisualisationInitializer(endTime);
+            sb.append(boardInit.initialize(scenarioDirectory));
         }
         if(runTimeKeeper) {
             sb.append("timekeeper:org.maas.agents.TimeKeeper(" + scenarioDirectory + ", " + endTime + ");");
@@ -157,7 +161,6 @@ public class Start {
             if (args[i].equals("-noTK")) { // no TimeKeeper
                 runTimeKeeper = false;
             }
-
         }
         if (!isHost && (port == null || host == null)) {
             System.out.println("instance is not host and host and port have to be specified!");
