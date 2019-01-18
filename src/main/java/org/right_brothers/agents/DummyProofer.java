@@ -36,7 +36,7 @@ public class DummyProofer extends BaseAgent {
             bakeryGuid = (String) args[0];
         }
         this.ovenManager = new AID(bakeryGuid + "-ovenManager", AID.ISLOCALNAME);
-        AID orderProcessor = new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
+        AID orderProcessor = new AID(bakeryGuid, AID.ISLOCALNAME);
 
         this.register("proofer", this.bakeryGuid + "-proofer");
         this.addBehaviour(new OrderServer(orderProcessor));
@@ -128,8 +128,8 @@ public class DummyProofer extends BaseAgent {
         public void action() {
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
-            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("order"));
-            ACLMessage msg = myAgent.receive(mt2);
+            // MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("order"));
+            ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);

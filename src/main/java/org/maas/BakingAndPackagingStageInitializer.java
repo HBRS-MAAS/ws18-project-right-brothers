@@ -16,9 +16,8 @@ public class BakingAndPackagingStageInitializer extends Initializer {
         Vector<String> bakeryNames = this.getBakeryNames(scenarioDirectory);
         Vector<String> agents = new Vector<>();
 
-        agents.add(bakeryNames.get(0) + "-dummy-order-processor:org.right_brothers.agents.DummyOrderProcessor(" + bakeryNames.get(0) + ", " + scenarioDirectory + ")");
+        // agents.add(bakeryNames.get(0) + "-dummy-order-processor:org.right_brothers.agents.DummyOrderProcessor(" + bakeryNames.get(0) + ", " + scenarioDirectory + ")");
         for (String bakeryName : bakeryNames) {
-        	// agents.add(bakeryName + "-dummy:org.right_brothers.agents.BakingStageTester(" + bakeryName + ")");
             agents.add(bakeryName + "-dummy-proofer:org.right_brothers.agents.DummyProofer(" + bakeryName + ")");
             agents.add(bakeryName + "-ovenManager:org.right_brothers.agents.OvenManager(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-postBakingProcessor:org.right_brothers.agents.PostBakingProcessor(" + bakeryName + ")");
@@ -27,7 +26,7 @@ public class BakingAndPackagingStageInitializer extends Initializer {
             agents.add(bakeryName + "-preLoadingProcessor:org.right_brothers.agents.PreLoadingProcessor(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-packaging-agent:org.right_brothers.agents.ProductBoxerAgent(" + bakeryName + ", " + scenarioDirectory + ")");
             agents.add(bakeryName + "-loader-agent:org.maas.agents.LoadingBayAgent(" + bakeryName + ")");
-            // agents.add(bakeryName + "-order-aggregator:org.right_brothers.agents.DummyReceiverAgent(" + bakeryName + ", order-aggregator, loader-agent)");
+            agents.add(bakeryName + "-order-aggregator:org.right_brothers.agents.DummyReceiverAgent(" + bakeryName + ", order-aggregator, loader-agent)");
         }
 
         String agentInitString = String.join(";", agents);
