@@ -2,6 +2,8 @@ package org.right_brothers.agents;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 
 import org.maas.agents.BaseAgent;
 import org.maas.agents.TimeKeeper;
@@ -46,6 +48,10 @@ public class VisualizationAgent extends BaseAgent {
         };
     	thread.start();
         
+    	
+		Arrays.stream(LogManager.getLogManager().getLogger("")
+				.getHandlers()).forEach(h -> h.setLevel(Level.SEVERE));
+		
     	guiWindow = Visualizer.waitForInstance();
 		addBehaviour(new MessageServer());
 	}
