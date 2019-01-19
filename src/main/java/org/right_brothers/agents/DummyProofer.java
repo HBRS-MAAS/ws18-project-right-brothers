@@ -36,7 +36,7 @@ public class DummyProofer extends BaseAgent {
             bakeryGuid = (String) args[0];
         }
         this.ovenManager = new AID(bakeryGuid + "-ovenManager", AID.ISLOCALNAME);
-        AID orderProcessor = new AID(bakeryGuid, AID.ISLOCALNAME);
+        AID orderProcessor = new AID(bakeryGuid+ "-dummy-order-processor", AID.ISLOCALNAME);
 
         this.register("proofer", this.bakeryGuid + "-proofer");
         this.addBehaviour(new OrderServer(orderProcessor));

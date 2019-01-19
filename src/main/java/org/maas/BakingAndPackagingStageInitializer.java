@@ -16,7 +16,7 @@ public class BakingAndPackagingStageInitializer extends Initializer {
         Vector<String> bakeryNames = this.getBakeryNames(scenarioDirectory);
         Vector<String> agents = new Vector<>();
 
-        // agents.add(bakeryNames.get(0) + "-dummy-order-processor:org.right_brothers.agents.DummyOrderProcessor(" + bakeryNames.get(0) + ", " + scenarioDirectory + ")");
+        agents.add(bakeryNames.get(0) + "-dummy-order-processor:org.right_brothers.agents.DummyOrderProcessor(" + bakeryNames.get(0) + ", " + scenarioDirectory + ")");
         for (String bakeryName : bakeryNames) {
             agents.add(bakeryName + "-dummy-proofer:org.right_brothers.agents.DummyProofer(" + bakeryName + ")");
             agents.add(bakeryName + "-ovenManager:org.right_brothers.agents.OvenManager(" + bakeryName + ", " + scenarioDirectory + ")");
