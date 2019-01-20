@@ -71,7 +71,7 @@ public class Proofer extends BaseAgent {
     }
 
     public void getBakingInterfaceAID() {
-        bakingInterfaceAgentName = "BakingInterface_" + bakeryId;
+        bakingInterfaceAgentName = bakeryId + "-ovenManager";
         bakingInterfaceAgent = new AID(bakingInterfaceAgentName, AID.ISLOCALNAME);
     }
 
@@ -131,7 +131,7 @@ public class Proofer extends BaseAgent {
 
                ACLMessage reply = msg.createReply();
                if (isAvailable){
-                   //System.out.println(getAID().getLocalName() + " is available");
+                   // System.out.println(getAID().getLocalName() + " is available");
                    reply.setPerformative(ACLMessage.PROPOSE);
                    reply.setContent("Hey I am free, do you wanna use me ;)?");
                }else{

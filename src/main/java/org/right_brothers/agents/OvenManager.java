@@ -49,7 +49,8 @@ public class OvenManager extends BaseAgent {
             scenarioDirectory = (String) args [1];
         }
         postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
-        AID proofer = new AID(this.bakeryGuid + "-dummy-proofer", AID.ISLOCALNAME);
+        // AID proofer = new AID(this.bakeryGuid + "-dummy-proofer", AID.ISLOCALNAME);
+        AID proofer = new AID("Proofer_" + this.bakeryGuid, AID.ISLOCALNAME);
 
         this.register("Oven-manager-agent", this.bakeryGuid+"-OverManager");
 
@@ -197,11 +198,15 @@ public class OvenManager extends BaseAgent {
         public void action() {
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
-            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("baking-Request"));
+            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("dough-Notification"));
             ACLMessage msg = myAgent.receive(mt2);
             if (msg != null) {
                 String messageContent = msg.getContent();
                 print("\tReceived Unbaked product " + messageContent);
+                ACLMessage reply = msg.createReply();
+                reply.setConversationId("dough-Notification-reply");
+                reply.setPerformative(ACLMessage.CONFIRM);
+                baseAgent.sendMessage(reply);
                 TypeReference<?> type = new TypeReference<UnbakedProductMessage>(){};
                 UnbakedProductMessage unbakedProductMessage = JsonConverter.getInstance(messageContent, type);
                 /*

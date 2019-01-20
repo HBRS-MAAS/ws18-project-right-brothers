@@ -18,7 +18,7 @@ public class DummyReceiverAgent extends BaseAgent {
 
     protected void setup() {
         super.setup();
-        System.out.println("\tHello! Dummy-proofer "+getAID().getName()+" is ready.");
+        System.out.println("\tDummy-receiver "+getAID().getName()+" is born.");
 
         Object[] args = getArguments();
         String name = "preLoadingProcessor";

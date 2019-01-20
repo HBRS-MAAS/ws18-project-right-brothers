@@ -133,7 +133,7 @@ public class DummyProofer extends BaseAgent {
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);
-                // System.out.println("\tDummy Proofer Received Order with guid: " + o.getGuid());
+                System.out.println("\tDummy Proofer Received Order with guid: " + o.getGuid());
                 orderList.add(o);
             }
             else {
