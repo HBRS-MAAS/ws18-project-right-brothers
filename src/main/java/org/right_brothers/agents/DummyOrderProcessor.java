@@ -41,7 +41,7 @@ public class DummyOrderProcessor extends BaseAgent {
             bakeryGuid = (String) args[0];
             scenarioDirectory = (String) args[1];
         }
-        this.register(bakeryGuid +"-OrderProcessing", "JADE-bakery");
+        this.register(bakeryGuid, "JADE-bakery");
 
         this.orderList = this.readOrdersFromJsonFile(scenarioDirectory);
         System.out.println("Total orders: " + this.orderList.size());
@@ -97,13 +97,13 @@ public class DummyOrderProcessor extends BaseAgent {
         }
         // get only those agents which belong to same bakery as orderProcessor
         for (DFAgentDescription agent : agents) {
-            if (agent.getName().getLocalName().substring(0, 10).equals(this.bakeryGuid)){
+            if (agent.getName().getLocalName().contains(this.bakeryGuid)){
                 agentList.add(agent.getName());
             }
         }
-        for (AID agent : agentList ) {
-            System.out.println(agent);
-        }
+        // for (AID agent : agentList ) {
+        //     System.out.println(agent);
+        // }
         return agentList;
     }
 
