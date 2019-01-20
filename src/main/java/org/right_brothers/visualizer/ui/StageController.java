@@ -25,29 +25,5 @@ public abstract class StageController implements ScenarioAware{
 		ft.play();
 	}
 	
-	protected void cleanUp(List<? extends StageCard> cardDataList, VBox container, Label cardCount) {
-		List<StageCard> cardsToRemove = new ArrayList<>();
-		List<Node> nodesToRemove = new ArrayList<>();
-		
-		for(int index = cardDataList.size() -1; index >=0; index--) {
-			if(cardDataList.get(index).isComplete()) {
-				cardsToRemove.add(cardDataList.get(index));
-				nodesToRemove.add(container.getChildren().get(index));
-			}
-		}
-		
-		for(int index = cardsToRemove.size()-1; index>=0; index--) {
-			StageCard card = cardsToRemove.get(index);
-			Node node = nodesToRemove.get(index);
-			Platform.runLater(
-					  () -> {
-						  cardDataList.remove(card);
-						  container.getChildren().remove(node);
-						  cardCount.setText(Integer.toString(container.getChildren().size()));
-					  }
-					);
-		}
-	}
-	
 	public abstract void clear();
 }
