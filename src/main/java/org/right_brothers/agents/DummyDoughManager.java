@@ -25,6 +25,7 @@ public class DummyDoughManager extends BaseAgent {
     private AID proofer;
     private String bakeryGuid = "bakery-001";
     private List<Order> orderList;
+    private int productCount = 0;
 
     protected void setup() {
         super.setup();
@@ -47,26 +48,6 @@ public class DummyDoughManager extends BaseAgent {
     }
 
 
-    private class InformSender extends OneShotBehaviour {
-        private MessageTemplate mt;
-        private String message;
-        private AID receiver;
-        private String conversationId;
-        
-        public InformSender(String message, AID receiver, String conversationId) {
-            this.message = message;
-            this.receiver = receiver;
-            this.conversationId = conversationId;
-        }
-        public void action() {
-            ACLMessage inform = new ACLMessage(ACLMessage.INFORM);
-            inform.addReceiver(this.receiver);
-            inform.setContent(this.message);
-            inform.setConversationId(this.conversationId);
-            baseAgent.sendMessage(inform);
-        }
-    }
-
     private class ProofingRequestSender extends Behaviour {
         private String message;
         private AID receiver;
@@ -84,18 +65,20 @@ public class DummyDoughManager extends BaseAgent {
                 ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
                 cfp.addReceiver(this.receiver);
                 cfp.setConversationId(this.conversationId);
+                cfp.setContent(this.message);
                 baseAgent.sendMessage(cfp);
-                // System.out.println(" sent cfp to proofer" + this.message);
+                System.out.println(" sent cfp to proofer" + this.message);
                 this.mt = MessageTemplate.and(MessageTemplate.MatchSender(this.receiver),
                         MessageTemplate.MatchConversationId(this.conversationId));
                 step = 1;
+                productCount ++;
                 break;
             case 1:
                 ACLMessage reply = myAgent.receive(mt);
                 if (reply != null) {
                     // System.out.println(reply.getContent());
                     if (reply.getPerformative() == ACLMessage.PROPOSE) {
-                        // System.out.println("proofer is available");
+                        System.out.println("proofer is available for " + this.message);
                         ACLMessage msg = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                         msg.addReceiver(this.receiver);
                         msg.setConversationId(this.conversationId);
@@ -105,8 +88,9 @@ public class DummyDoughManager extends BaseAgent {
                         step = 2;
                     }
                     else if (reply.getPerformative() == ACLMessage.REFUSE) {
-                        // System.out.println("proofer is not available");
+                        System.out.println("proofer is not available for " + this.message);
                         myAgent.addBehaviour(new ProofingRequestSender(this.message, this.receiver, this.conversationId));
+                        productCount --;
                         step = 3;
                     }
                 }
@@ -117,10 +101,15 @@ public class DummyDoughManager extends BaseAgent {
             case 2:
                 ACLMessage proposal_reply = myAgent.receive(mt);
                 if (proposal_reply != null) {
-                    if (proposal_reply.getPerformative() == ACLMessage.FAILURE) {
-                        System.out.println("proofer refused proofing request");
+                    if (proposal_reply.getPerformative() == ACLMessage.INFORM) {
+                        System.out.println("proofer accepted proofing request for " + this.message);
+                    }
+                    else if (proposal_reply.getPerformative() == ACLMessage.FAILURE) {
+                    // else {
+                        System.out.println("proofer refused proofing request for " + this.message);
                         myAgent.addBehaviour(new ProofingRequestSender(this.message, this.receiver, this.conversationId));
                     }
+                    productCount --;
                     step = 3;
                 }
                 else {
@@ -133,6 +122,10 @@ public class DummyDoughManager extends BaseAgent {
         }
         public boolean done() {
             if (step == 3) {
+                System.out.println(productCount);
+                if (productCount == 0) {
+                    baseAgent.finished();
+                }
                 return true;
             }
             return false;
@@ -144,12 +137,17 @@ public class DummyDoughManager extends BaseAgent {
         if (this.orderList.size() > 0){
             List<ProofingRequestMessage> proofingRequests = this.convertOrdersToProofingRequest(this.orderList);
             this.orderList.clear();
-            for (ProofingRequestMessage proofingRequest : proofingRequests) {
+            System.out.println(proofingRequests.size());
+            // for (ProofingRequestMessage proofingRequest : proofingRequests) {
+            for (int i = 0; i < 3; i++) {
+                ProofingRequestMessage proofingRequest = proofingRequests.get(i);
                 String messageContent = JsonConverter.getJsonString(proofingRequest);
-                this.addBehaviour(new ProofingRequestSender(messageContent, this.proofer, "proofing-request"));
+                this.addBehaviour(new ProofingRequestSender(messageContent, this.proofer, "proofing-Request"));
             }
         }
-        baseAgent.finished();
+        if (productCount == 0){
+            baseAgent.finished();
+        }
     }
 
     private List<ProofingRequestMessage> convertOrdersToProofingRequest(List<Order> orderList){

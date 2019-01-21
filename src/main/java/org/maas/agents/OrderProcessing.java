@@ -33,7 +33,7 @@ public class OrderProcessing extends BaseAgent {
             System.out.println(getName() + ": No parameter given for OrderProcessing " + getName());
         }
         logger = new Logger(getName(), "no");
-        this.register("OrderProcessing", this.sBakeryId);
+        this.register(this.sBakeryId + "-OrderProcessing", this.sBakeryId);
         findScheduler();
         order_received = false;
         addBehaviour(new OfferRequestServer());

@@ -92,7 +92,6 @@ public class CoolingRackAgent extends BaseAgent{
         message.setConversationId(this.bakeryGuid + "-cooled-product-" + Integer.toString(this.cooledProductConversationNumber));
         message.setContent(messageContent);
         baseAgent.sendMessage(message);
-        System.out.println(messageContent);
     }
     private void print(String str){
         if (this.verbose){
