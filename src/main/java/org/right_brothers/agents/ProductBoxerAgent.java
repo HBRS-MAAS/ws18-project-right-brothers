@@ -49,7 +49,7 @@ public class ProductBoxerAgent extends BaseAgent {
             this.bakeryGuid = (String) args[0];
             scenarioDirectory = (String) args [1];
         }
-        AID orderProcessor =  new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
+        AID orderProcessor =  new AID(bakeryGuid, AID.ISLOCALNAME);
         AID preLoadingProcessor = new AID(bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
         loadingBayAgent = new AID(bakeryGuid + "-loader-agent", AID.ISLOCALNAME);
         this.register("Product-Boxer-agent", this.bakeryGuid+"-ProductBoxerAgent");

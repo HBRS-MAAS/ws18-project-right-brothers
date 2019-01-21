@@ -37,7 +37,7 @@ public class DummyCoolingRackAgent extends BaseAgent {
         }
         this.register("cooling-rack-agent", this.bakeryGuid+"-CoolingRackAgent");
         this.preLoadingProcessor = new AID(bakeryGuid + "-preLoadingProcessor", AID.ISLOCALNAME);
-        AID orderProcessor = new AID(bakeryGuid + "-dummy-order-processor", AID.ISLOCALNAME);
+        AID orderProcessor = new AID(bakeryGuid, AID.ISLOCALNAME);
 
         this.addBehaviour(new OrderServer(orderProcessor));
     }
@@ -100,12 +100,11 @@ public class DummyCoolingRackAgent extends BaseAgent {
         public void action() {
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
-            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("order"));
-            ACLMessage msg = myAgent.receive(mt2);
+            ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String order = msg.getContent();
                 Order o = this.parseOrder(order);
-                // System.out.println("\tCooling-Racks received Order with guid: " + o.getGuid());
+                System.out.println("\tCooling-Racks received Order with guid: " + o.getGuid());
                 orderList.add(o);
             }
             else {

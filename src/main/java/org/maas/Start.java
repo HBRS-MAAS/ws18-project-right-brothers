@@ -83,7 +83,7 @@ public class Start {
             if(packagingStage) {
                 Initializer init = new PackagingStageInitializer();
                 sb.append(init.initialize(scenarioDirectory));
-                endTime = "002.01.00";
+                endTime = "003.01.00";
             }
         }
         if(deliveryStage) {
