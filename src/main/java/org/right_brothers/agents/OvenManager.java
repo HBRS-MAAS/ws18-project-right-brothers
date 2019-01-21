@@ -3,7 +3,6 @@ package org.right_brothers.agents;
 import java.util.*;
 // import java.util.stream.Collectors;
 import java.io.IOException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 // import jade.core.Agent;
