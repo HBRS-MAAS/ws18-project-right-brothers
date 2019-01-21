@@ -126,6 +126,10 @@ public class Start {
                 localPort = args[i+1];
                 ++i;
             }
+            if (args[i].equals("-scenarioDirectory")) {
+                scenarioDirectory = args[i+1];
+                ++i;
+            }
             if (args[i].equals("-customer")) {
                 customerStage = true;
                 noAgentStarting = false;

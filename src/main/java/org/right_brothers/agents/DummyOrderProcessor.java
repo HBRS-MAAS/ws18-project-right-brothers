@@ -70,10 +70,10 @@ public class DummyOrderProcessor extends BaseAgent {
         Vector<Client> clientList = JsonConverter.getInstance(fileString, type);
         System.out.println("Total clients: " + clientList.size());
         Vector<Order> orderList = new Vector<Order>();
-        // for (Client client : clientList) {
-        //     orderList.addAll(client.getOrders());
-        // }
-        orderList.addAll(clientList.get(0).getOrders().subList(0, 3));
+        for (Client client : clientList) {
+            orderList.addAll(client.getOrders());
+        }
+        // orderList.addAll(clientList.get(0).getOrders().subList(0, 3));
         return orderList;
     }
 
