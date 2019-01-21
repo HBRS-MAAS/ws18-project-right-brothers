@@ -12,7 +12,6 @@ import jade.domain.JADEAgentManagement.JADEManagementOntology;
 import jade.domain.JADEAgentManagement.ShutdownPlatform;
 import jade.domain.FIPANames;
 
-import jade.core.Agent;
 import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.domain.FIPAAgentManagement.*;
