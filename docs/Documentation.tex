@@ -144,6 +144,7 @@ With figure~\ref{fig:1} as the starting point, we created a component diagram, f
 
 All the agents in our stages are created statically at startup. 
 To illustrate this decision, consider the baking stage. Each bakery has a fixed number of ovens. In our design, we have a single agent called as OvenManager looking after all the ovens. Hence as per our design, it does not make sense to use dynamic agent creation for OvenManager. Also static agent creation, simplifies the overall interoperability to a cetain extent.
+
 \section{Baking Stage:}
 \begin{itemize}
     \item \textbf{OvenManager}: 
@@ -199,6 +200,177 @@ Every agent that inherits BaseAgent has to call \texttt{finished} when their tas
 Visualization agent receives messages from baseAgent of all agents and parses this message to extract whetever information it needs.
 It then uses this information to create graphical representation using \texttt{JavaFX}.
 \end{itemize}
+
+\section{Mockup Agents:}
+For testing the individual stages for proper functioning, we create a number of agents basically as mockup agents to provided the necessary input messages to the interface messages of our stages. These are listed below along with their functionality.
+\begin{itemize}
+    \item \textbf{DummyAgent}:
+    \item \textbf{DummyCoolingRackAgent}:
+    \item \textbf{DummyOrderProcessor}:
+    \item \textbf{DummyProofer}:
+    \item \textbf{DummyReceiverAgent}:
+\end{itemize}
+
+Following section will provided class descriptions for the different agents discussed in this section.
+
+\newpage{}
+\section{Class descriptions}%
+\label{sec:agent_descriptions}
+
+\subsection{TimeKeeper}
+\begin{itemize}
+    \item \textbf{Stage}: Common Agent
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: SendTimeStep (OneShot), TimeStepConfirmationBehaviour (Cyclic)
+    \item \textbf{Messages in}: 
+        \begin{itemize}
+            \item  finished (Sender: all agents)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item  TimeStep (Receiver: all agents)
+        \end{itemize}
+\end{itemize}
+%\newpage{}
+
+\subsection{BaseAgent}
+\begin{itemize}
+    \item \textbf{Stage}: NA
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static  
+    \item \textbf{Behaviour}: PermitAction (Cyclic)
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item  TimeStep (Sender: TimeKeeper)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item  finished (Receiver: TimeKeeper)
+            \item  all messages(Receiver: Visualization Agents)
+        \end{itemize}
+\end{itemize}
+\newpage{}
+
+\subsection{Visualization agent}
+\begin{itemize}
+    \item \textbf{Stage}: Common Agents 
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: MessageServer (Cyclic)
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item  all messages (Sender: all agents)
+        \end{itemize}
+\end{itemize}
+%\newpage{}
+
+\subsection{OvenManager}
+\begin{itemize}
+    \item \textbf{Stage}: Baking 
+    \item \textbf{Agent/Object}: Agent 
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: Bake (Cyclic), OrderServer (Cyclic), UnbakedProductsServer (Cyclic) 
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item  Order (Sender: OrderProcessor)
+            \item  UnbakedProductMessage (Sender: Proofer)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item  BakedProductMessage (Receiver: PostBakingProcessor)
+        \end{itemize}
+\end{itemize}
+\newpage{}
+
+\subsection{PostBakingProcessor}
+\begin{itemize}
+    \item \textbf{Stage}: Baking
+    \item \textbf{Agent/Object}: Agent 
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: BakedProductsServer (Cyclic), Process (Cyclic)
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item  BakedProductMessage (Sender: OvenManager)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item  ProcessedProductMessage (Receiver: CoolingRackAgent)
+        \end{itemize}
+\end{itemize}
+%\newpage{}
+
+\subsection{CoolingRackAgent}
+\begin{itemize}
+    \item \textbf{Stage}: Baking
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: ProcessedProductServer (Cyclic), CoolProducts (Cyclic)
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item ProcessedProductMessage (Sender: PostBakingProcessor)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item ProductMessage (Receiver: PreLoadingProcessor)
+        \end{itemize}
+\end{itemize}
+\newpage{}
+
+\subsection{PreLoadingProcessor}
+\begin{itemize}
+    \item \textbf{Stage}: Packaging
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: Process (Cyclic), CooledProductServer (Cyclic), OrderServer (Cyclic)
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item ProductMessage (Sender: CoolingRackAgent)
+            \item Order (Sender: OrderProcessor)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item CompletedProductMessage (Receiver: LoadingBayAgent)
+        \end{itemize}
+\end{itemize}
+
+\subsection{ProductBoxerAgent}
+\begin{itemize}
+    \item \textbf{Stage}: Packaging
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: OrderReceiver (Cyclic), CompletedProductReceiver (Cyclic)
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item CompletedProductMessage (Sender: PreLoadingProcessor)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item LoadingBayMessage (Receiver: LoadingBayAgent)
+        \end{itemize}
+\end{itemize}
+
+\newpage{}
+
+\subsection{LoadingBayAgent}
+\begin{itemize}
+    \item \textbf{Stage}: Packaging
+    \item \textbf{Agent/Object}: Agent
+    \item \textbf{Static/Dynamic}: Static
+    \item \textbf{Behaviour}: OrderDetailsReceiver (Cyclic), ProductDetailsReceiver (Cyclic)
+    \item \textbf{Messages in}:
+        \begin{itemize}
+            \item LoadingBayAgent (Sender: ProductBoxerAgent)
+        \end{itemize}
+    \item \textbf{Messages out}:
+        \begin{itemize}
+            \item LoadingBayMessage (Receiver: OrderTracker/OrderAggregator)
+        \end{itemize}
+\end{itemize}
+
+\section{Testing}
+
+
 
 \bibliography{refs}
 \bibliographystyle{IEEEtran}
