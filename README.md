@@ -44,23 +44,27 @@ In case you want to clean you workspace run
     gradle clean
 
 
-### Running from different machines
+### Test
 
-#### Main Container
+For testing TimeKeeper
 
-    gradle run --args="server -host <server ip address>"
+    gradle run
 
-#### Peripheral Container
+For testing baking stage
 
-    gradle run --args="-host <server ip address>"
+    gradle run --args="-baking"
 
-#### Coordinator Test
+For testing packaging stage
     
-    gradle run --args="coordinatorTest"
+    gradle run --args="-packaging"
 
-## Unit test
+For testing baking and packaging stage
 
-    gradle test
+    gradle run --args="-baking -packaging"
+    
+For testing baking and packaging and visualisation stage
+
+	gradle run --args="-baking -packaging -visualization"
 
 ## Eclipse
 To use this project with eclipse run
