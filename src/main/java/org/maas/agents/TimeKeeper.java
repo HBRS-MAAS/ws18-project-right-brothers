@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.File;
 import java.util.Scanner;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,7 +39,6 @@ public class TimeKeeper extends Agent{
 	 */
 	public static final int BROADCAST_TIMESTEP_PERFORMATIVE = 55;
 	
-	private int currentTimeStep;
     private Time currentTime;
     private Time singleTimeStep;
 	private int countAgentsReplied;

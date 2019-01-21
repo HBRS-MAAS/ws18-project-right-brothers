@@ -2,13 +2,10 @@ package org.right_brothers.agents;
 
 import java.util.*;
 
-import jade.core.Agent;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.domain.FIPAAgentManagement.*;
-import jade.domain.FIPAException;
-import jade.domain.DFService;
 
 import org.maas.agents.BaseAgent;
 import org.right_brothers.data.models.Order;

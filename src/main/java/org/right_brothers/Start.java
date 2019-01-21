@@ -31,7 +31,6 @@ public class Start {
         System.out.println(clients.size());
 
         if(arguments.size() > 0) {
-            String customArgument = String.join(" ", arguments).trim();
             if(arguments.get(0).equalsIgnoreCase("packagingStageTest")){
                 cmd.add("-agents");
                 String endTime = "000.13.00";
