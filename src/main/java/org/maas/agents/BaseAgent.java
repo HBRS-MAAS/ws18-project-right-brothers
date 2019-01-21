@@ -1,5 +1,10 @@
 package org.maas.agents;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.maas.utils.Time;
 
 import jade.core.Agent;
@@ -21,7 +26,7 @@ public abstract class BaseAgent extends Agent {
     private Time currentTime;
     private boolean allowAction = false;
     protected AID clockAgent = new AID("TimeKeeper", AID.ISLOCALNAME);
-    //protected AID visualisationAgent = new AID("visualisation", AID.ISLOCALNAME);
+    protected AID visualisationAgent = new AID("visualisation", AID.ISLOCALNAME);
     protected BaseAgent baseAgent = this;
 	
     /* 
@@ -124,11 +129,44 @@ public abstract class BaseAgent extends Agent {
     protected void visualiseMessageQueuesByAgent(ACLMessage msg) {
     }
     protected void visualiseOrderBoard(ACLMessage msg) {
-       /*
-       msg.clearAllReceiver();
-       msg.addReceiver(visualisationAgent);
-       this.send(msg);
-       */
+    	String bakingOutputConversationPattern = "^dough-notification$";
+    	String loadingBayOutputConversationPattern = "^packaged-orders$";
+    	
+    	List<String> visualizedMessages = Arrays
+    			.asList(bakingOutputConversationPattern, "^[\\w\\-]+\\-cooled\\-product\\-\\d+$", loadingBayOutputConversationPattern);
+    	
+    	if(msg != null && msg.getConversationId() != null) {
+    		String conversationId = msg.getConversationId().toLowerCase();
+    		
+    		
+    		if(visualizedMessages.stream().anyMatch(pattern -> conversationId.matches(pattern))) {
+    		
+	    		if(conversationId.matches(bakingOutputConversationPattern)) {
+	    			Matcher bakeryMatcher = Pattern.compile("^Proofer_(\\w+)\\-(\\d+)")
+		    				.matcher(msg.getSender().getLocalName());
+		    		
+		    		if(bakeryMatcher.lookingAt()) {
+		        		msg.setConversationId(
+		        				bakeryMatcher.group(1)+ "-" + bakeryMatcher.group(2) + "-baking-request"
+	        				);
+		    		}
+	    		} else if(conversationId.matches(loadingBayOutputConversationPattern)) {
+	    			Matcher bakeryMatcher = Pattern.compile("^(\\w+)\\-(\\d+)\\-")
+    	    				.matcher(msg.getSender().getLocalName());
+    	    		
+    	    		if(bakeryMatcher.lookingAt()) {
+    	        		msg.setConversationId(
+    	        				bakeryMatcher.group(1)+ "-" + bakeryMatcher.group(2) + "-" + msg.getConversationId()
+	        				);
+    	    		}
+	    		}
+	    		
+    	    	msg.clearAllReceiver();
+    	    	msg.addReceiver(visualisationAgent);
+    	    	
+    	    	this.send(msg);
+    		}
+    	}
     }
     protected void visualiseStreetNetwork(ACLMessage msg) {
     }

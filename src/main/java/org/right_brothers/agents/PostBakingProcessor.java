@@ -18,15 +18,25 @@ import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class PostBakingProcessor extends BaseAgent{
-    private AID ovenManager = new AID("OvenManager", AID.ISLOCALNAME);
-    private AID coolingRacksAgent = new AID("cooling-rack", AID.ISLOCALNAME);
+    private AID coolingRacksAgent;
     private List<BakedProduct> bakedProductList;
+    private String bakeryGuid;
+    private boolean verbose = false;
     
     protected void setup() {
         super.setup();
         System.out.println("\t"+getAID().getLocalName()+" is born.");
         
-        this.register("postBakingProcessor-agent", "JADE-bakery");
+        Object[] args = getArguments();
+        if (args != null && args.length > 0) {
+            this.bakeryGuid = (String) args[0];
+        } else {
+            this.bakeryGuid = "bakery-001";
+        }
+        AID ovenManager = new AID(this.bakeryGuid + "-ovenManager", AID.ISLOCALNAME);
+        this.coolingRacksAgent = new AID(this.bakeryGuid + "-cooling-rack", AID.ISLOCALNAME);
+
+        this.register("postBakingProcessor-agent", this.bakeryGuid+"-PostBakingProcessor");
         this.bakedProductList = new ArrayList<BakedProduct> ();
 
         addBehaviour(new BakedProductsServer(ovenManager));
@@ -55,10 +65,10 @@ public class PostBakingProcessor extends BaseAgent{
         for (BakedProduct bakedProduct : bakedProductList) {
             if (bakedProduct.getRemainingTimeDuration() < 0){
                 bakedProduct.setRemainingTimeDuration(bakedProduct.getIntermediateSteps().get(0).getDuration());
-                System.out.println("\tStarted " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                this.print("\tStarted " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
             }
             if (bakedProduct.getRemainingTimeDuration() == 0){
-                System.out.println("\tFinished " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                this.print("\tFinished " + bakedProduct.getIntermediateSteps().get(0).getAction() + " " + bakedProduct.getQuantity() + " " + bakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 bakedProduct.finishedStep();
                 bakedProduct.setRemainingTimeDuration(-1);
                 if (bakedProduct.getIntermediateSteps().size() == 0) {
@@ -85,6 +95,11 @@ public class PostBakingProcessor extends BaseAgent{
         loadingBayMessage.setContent(messageContent);
         baseAgent.sendMessage(loadingBayMessage);
     }
+    private void print(String str){
+        if (this.verbose){
+            System.out.println(str);
+        }
+    }
 
     /*
      * Server for the intermediate products from oven manager agent's message
@@ -102,7 +117,7 @@ public class PostBakingProcessor extends BaseAgent{
             ACLMessage msg = myAgent.receive(mt);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                System.out.println("\tReceived intermediate product: " + messageContent + " at " + baseAgent.getCurrentHour());
+                print("\tReceived intermediate product: " + messageContent + " at " + baseAgent.getCurrentHour());
                 TypeReference<?> type = new TypeReference<ArrayList<BakedProduct>>(){};
                 ArrayList<BakedProduct> receivedBakedProducts = JsonConverter.getInstance(messageContent, type);
                 bakedProductList.addAll(receivedBakedProducts);

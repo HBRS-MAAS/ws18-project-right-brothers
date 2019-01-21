@@ -15,6 +15,7 @@ import jade.core.behaviours.*;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -68,7 +69,7 @@ public class TimeKeeper extends Agent{
             endTime = new Time(endTimeString);
         } else {
             scenarioDirectory = "small";
-            endTime = new Time(0,12,0);
+            endTime = new Time(1,12,0);
         }
         this.readSingleTimeStepFromMeta(scenarioDirectory);
 
@@ -94,6 +95,7 @@ public class TimeKeeper extends Agent{
         TypeReference<?> type = new TypeReference<Meta>(){};
         Meta m = JsonConverter.getInstance(fileString, type);
         this.singleTimeStep = m.getTimeStep();
+        this.endTime = new Time(m.getDurationInDays() + 1, 0, 0);
     }
 	
 	protected void takeDown() {
@@ -105,10 +107,12 @@ public class TimeKeeper extends Agent{
 	private List<DFAgentDescription> getAllAgents(){
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
-        sd.setName("JADE-bakery");
+		SearchConstraints getAll = new SearchConstraints();
+		getAll.setMaxResults(new Long(-1));
+//         sd.setName("JADE-bakery");
 		template.addServices(sd);
 		try {
-			DFAgentDescription[] result = DFService.search(this, template);
+			DFAgentDescription[] result = DFService.search(this, template, getAll);
 			return Arrays.asList(result);
 		}
 		catch (FIPAException fe) {

@@ -2,6 +2,9 @@ package org.right_brothers.visualizer.ui;
 	
 import java.util.concurrent.CountDownLatch;
 
+import org.maas.agents.BaseAgent;
+import org.maas.utils.Time;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -10,8 +13,11 @@ import javafx.scene.Scene;
 
 
 public class Visualizer extends Application {
-	private static final CountDownLatch countDownLatch = new CountDownLatch(1);
+	private static CountDownLatch countDownLatch = new CountDownLatch(1);
 	public static Visualizer currentInstance = null;
+	
+	private static BaseAgent agent;
+	private static String scenarioDirectory;
 	
 	private LayoutController layoutController;
 	
@@ -30,8 +36,11 @@ public class Visualizer extends Application {
         return currentInstance;
     }
 	
-	public static void run(String[] args) {
-		launch(args);
+	public static void run(BaseAgent agent, String scenarioDirectory) {
+		Visualizer.agent = agent;
+		Visualizer.scenarioDirectory = scenarioDirectory;
+		
+		launch();
 	}
 	
 	@Override
@@ -40,6 +49,8 @@ public class Visualizer extends Application {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/right_brothers/Layout.fxml"));
 			Parent root = fxmlLoader.load();
 			layoutController = fxmlLoader.getController();
+			layoutController.setScenario(scenarioDirectory);
+			layoutController.setStage(primaryStage);
 			
 			
 			Scene scene = new Scene(root);
@@ -57,10 +68,17 @@ public class Visualizer extends Application {
 	
 	@Override
 	public void stop() {
-		System.out.println("Closing application");
+		countDownLatch = new CountDownLatch(1);
+		currentInstance = null;
+		
+		agent.finished();
 	}
 	
 	public void updateBoard(String messageType, String message) {
 		layoutController.updateBoard(messageType, message);
+	}
+
+	public void setTime(Time currentTime) {
+		layoutController.setTime(currentTime);
 	}
 }

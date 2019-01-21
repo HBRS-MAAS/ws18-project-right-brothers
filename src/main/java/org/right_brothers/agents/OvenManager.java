@@ -30,30 +30,35 @@ import org.maas.utils.Time;
 
 @SuppressWarnings("serial")
 public class OvenManager extends BaseAgent {
-    private AID postBakingProcessor = new AID("postBakingProcessor", AID.ISLOCALNAME);
-    private AID proofer = new AID("dummy", AID.ISLOCALNAME);
-    private AID orderProcessor = new AID("dummy", AID.ISLOCALNAME);
+    private AID postBakingProcessor;
     private List<Product> availableProductList;
     private String bakeryGuid = "bakery-001";
     private List<Tray> trayList;
     private List<UnbakedProduct> unbakedProductList;
     private int bakedProductConversationNumber = 0;
+    private boolean verbose = false;
 
     protected void setup() {
         super.setup();
         System.out.println("\tOven-manager "+getAID().getLocalName()+" is born.");
 
-        this.register("Oven-manager-agent", "JADE-bakery");
+        String scenarioDirectory = "small";
+        Object[] args = getArguments();
+        if (args != null && args.length > 0) {
+            this.bakeryGuid = (String) args[0];
+            scenarioDirectory = (String) args [1];
+        }
+        postBakingProcessor = new AID(this.bakeryGuid + "-postBakingProcessor", AID.ISLOCALNAME);
+        // AID proofer = new AID(this.bakeryGuid + "-dummy-proofer", AID.ISLOCALNAME);
+        AID proofer = new AID("Proofer_" + this.bakeryGuid, AID.ISLOCALNAME);
+
+        this.register("Oven-manager-agent", this.bakeryGuid+"-OverManager");
 
         this.unbakedProductList = new ArrayList<UnbakedProduct> ();
         this.availableProductList = new ArrayList<Product> ();
 
-        // TODO: get bakery guid as argument
-        //         Object[] args = getArguments();
+        this.getAllInformation(scenarioDirectory);
 
-        this.getAllInformation();
-
-        //         this.addBehaviour(new OrderServer(orderProcessor));
         this.addBehaviour(new UnbakedProductsServer(proofer));
     }
 
@@ -61,9 +66,11 @@ public class OvenManager extends BaseAgent {
         this.deRegister();
         System.out.println("\t" + getAID().getLocalName() + ": Terminating.");
     }
-    private void getAllInformation(){
+
+    private void getAllInformation(String scenarioDirectory){
+        String filePath = "/config/" + scenarioDirectory + "/bakeries.json";
 		InputParser<Vector<Bakery>> parser2 = new InputParser<>
-			("/config/sample/bakeries.json", new TypeReference<Vector<Bakery>>(){});
+			(filePath, new TypeReference<Vector<Bakery>>(){});
 		List<Bakery> bakeries = parser2.parse();
         List<Oven> ovens = new ArrayList<Oven> ();
         for (Bakery b : bakeries) {
@@ -73,7 +80,7 @@ public class OvenManager extends BaseAgent {
                 break;
             }
         }
-        System.out.println("Number of oven " + ovens.size());
+        this.print("Number of oven " + ovens.size());
         this.trayList = new ArrayList<Tray> (ovens.size() * 4);
         for (Oven o : ovens) {
             for (int i = 0; i < 4; i++) {
@@ -81,7 +88,7 @@ public class OvenManager extends BaseAgent {
                 this.trayList.add(t);
             }
         }
-        System.out.println("Number of trayList " + this.trayList.size());
+        this.print("Number of trayList " + this.trayList.size());
     }
 
     /*
@@ -108,7 +115,7 @@ public class OvenManager extends BaseAgent {
             if (unbakedProduct.isScheduled())
                 continue;
             if (unbakedProduct.getRemainingTimeDuration() == 0){
-                System.out.println("\tBaked " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
+                this.print("\tBaked " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at time " + baseAgent.getCurrentHour());
                 BakedProductMessage bakedProductMessage = new BakedProductMessage();
                 bakedProductMessage.setGuid(unbakedProduct.getGuid());
                 bakedProductMessage.setQuantity(unbakedProduct.getQuantity());
@@ -141,7 +148,7 @@ public class OvenManager extends BaseAgent {
                     temp.add(unbakedProduct);
                     unbakedProduct.setScheduled(null);
                     unbakedProduct.setRemainingTimeDuration(unbakedProduct.getBakingDuration());
-                    System.out.println("\tStarted Baking " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
+                    this.print("\tStarted Baking " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
                 }
                 else {
                     tray.setNextTimeStepTemp();
@@ -161,7 +168,7 @@ public class OvenManager extends BaseAgent {
                 break;
             tray.setUsedFor(unbakedProduct);
             unbakedProduct.setScheduled(tray);
-            System.out.println("\tScheduled " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
+            this.print("\tScheduled " + unbakedProduct.getQuantity() + " " + unbakedProduct.getGuid() + " at " + baseAgent.getCurrentHour());
         }
     }
     private Tray getFreeTray(){
@@ -171,6 +178,11 @@ public class OvenManager extends BaseAgent {
             }
         }
         return null;
+    }
+    private void print(String str){
+        if (this.verbose){
+            System.out.println(str);
+        }
     }
 
     /*
@@ -186,11 +198,15 @@ public class OvenManager extends BaseAgent {
         public void action() {
             this.mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
                     MessageTemplate.MatchSender(sender));
-            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("order_guid"));
+            MessageTemplate mt2 = MessageTemplate.and(this.mt, MessageTemplate.MatchConversationId("dough-Notification"));
             ACLMessage msg = myAgent.receive(mt2);
             if (msg != null) {
                 String messageContent = msg.getContent();
-                System.out.println("\tReceived Unbaked product " + messageContent);
+                print("\tReceived Unbaked product " + messageContent);
+                ACLMessage reply = msg.createReply();
+                reply.setConversationId("dough-Notification-reply");
+                reply.setPerformative(ACLMessage.CONFIRM);
+                baseAgent.sendMessage(reply);
                 TypeReference<?> type = new TypeReference<UnbakedProductMessage>(){};
                 UnbakedProductMessage unbakedProductMessage = JsonConverter.getInstance(messageContent, type);
                 /*
@@ -218,8 +234,10 @@ public class OvenManager extends BaseAgent {
                 }
                 if (!alreadyAdded){
                     UnbakedProduct up = this.getUnbakedProductFromProductName(unbakedProductMessage.getProductType());
-                    int newQuantity = this.getTotalQuantity(unbakedProductMessage.getProductQuantities());
-                    this.iterativelyAddUnbakedProducts(newQuantity, up);
+                    if(up != null) {
+	                    int newQuantity = this.getTotalQuantity(unbakedProductMessage.getProductQuantities());
+	                    this.iterativelyAddUnbakedProducts(newQuantity, up);
+                    }
                 }
             }
             else {
@@ -229,29 +247,32 @@ public class OvenManager extends BaseAgent {
         private UnbakedProduct getUnbakedProductFromProductName(String productName){
             UnbakedProduct up = new UnbakedProduct();
             Product p = this.getProductWithSameGuid(productName);
-            up.setGuid(p.getGuid());
-            up.setBakingTemp(p.getRecipe().getBakingTemp());
-            up.setBreadsPerOven(p.getBatch().getBreadsPerOven());
-            Vector<Step> steps = new Vector<Step> ();
-            boolean addStep = false;
-            // ASSUMPTION: The steps are in order of recipe.
-            for (Step s : p.getRecipe().getSteps()) {
-                if (s.getAction().equals("baking")){
-                    up.setBakingDuration(s.getDuration());
-                    addStep = true;
-                    continue;
-                }
-                if (s.getAction().equals("cooling")){
-                    up.setCoolingDuration(s.getDuration());
-                    addStep = false;
-                    break;
-                }
-                if (addStep) {
-                    steps.add(s);
-                }
+            if(p != null) {
+	            up.setGuid(p.getGuid());
+	            up.setBakingTemp(p.getRecipe().getBakingTemp());
+	            up.setBreadsPerOven(p.getBatch().getBreadsPerOven());
+	            Vector<Step> steps = new Vector<Step> ();
+	            boolean addStep = false;
+	            // ASSUMPTION: The steps are in order of recipe.
+	            for (Step s : p.getRecipe().getSteps()) {
+	                if (s.getAction().equals("baking")){
+	                    up.setBakingDuration(s.getDuration());
+	                    addStep = true;
+	                    continue;
+	                }
+	                if (s.getAction().equals("cooling")){
+	                    up.setCoolingDuration(s.getDuration());
+	                    addStep = false;
+	                    break;
+	                }
+	                if (addStep) {
+	                    steps.add(s);
+	                }
+	            }
+	            up.setIntermediateSteps(steps);
+	            return up;
             }
-            up.setIntermediateSteps(steps);
-            return up;
+            return null;
         }
         private Product getProductWithSameGuid(String productName){
             for (Product p : availableProductList) {
