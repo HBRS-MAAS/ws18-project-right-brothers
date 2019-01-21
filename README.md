@@ -46,23 +46,23 @@ In case you want to clean you workspace run
 
 ### Test
 
-##### For testing TimeKeeper
+For testing TimeKeeper
 
     gradle run
 
-##### For testing baking stage
+For testing baking stage
 
     gradle run --args="-baking"
 
-##### For testing packaging stage
+For testing packaging stage
     
     gradle run --args="-packaging"
 
-##### For testing baking and packaging stage
+For testing baking and packaging stage
 
     gradle run --args="-baking -packaging"
     
-##### For testing baking and packaging and visualisation stage
+For testing baking and packaging and visualisation stage
 
 	gradle run --args="-baking -packaging -visualization"
 
