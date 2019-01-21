@@ -17,6 +17,7 @@
 \usepackage{changepage}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{float}
 \usepackage[htt]{hyphenat}
 %\usepackage{minted}
 
@@ -197,18 +198,47 @@ It is mainly responsible for registering the agent to yellow pages and talking t
 It is also responsible for sending the message to visualization agents.
 Every agent that inherits BaseAgent has to call \texttt{finished} when their task is finished for that time step.
 \item \textbf{Visualization}:
-Visualization agent receives messages from baseAgent of all agents and parses this message to extract whetever information it needs.
-It then uses this information to create graphical representation using \texttt{JavaFX}.
+VisualizationAgent receives the output messages of the interface agents. It is a JADE agent extended from \textbf{BaseAgent}. It creates an instance of JavaFX application instance \textbf{Visualizer} during initialization and forwards all interface agent messages to the Visualizer instance.
+Please refer Figure~\ref{fig:visualizer-ui} for a snapshot of the visualiser gui in action and refer 
+Figure~\ref{fig:class_diagram_for_visualiser} for the class diagram of the visualiser agent.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.0\linewidth]{visualizer-ui.png}
+    \caption{Board visualization in progress}\label{fig:visualizer-ui}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\linewidth]{class-diagram.png}
+    \caption{Class diagram of the major classes of the visualizer}\label{fig:class_diagram_for_visualiser}
+\end{figure}
+
 \end{itemize}
 
 \section{Mockup Agents:}
 For testing the individual stages for proper functioning, we create a number of agents basically as mockup agents to provided the necessary input messages to the interface messages of our stages. These are listed below along with their functionality.
 \begin{itemize}
     \item \textbf{DummyAgent}:
+        The purpose of this agent was to test the TimeKeeper agent. It prints a message every time step
+        till the platform shuts down.
     \item \textbf{DummyCoolingRackAgent}:
+        This dummy agent get the order messages from order processing agent and creates ProductMessage
+        objects. This product message is converted into a json string message and sent to PreLoadingBayAgent.
+        This dummy is used in the test for packaging stage.
     \item \textbf{DummyOrderProcessor}:
+        This dummy agent reads a client.json file from a scenario directory and create order messages
+        from that information. This order message is then sent to all the agents of its bakery. The 
+        dummy order processor takes all the order for its bakery so there cannot be multiple order processing 
+        agent reading the same file.
     \item \textbf{DummyProofer}:
+        Similar to DummyCoolingRackAgent, this agent receives order messages from order processing 
+        agent and converts the order to UnbakedProductMessage and sends it to the OvenManager of its 
+        bakery.
     \item \textbf{DummyReceiverAgent}:
+        This agent is made for the sole purpose of receiving INFORM messages from a particular agent.
+        It takes 3 arguments, namely, guid of the bakery it is part of, the name of the agent it will
+        receive messages from and the conversation id of those messages. This agent is also used for 
+        testing different stages. It is the last agent in the chain and once it receives a message, 
+        we assert that the stage is working correctly.
 \end{itemize}
 
 Following section will provided class descriptions for the different agents discussed in this section.
@@ -368,7 +398,18 @@ Following section will provided class descriptions for the different agents disc
         \end{itemize}
 \end{itemize}
 
-\section{Testing}
+\section{Testing}%
+\label{sec:testing}
+\begin{itemize}
+    \item For testing TimeKeeper \\\texttt{gradle run}
+    \item For testing baking stage \\\texttt{gradle run --args="-baking"}
+    \item For testing packaging stage \\\texttt{gradle run --args="-packaging"}
+    \item For testing baking and packaging stage \\\texttt{gradle run --args="-baking -packaging"}
+    \item For testing baking and packaging and visualisation stage \\\texttt{gradle run --args="-baking -packaging -visualization"}
+\end{itemize}
+
+
+
 
 
 
