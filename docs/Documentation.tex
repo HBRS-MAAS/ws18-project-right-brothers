@@ -73,7 +73,7 @@
 %	TITLE SECTION
 %------------------
 \HRule \\[0.4cm]
-{ \huge \bfseries German Bakery}\\[0.4cm] % Title of your document
+{ \huge \bfseries Flying Saucers Bakery}\\[0.4cm] % Title of your document
 \HRule \\[1.5cm]
  
 %--------------------
@@ -396,6 +396,229 @@ Following section will provided class descriptions for the different agents disc
         \begin{itemize}
             \item LoadingBayMessage (Receiver: OrderTracker/OrderAggregator)
         \end{itemize}
+\end{itemize}
+
+\section{Message Object Description}
+\subsection{UnbakedProductMessage}
+\begin{itemize}
+\item Recipient: OvenManager(Baking Stage)
+\item Sender: Proofer(Dough Preparation Stage)
+\item Class description:
+\begin{lstlisting}[language=Java]
+public class UnbakedProductMessage implements java.io.Serializable {
+    private String productType;
+    private Vector<String> guids; 
+    private Vector<Integer> productQuantities;
+    
+	public UnbakedProductMessage() {
+        this.guids = new Vector<String> ();
+        this.productQuantities = new Vector<Integer> ();
+	}
+
+    public void setProductType(String productType) {
+        this.productType = productType;
+    }
+
+    public String getProductType() {
+        return productType;
+    }
+
+    public void setGuids(Vector<String> guids) {
+        this.guids = guids;
+    }
+
+    public Vector<String> getGuids() {
+        return guids;
+    }
+
+    public void setProductQuantities(Vector<Integer> productQuantities) {
+        this.productQuantities = productQuantities;
+    }
+
+    public Vector<Integer> getProductQuantities() {
+        return productQuantities;
+    }
+}
+\end{lstlisting} 
+
+\end{itemize}
+\subsection{BakedProductMessage}
+\begin{itemize}
+\item Recipient: PostBakingProcessor(Baking Stage)
+\item Sender: OvenManager(Baking Stage)
+\item Class description:
+\begin{lstlisting}[language=Java]
+public class BakedProductMessage implements java.io.Serializable {
+    private String guid;
+    private int coolingDuration;
+    private Vector<Step> intermediateSteps;
+    private int quantity;
+    
+	public BakedProductMessage() {
+        this.intermediateSteps = new Vector<Step> ();
+	}
+    public void setGuid(String id) {
+        this.guid = id;
+    }
+
+    public String getGuid() {
+        return this.guid;
+    }
+
+    public void setCoolingDuration(int coolingDuration) {
+        this.coolingDuration = coolingDuration;
+    }
+
+    public int getCoolingDuration() {
+        return coolingDuration;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setIntermediateSteps(Vector<Step> intermediateSteps) {
+        this.intermediateSteps = intermediateSteps;
+    }
+
+    public Vector<Step> getIntermediateSteps() {
+        return intermediateSteps;
+    }
+}
+\end{lstlisting}
+\end{itemize}
+\subsection{ProcessedProductMessage}
+\begin{itemize}
+\item Recipient: CoolingRackAgent(Baking Stage)
+\item Sender: PostBakingProcessor(Baking Stage)
+\item Class description:
+\begin{lstlisting}[language=Java]
+public class ProcessedProductMessage implements java.io.Serializable {
+    private String guid;
+    private int coolingDuration;
+    private int quantity;
+    
+    public void setGuid(String id) {
+        this.guid = id;
+    }
+
+    public String getGuid() {
+        return this.guid;
+    }
+
+    public void setCoolingDuration(int coolingDuration) {
+        this.coolingDuration = coolingDuration;
+    }
+
+    public int getCoolingDuration() {
+        return coolingDuration;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+}
+\end{lstlisting}
+\end{itemize}
+\subsection{ProductMessage}
+\begin{itemize}
+\item Recipient: PreLoadingProcessor(Packaging Stage)
+\item Sender: CoolingRackAgent(Baking Stage)
+\item Class description:
+\begin{lstlisting}[language=Java]
+public class ProductMessage implements java.io.Serializable {
+    private Hashtable<String,Integer> products;
+    
+    public ProductMessage() {
+        this.setProducts(new Hashtable<>());
+    }
+
+    public void setProducts(Hashtable<String,Integer> products) {
+        this.products = products;
+    }
+
+    public Hashtable<String,Integer> getProducts() {
+        return products;
+    }
+}
+\end{lstlisting}
+\end{itemize}
+\subsection{CompletedProductMessage}
+\begin{itemize}
+\item Recipient: ProductBoxerAgent(Packaging Stage)
+\item Sender: PreLoadingProcessor(Packaging Stage)
+\item Class description:
+\begin{lstlisting}[language=Java]
+public class CompletedProductMessage implements java.io.Serializable {
+    private String guid;
+    private int quantity;
+    
+    public void setGuid(String id) {
+        this.guid = id;
+    }
+
+    public String getGuid() {
+        return this.guid;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+}
+\end{lstlisting}
+\end{itemize}
+\subsection{LoadingBayMessage}
+\begin{itemize}
+\item Recipient: LoadingBayAgent(Packaging Stage)
+\item Sender: ProductBoxerAgent(Packaging Stage)
+\item Class description:
+\begin{lstlisting}[language=Java]
+public class LoadingBayMessage {
+	private String orderId;
+	private List<LoadingBayBox> boxes;
+	
+	public LoadingBayMessage() {
+		boxes = new ArrayList<LoadingBayBox>();
+	}
+	
+	public LoadingBayMessage(String orderId, List<LoadingBayBox> boxes) {
+		this();
+		
+		this.orderId = orderId;
+		this.boxes = boxes;
+	}
+	@JsonProperty("OrderID")
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+	@JsonProperty("Boxes")
+	public List<LoadingBayBox> getBoxes() {
+		return boxes;
+	}
+	public void setBoxes(List<LoadingBayBox> boxes) {
+		this.boxes = boxes;
+	}
+}
+
+\end{lstlisting}
 \end{itemize}
 
 \section{Testing}%
