@@ -44,7 +44,9 @@ package "Packaging" {
   Order -down-> [LoadingBayAgent] 
   ProductMessage -down-> [PreLoadingProcessor]
   [PreLoadingProcessor] -down-> CompletedProductMessage
-  CompletedProductMessage -down-> [LoadingBayAgent]
+  CompletedProductMessage -down-> [ProductBoxerAgent]
+  [ProductBoxerAgent] -down-> LoadingBayMessage1
+  LoadingBayMessage1 -down-> [LoadingBayAgent]
   [LoadingBayAgent] -down-> LoadingBayMessage
 }
 
