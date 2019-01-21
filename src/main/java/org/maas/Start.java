@@ -90,7 +90,7 @@ public class Start {
 
         }
         if(visualizationStage) {
-            Initializer init = new VisualisationInitializer(endTime);
+            Initializer init = new VisualizationInitializer();
             sb.append(init.initialize(scenarioDirectory));
             
             Initializer boardInit = new BoardVisualisationInitializer(endTime);
