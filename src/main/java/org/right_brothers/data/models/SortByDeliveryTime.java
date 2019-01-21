@@ -11,8 +11,8 @@ public class SortByDeliveryTime implements Comparator<OrderItem>
         int timeParam1;
         int timeParam2;
         // Assuming orders do not arrive months in advance. Order has Date in only day and hours
-        timeParam1 = (a.getOrder().getDeliveryDate().getDay()*24)+(a.getOrder().getDeliveryDate().getHour());
-        timeParam2 = (b.getOrder().getDeliveryDate().getDay()*24)+(b.getOrder().getDeliveryDate().getHour());
+        timeParam1 = (a.getOrder().getDeliveryDate().getDay()*24*60)+(a.getOrder().getDeliveryDate().getHour()*60)+(a.getOrder().getDeliveryDate().getMinute());
+        timeParam2 = (b.getOrder().getDeliveryDate().getDay()*24*60)+(b.getOrder().getDeliveryDate().getHour()*60)+(b.getOrder().getDeliveryDate().getMinute());
         return timeParam1 - timeParam2; 
     } 
 }
