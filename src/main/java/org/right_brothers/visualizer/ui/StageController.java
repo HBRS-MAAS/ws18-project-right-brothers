@@ -1,15 +1,8 @@
 package org.right_brothers.visualizer.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.right_brothers.visualizer.model.StageCard;
 
 import javafx.animation.FadeTransition;
-import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 public abstract class StageController implements ScenarioAware{
