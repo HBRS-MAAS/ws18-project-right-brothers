@@ -65,6 +65,8 @@ For testing baking and packaging stage
 For testing baking and packaging and visualisation stage
 
 	gradle run --args="-baking -packaging -visualization"
+	
+The visualization with all the orders in a scenario is very fast and hard to follow. It's easier to follow smaller subset of orders. To use a smaller number of orders please comment out line 73 to 75 (inclusive) in `org.right_brothers.agents.DummyOrderProcessor` and uncomment line 76.
 
 ## Eclipse
 To use this project with eclipse run
