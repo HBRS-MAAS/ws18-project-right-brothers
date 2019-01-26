@@ -40,6 +40,7 @@ public class Start {
 
         cmd.add("-jade_domain_df_maxresult");
         cmd.add("10000");
+        // cmd.add("-gui");
 
         if(isHost) {
             cmd.add("-host");
@@ -73,7 +74,6 @@ public class Start {
             Initializer init = new BakingAndPackagingStageInitializer();
             sb.append(init.initialize(scenarioDirectory));
             endTime = "004.12.00";
-
         } else {
             if(bakingStage) {
     			Initializer init = new BakingStageInitializer();
